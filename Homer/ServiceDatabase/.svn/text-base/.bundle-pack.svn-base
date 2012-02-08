@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<bundlejar>
+<resource dst="" pattern=".*\.class" src="/ServiceDatabase/out" type="0"/>
+<resource dst="lib/h2.jar" src="/ServiceDatabase/lib/h2.jar" type="1"/>
+</bundlejar>

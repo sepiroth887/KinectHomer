@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="**/.svn/**|**/CVS/**" including="**/*.java" kind="src" path="src"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.EXECUTION_ENVIRONMENT_CONTAINER"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.FRAMEWORK_CONTAINER">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/osgi/framework/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/comfyJ/lib/comfyj-2.9.jar"/>
+	<classpathentry kind="lib" path="libs/comfyJ/lib/jniwrap-3.8.3.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Kinect/libs/comfyJ/bin"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/comfyJ/lib/winpack-3.8.3.jar"/>
+	<classpathentry kind="lib" path="libs/comfyJ/lib/slf4j-simple-1.5.8.jar"/>
+	<classpathentry kind="lib" path="libs/comfyJ/lib/slf4j-api-1.5.8.jar"/>
+	<classpathentry kind="lib" path="libs/KinectCOM/kinect.jar"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/HomerFramework">
+		<accessrules>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerPolicyServer/overlap/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerPolicyServer/conflicts/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerPolicyServer/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/systemUtils/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/parameterData/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/osgi/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/events/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/configData/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/tcas/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/homerObjects/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/componentUtils/encoding/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/componentUtils/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/ServiceDatabase">
+		<accessrules>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceDatabase/queryBuilder/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceDatabase/objects/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceDatabase/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/ServiceCOMMs">
+		<accessrules>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceCOMMs/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/ServiceJSON">
+		<accessrules>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceJSON/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="output" path="out"/>
+</classpath>

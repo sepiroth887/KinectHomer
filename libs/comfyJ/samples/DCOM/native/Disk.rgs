@@ -1,0 +1,24 @@
+HKCR
+{
+	DComServer.Disk.1 = s 'Disk Class'
+	{
+		CLSID = s '{E55F07E6-6548-4FA4-8D91-F818D28BA78D}'
+	}
+	DComServer.Disk = s 'Disk Class'
+	{
+		CLSID = s '{E55F07E6-6548-4FA4-8D91-F818D28BA78D}'
+		CurVer = s 'DComServer.Disk.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {E55F07E6-6548-4FA4-8D91-F818D28BA78D} = s 'Disk Class'
+		{
+			ProgID = s 'DComServer.Disk.1'
+			VersionIndependentProgID = s 'DComServer.Disk'
+			ForceRemove 'Programmable'
+			LocalServer32 = s '%MODULE%'
+			val AppID = s '{97987041-A6E7-430B-BA28-8941559EC62A}'
+			'TypeLib' = s '{8F1E4924-7068-46A6-9BDF-0987DC573484}'
+		}
+	}
+}

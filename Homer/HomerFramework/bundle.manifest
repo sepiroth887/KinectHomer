@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Export-Package: uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils, 
+ uk.ac.stir.cs.homer.homerFrameworkAPI.tcas, uk.ac.stir.cs.homer.homer
+ FrameworkAPI.componentUtils.encoding, uk.ac.stir.cs.homer.homerFramew
+ orkAPI.osgi, uk.ac.stir.cs.homer.homerFrameworkAPI.systemUtils, uk.ac
+ .stir.cs.homer.homerFrameworkAPI.parameterData, uk.ac.stir.cs.homer.h
+ omerFrameworkAPI.events, uk.ac.stir.cs.homer.homerFrameworkAPI.config
+ Data, uk.ac.stir.cs.homer.homerFrameworkAPI.homerObjects, uk.ac.stir.
+ cs.homer.homerPolicyServer, uk.ac.stir.cs.homer.homerPolicyServer.con
+ flicts, uk.ac.stir.cs.homer.homerPolicyServer.overlap
+Bundle-ClassPath: .
+Bundle-Version: 1.0.0
+Bundle-Name: HomerFramework
+Bundle-ManifestVersion: 2
+Bundle-Activator: uk.ac.stir.cs.homer.homerFrameworkAPI.HomerFramework
+ APIActivator
+Import-Package: org.osgi.framework, org.osgi.service.event, org.osgi.u
+ til.tracker, org.slf4j, uk.ac.stir.cs.homer.serviceDatabase, uk.ac.st
+ ir.cs.homer.serviceDatabase.objects, uk.ac.stir.cs.homer.serviceDatab
+ ase.queryBuilder, org.json, uk.ac.stir.cs.homer.serviceJSON, javax.sw
+ ing, javax.xml.transform, javax.xml.transform.sax, javax.xml.transfor
+ m.stream, org.xml.sax, org.xml.sax.helpers
+Bundle-SymbolicName: HomerFramework
+

@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-Version: 1.0.0
+Bundle-Name: UserInterfaceJavaClient
+Bundle-Activator: uk.ac.stir.cs.homer.userInterfaceJavaClient.UserInte
+ rfaceJavaClientActivator
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: UserInterfaceJavaClient
+Import-Package: javax.swing, javax.swing.border, javax.swing.event, ja
+ vax.swing.filechooser, org.json, org.osgi.framework, org.osgi.service
+ .event, uk.ac.stir.cs.homer.homerFrameworkAPI.configData, uk.ac.stir.
+ cs.homer.homerFrameworkAPI.events, uk.ac.stir.cs.homer.homerFramework
+ API.osgi, uk.ac.stir.cs.homer.homerFrameworkAPI.parameterData, uk.ac.
+ stir.cs.homer.homerFrameworkAPI.systemUtils, uk.ac.stir.cs.homer.serv
+ iceDatabase, uk.ac.stir.cs.homer.serviceDatabase.objects, uk.ac.stir.
+ cs.homer.serviceDatabase.queryBuilder, uk.ac.stir.cs.homer.serviceJSO
+ N

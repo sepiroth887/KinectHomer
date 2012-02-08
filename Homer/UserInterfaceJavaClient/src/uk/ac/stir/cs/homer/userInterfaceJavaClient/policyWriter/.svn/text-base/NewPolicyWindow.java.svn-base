@@ -1,0 +1,118 @@
+package uk.ac.stir.cs.homer.userInterfaceJavaClient.policyWriter;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Calendar;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import org.json.JSONException;
+
+import uk.ac.stir.cs.homer.homerFrameworkAPI.systemUtils.SystemGateway;
+import uk.ac.stir.cs.homer.serviceDatabase.HomerDatabase;
+import uk.ac.stir.cs.homer.serviceDatabase.objects.Policy;
+import utils.VerticalFlowLayout;
+
+public class NewPolicyWindow extends JPanel implements ActionListener
+{
+
+	private final HomerDatabase database;
+	private WhenTerms whenTerms;
+	private DoTerms doTerms;
+	private JTextField policyNameTextField;
+	private JTextField authorNameTextField;
+	private JTextField whenDurationTextField;
+	
+	public NewPolicyWindow(HomerDatabase database)
+	{
+		this.database = database;
+
+		initiateGUI();		
+
+	}
+
+	private void initiateGUI()
+	{		
+		JPanel centralPanel = new JPanel(new VerticalFlowLayout(VerticalFlowLayout.CENTER));
+		centralPanel.add(createWhenPanel());
+		centralPanel.add(createDoPanel());
+		
+		//JScrollPane centralScrollPanel = new JScrollPane();
+		//centralScrollPanel.setAutoscrolls(true);
+		//centralScrollPanel.setWheelScrollingEnabled(true);	
+		//centralScrollPanel.setViewportView(centralPanel);
+		
+		JPanel buttonsPanel = new JPanel();
+
+		policyNameTextField = new JTextField(20);
+		buttonsPanel.add(new JLabel("Policy Name:"));
+		buttonsPanel.add(policyNameTextField);
+		
+		authorNameTextField = new JTextField("Claire");
+		buttonsPanel.add(new JLabel("Author:"));
+		buttonsPanel.add(authorNameTextField);
+		
+		JButton saveButton = new JButton("Save");
+		saveButton.addActionListener(this);
+		buttonsPanel.add(saveButton);
+		
+		this.setLayout(new BorderLayout());
+		this.add(BorderLayout.NORTH, buttonsPanel);
+		this.add(BorderLayout.CENTER, centralPanel);
+		
+		this.validate();
+	}
+
+	private Component createWhenPanel()
+	{
+		JPanel whenPanel = new JPanel();//new VerticalFlowLayout(VerticalFlowLayout.CENTER));
+		whenTerms = new WhenTerms(database);
+		
+		whenPanel.add(new JLabel("When ("));
+		whenPanel.add(whenTerms);
+		whenPanel.add(new JLabel(") occuring within:"));
+		whenDurationTextField = new JTextField(System.getProperty("uk.ac.stir.cs.homer.policies.eventTimeFrame"));
+		whenPanel.add(whenDurationTextField);
+		whenPanel.add(new JLabel("seconds"));
+		return whenPanel;
+	}
+
+	private Component createDoPanel()
+	{
+		JPanel doPanel = new JPanel(new VerticalFlowLayout(VerticalFlowLayout.CENTER));
+		doTerms = new DoTerms(database);
+		
+		doPanel.add(new JLabel("Do ("));
+		doPanel.add(doTerms);
+		doPanel.add(new JLabel(")"));
+		
+		return doPanel;
+	}
+
+	
+	@Override
+	public void actionPerformed(ActionEvent arg0)
+	{
+		try
+		{
+			//System.out.println(whenTerms.getJSON().toString());
+			//System.out.println(doTerms.getJSON().toString());
+			
+			String dateRightNow = Long.toString(Calendar.getInstance().getTimeInMillis());
+			Policy policy = new Policy(policyNameTextField.getText(), authorNameTextField.getText(), dateRightNow, dateRightNow, true, whenTerms.getJSON().toString(), doTerms.getJSON().toString(), Integer.parseInt(whenDurationTextField.getText()));
+			SystemGateway.Singleton.get().addNewPolicy(policy);
+			
+			//System.out.println(whenTerms.getJSON().toString());
+			//System.out.println(doTerms.getJSON().toString());
+		} catch (JSONException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+}

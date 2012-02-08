@@ -1,0 +1,1074 @@
+package uk.ac.stir.cs.homer.homerPolicyServer.overlap;
+
+// PolicyOverlap.java
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.json.JSONException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.stir.cs.homer.homerFrameworkAPI.events.EventType;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.parameterData.Parameter;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.parameterData.ParameterData;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.time.TimeAndDateComponent;
+import uk.ac.stir.cs.homer.homerPolicyServer.LivePolicy;
+import uk.ac.stir.cs.homer.homerPolicyServer.PolicyEvent;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.Event;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.And;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.Constraint;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.Not;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.Or;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.PrimitiveConstraint;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.XdivCeqZ;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.XeqC;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.XeqY;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.XgtC;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.XgtY;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.XgteqC;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.XgteqY;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.XltC;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.XltY;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.XlteqC;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.XlteqY;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.XmodCeqZ;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.XneqC;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.constraints.XneqY;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.core.BooleanVar;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.core.Domain;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.core.IntDomain;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.core.IntVar;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.core.Store;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.core.Var;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.search.DepthFirstSearch;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.search.IndomainMin;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.search.SelectChoicePoint;
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.search.SimpleSelect;
+import uk.ac.stir.cs.homer.homerPolicyServer.policies.terms.TermType;
+import uk.ac.stir.cs.homer.homerPolicyServer.policies.terms.whenTerms.WhenEventTerm;
+import uk.ac.stir.cs.homer.homerPolicyServer.policies.terms.whenTerms.WhenTerm;
+import uk.ac.stir.cs.homer.serviceDatabase.HomerDatabase;
+import uk.ac.stir.cs.homer.serviceDatabase.objects.Condition;
+import uk.ac.stir.cs.homer.serviceDatabase.objects.Policy;
+import uk.ac.stir.cs.homer.serviceDatabase.objects.SystemDeviceType;
+import uk.ac.stir.cs.homer.serviceDatabase.objects.Trigger;
+import uk.ac.stir.cs.homer.serviceDatabase.objects.UserDevice;
+import uk.ac.stir.cs.homer.serviceDatabase.queryBuilder.QueryObject;
+import uk.ac.stir.cs.homer.serviceJSON.JSONUtils;
+
+/**
+ * <p>
+ * This class is designed for checking overlap among triggers/conditions in a
+ * policy. It defines a number of general-purpose methods that conveniently wrap
+ * up PolicyOverlap constraints. Trigger/condition variables and constraints on
+ * them are declared, then it is determined if there is a solution for these
+ * variables. If there is, this means that the triggers/conditions of the given
+ * policies overlap (and may therefore lead to conflict). Earlier examples are
+ * taken from "Homer Policy Conflict Handling" by Claire Maternaghan; later
+ * examples are from the author.
+ * </p>
+ * 
+ * <p>
+ * Compile and run this code as follows:
+ * </p>
+ * 
+ * <code>
+    javac -cp ".;C:/usr/local/jacop/jacop.jar" PolicyOverlap.java
+    java -cp ".;C:/usr/local/jacop/jacop.jar" PolicyOverlap
+  </code>
+ * 
+ * <p>
+ * Trigger and condition variables are mapped to Jacop integer variables. Each
+ * of these has a time field and a value field. The time field indicates the
+ * relative time at which the trigger/condition becomes true (0 up to but not
+ * including TIME_LIMIT). The value field indicates the variable value (0 up to
+ * but not including VALUE_LIMIT).
+ * </p>
+ * 
+ * <p>
+ * The event names in triggers/conditions are represented by Jacop variables.
+ * Normally variables are declared as "intVar(event_name)", as this allows their
+ * use in "then". However, variables that are not used in this way can more
+ * efficiently be declared as "boolVar(event_name)". In the examples given
+ * below, event names are plain text. However, they could as well be unique
+ * identifiers (e.g. "t14631379" in place of trigger "front_door").
+ * </p>
+ * 
+ * <p>
+ * If an event name appears more than once in a "then", each such instance is a
+ * separate event and needs to be distinguished (e.g. "house_temperature_0",
+ * "house_temperature_1").
+ * </p>
+ * 
+ * <p>
+ * A trigger/condition may have an optional parameter that is represented by the
+ * value field of a Jacop variable. These values should be (small) integers. If
+ * the trigger/condition already has a numeric parameter, this is a fairly
+ * direct translation. As Jacop uses integers, decimal fractions need
+ * translation. For example, the numbers might be multiplied by 100 to allow for
+ * two decimal places (e.g. 94.6 is represented by 9460). Negative numbers could
+ * be mapped relative to the minimum of the actual value (e.g. -100.00 could be
+ * represented by 0 and +100.00 by 200).
+ * </p>
+ * 
+ * <p>
+ * If a trigger/condition has a parameter that belong sto an enumerated list, it
+ * should be represented by its index in the list. Suppose an immerser event can
+ * have a temperature parameter that is "cold", "lukewarm", "hot" and "boiling".
+ * These values could be mapped to 0, 1, 2 and 3.
+ * </p>
+ * 
+ * <p>
+ * When an "intVar" variable is declared, additional variables are also declared
+ * for its time and value counterparts. The main, time and value variables are
+ * related by constraints that reflect the formula:
+ * </p>
+ * 
+ * <code>
+    variable = value * TIME_LIMIT + time
+  </code>
+ * 
+ * <p>
+ * Syntactic sugar is provided for conveniently stating policy "when" clauses.
+ * In the following, "..." denotes repetition and "value" means a variable or an
+ * integer constant:
+ * </p>
+ * 
+ * <code>
+    constraint :=
+      and(constraint, ...) | or(constraint, ...) | not(constraint) |
+      then(variable, ...)
+      eq(variable, value) | ne(variable, value) |
+      gt(variable, value) | ge(variable, value) |
+      lt(variable, value) | le(variable, value) |
+      range(variable, minimum_constant, maximum_constant)
+  </code>
+ * 
+ * @author Kenneth J. Turner
+ * @version 1.0 (19th July 2011)
+ */
+public class JacopOverlapChecker extends HomerOverlapChecker
+{
+
+	/* ============================= Constants ================================ */
+
+	/** Suffix of a time variable */
+	private final static String TIME_SUFFIX = "_t";
+
+	/** Variable time 0 up to but not including this limit */
+	private final static int TIME_LIMIT = 10;
+
+	/** Variable value 0 up to but not including this limit */
+	private final static int VALUE_LIMIT = 10000;
+
+	/** Variable multiplier of all number values so as to retain 2dp precision */
+	private final static int INTEGER_MULTIPLIER = 1;
+	
+	/** Suffix of a value variable */
+	private final static String VALUE_SUFFIX = "_v";
+
+	/** Maximum value of an integer variable */
+	private final static int VAR_MAXIMUM = VALUE_LIMIT * TIME_LIMIT;
+
+	/** Minimum value of an integer variable */
+	private final static int VAR_MINIMUM = 0;
+
+	/* ============================= Variables ================================ */
+
+	/** Constraint store */
+	private Store store;
+
+	/** Declared variables (and their time/value counterparts) */
+	private ArrayList<Var> variables;
+
+	private HomerDatabase database;
+	private Map<String, IntVar> policyVariables;
+	private List<ThenVar> thenTerms;
+	private Logger logger = LoggerFactory.getLogger(JacopOverlapChecker.class);
+	
+	public JacopOverlapChecker(HomerDatabase database)
+	{
+		this.database = database;
+	}
+	
+	@Override
+	public Overlap getOverlapsWithinOnePolicy(LivePolicy livePolicy)
+	{
+		initialiseConstraints();
+		return getOverlap(translate(livePolicy.getRootWhenTerm(), 0, TermType.AND));
+	}
+	
+	@Override
+	public Map<Policy, Overlap> getOverlappingPolicies(LivePolicy newPolicy,
+			Collection<LivePolicy> existingPolicies)
+	{
+		initialiseConstraints();
+		
+		Map<Policy, Overlap> overlappingPolicies = new HashMap<Policy, Overlap>();
+		
+		
+		for (LivePolicy existingPolicy : existingPolicies)
+		{
+			Overlap overlaps = getOverlap(newPolicy, existingPolicy);
+			if (!overlaps.getVariables().isEmpty())
+			{
+				overlappingPolicies.put(existingPolicy.getPolicy(), overlaps);
+			}
+		}
+		return overlappingPolicies;
+	}
+	
+	private Overlap getOverlap(LivePolicy livePolicyA, LivePolicy livePolicyB)
+	{
+		List<String> userDevicesIDsInPolicyA = new LinkedList<String>();
+		for (PolicyEvent event : livePolicyA.getWhenEventTerms())
+		{
+			userDevicesIDsInPolicyA.add(event.getUserDeviceID());
+		}
+		for (PolicyEvent event : livePolicyB.getWhenEventTerms())
+		{
+			// if there is at least one common user device then go ahead and look for overlaps
+			if	(userDevicesIDsInPolicyA.contains(event.getUserDeviceID()))
+			{
+				Constraint c = and(translate(livePolicyA.getRootWhenTerm(), 0, TermType.AND), translate(livePolicyB.getRootWhenTerm(), 100, TermType.AND));
+				return getOverlap(c);
+			}
+		}
+		// if no common user devices then dont bother checking
+		return new Overlap();
+	}
+	
+	private Overlap getOverlap(Constraint c)
+	{
+		store.impose(c);
+
+		Var[] variableList = variables.toArray(new Var[0]);
+		DepthFirstSearch search = new DepthFirstSearch();
+		search.setPrintInfo(true);
+		search.setOptimize(true);
+		store.print();
+		SelectChoicePoint select = new SimpleSelect(variableList, null, new IndomainMin());
+		boolean result = search.labeling(store, select);
+
+		Overlap overlap = new Overlap();
+		if (result)
+		{
+			Map<String, UserDevice> userDevices = new HashMap<String, UserDevice>();
+			
+			for (int i = 0; i < variableList.length; i++) {
+				Var var = variableList[i];
+				String varName = var.id();
+				if (!varName.endsWith(TIME_SUFFIX) && !varName.endsWith(VALUE_SUFFIX)) {
+					Domain varDomain = var.dom();
+					
+					String[] parts = varName.split(VARIABLE_NAME_SPLITTER);
+					String userDeviceID = parts[0];
+					if (!userDevices.containsKey(userDeviceID))
+					{
+						userDevices.put(userDeviceID, database.getUserDevices(new QueryObject().userDevice(userDeviceID))[0]);
+					}
+					UserDevice userDevice = userDevices.get(userDeviceID);
+
+					OverlappingVariable overlappingVariable = new OverlappingVariable(userDevice);
+					if (varDomain.singleton() && varDomain instanceof IntDomain) {
+						int varInt = ((IntDomain) varDomain).value();
+						overlappingVariable.setTime(varInt % TIME_LIMIT);
+						overlappingVariable.setValue(varInt / TIME_LIMIT);
+
+					}
+					int paramNumber = Integer.parseInt(parts[1]);
+					
+					// No parameters
+					if (paramNumber < 0)
+					{
+						SystemDeviceType sysDevType = database.getSystemDeviceTypes(new QueryObject().userDevice(userDeviceID))[0];
+						
+						//check if it's a date
+						if (sysDevType.getId().equals(TimeAndDateComponent.SYSTEM_DEVICE_DATE))
+						{
+							overlappingVariable.setIsDate(true);
+						}
+						else if (sysDevType.getId().equals(TimeAndDateComponent.SYSTEM_DEVICE_TIME))
+						{
+							overlappingVariable.setIsTime(true);
+						}
+						else
+						{
+							// work out what the trigger/condition event was
+							if (overlappingVariable.getValue()>0)
+							{
+								Event e = getEventFromParamNumber(userDevice, overlappingVariable.getValue());
+								overlappingVariable.setEvent(e);
+							}
+						}
+					}
+				
+					overlap.addVariable(overlappingVariable);
+				}
+			}
+		}
+		return overlap;
+	}
+	
+	private PrimitiveConstraint translate(WhenTerm whenTerm, int termGroupNumber, TermType parentTermType)
+	{
+		switch(whenTerm.getTermType()) {
+			case AND: logger.trace(" and ( "); parentTermType=TermType.AND; termGroupNumber++; return and(translate(whenTerm.getChildren(), termGroupNumber, parentTermType)); 
+			case OR:  logger.trace(" or ( "); parentTermType=TermType.OR; termGroupNumber++; return or(translate(whenTerm.getChildren(), termGroupNumber, parentTermType));
+			case THEN:  logger.trace(" then ( "); parentTermType=TermType.THEN; 
+									termGroupNumber++; return then(translate(whenTerm.getChildren(), termGroupNumber, parentTermType));
+			case EVENT: return getConstraintForEvent((WhenEventTerm)whenTerm, termGroupNumber, parentTermType);
+			default: return null; //AHHHH THIS SHOULD NEVER HAPPEN!!
+		}
+	}
+	private PrimitiveConstraint[] translate(List<WhenTerm> children, int termGroupNumber, TermType parentTermType)
+	{
+		PrimitiveConstraint[] constraints = new PrimitiveConstraint[children.size()];
+		for (int i = 0; i<children.size(); i++)
+		{
+			constraints[i] = translate(children.get(i), termGroupNumber, parentTermType);
+		}
+		return constraints;
+	}
+	
+	private PrimitiveConstraint getConstraintForEvent(WhenEventTerm whenTerm, int termGroupNumber, TermType parentTermType)
+	{
+		PolicyEvent event = whenTerm.getPolicyEvent();
+
+		String jsonParamData;
+		Condition condition = null;
+		boolean isDate = false;
+		boolean isTime = false;
+		if (event.getType() == EventType.TRIGGER)
+		{
+			Trigger trigger = database.getTriggers(new QueryObject().trigger(event.getID()))[0];
+			jsonParamData = trigger.getJsonParamData();
+		}
+		else
+		{
+			condition = database.getConditions(new QueryObject().condition(event.getID()))[0];
+			isDate = condition.getSystemDeviceType().equals(TimeAndDateComponent.SYSTEM_DEVICE_DATE);
+			isTime = !isDate && condition.getSystemDeviceType().equals(TimeAndDateComponent.SYSTEM_DEVICE_TIME);
+			jsonParamData = condition.getJsonParamData();
+		}
+		
+		// Handle time and date
+		if (isDate)
+		{			
+			if (condition.getId().equals(TimeAndDateComponent.CONDITION_DATE_IS_WEEKDAY))
+			{
+				return range(intVar(formatEventName(event), termGroupNumber, parentTermType), 1, 5);
+			}
+			if (condition.getId().equals(TimeAndDateComponent.CONDITION_DATE_IS_WEEKEND))
+			{
+				return range(intVar(formatEventName(event), termGroupNumber, parentTermType), 6, 7);
+			}
+			
+			return eq(intVar(formatEventName(event), termGroupNumber, parentTermType), TimeAndDateComponent.translateDay(condition.getId())+1);	
+		}
+		else if (isTime)
+		{
+			int time = TimeAndDateComponent.translateTime(getIntegerParameter(event, 0), getIntegerParameter(event, 1)) +1;
+
+			if (condition.getId().equals(TimeAndDateComponent.CONDITION_TIME_IS))
+			{
+				return eq(intVar(formatEventName(event), termGroupNumber, parentTermType), time);
+			}
+			if (condition.getId().equals(TimeAndDateComponent.CONDITION_TIME_IS_AFTER))
+			{
+				return gt(intVar(formatEventName(event), termGroupNumber, parentTermType), time);
+			}
+			if (condition.getId().equals(TimeAndDateComponent.CONDITION_TIME_IS_BEFORE))
+			{
+				return lt(intVar(formatEventName(event), termGroupNumber, parentTermType), time);
+			}
+			if (condition.getId().equals(TimeAndDateComponent.CONDITION_TIME_IS_BETWEEN))
+			{
+				int secondtime = TimeAndDateComponent.translateTime(getIntegerParameter(event, 2), getIntegerParameter(event, 3)) +1;
+				return range(intVar(formatEventName(event), termGroupNumber, parentTermType), time, secondtime);
+			}
+			return null;
+		}
+		else
+		{
+			try
+			{
+				ParameterData parameters = new ParameterData(jsonParamData);
+				List<PrimitiveConstraint> paramConstraints = new ArrayList<PrimitiveConstraint>(parameters.getParameters().size());
+				for (Parameter parameter: parameters.getParameters())
+				{
+					PrimitiveConstraint c = null;
+					switch(parameter.getComparitor())
+					{
+						case LESS_THAN: c = lt(intVar(getUniqueParamName(event, paramConstraints.size()), termGroupNumber, parentTermType), getIntegerParameter(event, paramConstraints.size())); break;
+						case LESS_THAN_OR_EQUAL_TO: c = le(intVar(getUniqueParamName(event, paramConstraints.size()), termGroupNumber, parentTermType), getIntegerParameter(event, paramConstraints.size())); break;
+						
+						case GREATER_THAN:
+							
+							c = gt(intVar(getUniqueParamName(event, paramConstraints.size()), termGroupNumber, parentTermType), getIntegerParameter(event, paramConstraints.size())); break;
+						case GREATER_THAN_OR_EQUAL_TO: c = ge(intVar(getUniqueParamName(event, paramConstraints.size()), termGroupNumber, parentTermType), getIntegerParameter(event, paramConstraints.size())); break;
+						
+						case NOT_EQUAL_CASE_INSENSITIVE: {
+							String uniqueParamName = getUniqueParamName(event, paramConstraints.size()); 
+							c = ne(intVar(uniqueParamName, termGroupNumber, parentTermType), intVar(uniqueParamName + (getStringParameter(event, paramConstraints.size()).toLowerCase()), termGroupNumber, parentTermType)); 
+							break;
+						}
+						case NOT_EQUAL:
+						case NOT_EQUAL_CASE_SENSITIVE: {
+							String uniqueParamName = getUniqueParamName(event, paramConstraints.size()); 
+							c = ne(intVar(uniqueParamName, termGroupNumber, parentTermType), intVar(uniqueParamName + (getStringParameter(event, paramConstraints.size())), termGroupNumber, parentTermType)); 
+							break;
+						}
+						
+						case EQUAL_CASE_INSENSITIVE: {
+							String uniqueParamName = getUniqueParamName(event, paramConstraints.size()); 
+							c = eq(intVar(uniqueParamName, termGroupNumber, parentTermType), intVar(uniqueParamName + (getStringParameter(event, paramConstraints.size()).toLowerCase()), termGroupNumber, parentTermType)); 
+							break;
+						}
+						case EQUAL:
+						case EQUAL_CASE_SENSITIVE:
+						case NONE: {
+							String uniqueParamName = getUniqueParamName(event, paramConstraints.size()); 
+							if (parameter.isNumberType())
+							{							
+								c = eq(intVar(uniqueParamName, termGroupNumber, parentTermType), getIntegerParameter(event, paramConstraints.size())); 
+							}
+							else
+							{
+								//c = eq(intVar(uniqueParamName), getStringParameter(event, paramConstraints.size())); 
+							}
+							break;
+						}
+					}
+					
+					if (parameters.getParameters().size() == 1)
+					{
+						return c;
+					}
+					else
+					{
+						paramConstraints.add(c);
+					}
+				}
+				return and(paramConstraints.toArray(new PrimitiveConstraint[0]));
+			}
+			
+			// no parameters
+			catch (JSONException e)
+			{
+				UserDevice ud = database.getUserDevices(new QueryObject().userDevice(event.getUserDeviceID()))[0];
+				
+				int indexOfEvent = getEventIndex(event, ud);
+				logger.trace(" eq(intVar(" + ud.getName() + "), " + indexOfEvent + ")"); 
+				return eq(intVar(formatEventName(event), termGroupNumber, parentTermType), indexOfEvent);			
+			}
+		}
+	}
+
+	private int getEventIndex(PolicyEvent event, UserDevice ud)
+	{
+		int indexOfEvent = 1;
+		if (event.getType() == EventType.CONDITION)
+		{
+			Condition[] conditions = database.getConditions(new QueryObject().userDevice(ud.getId()));
+			for (Condition condition: conditions)
+			{
+				if (condition.getId().equals(event.getID())) 
+				{
+					for (String potentialTriggerID : JSONUtils.convertJSONArrayToJavaStringList(condition.getTriggerIDsAndOrActionIDsResultingInThisState()))
+					{	
+						Trigger[] triggers = database.getTriggers(new QueryObject().userDevice(ud.getId()).trigger(potentialTriggerID));
+						if (triggers.length>0)
+						{
+							event = new PolicyEvent(triggers[0].getId(), ud.getId(), event.getParameters(), EventType.TRIGGER);
+						}
+					}
+				}
+			}	
+		}
+		
+		if (event.getType() == EventType.TRIGGER)
+		{
+			Trigger[] triggers = database.getTriggers(new QueryObject().userDevice(ud.getId()));
+			for (Trigger trigger: triggers)
+			{
+				if (trigger.getId().equals(event.getID())) 
+				{
+					break;
+				}
+				indexOfEvent++;
+			}
+		}
+		else
+		{
+			Condition[] conditions = database.getConditions(new QueryObject().userDevice(ud.getId()));
+			for (Condition condition: conditions)
+			{
+				if (condition.getId().equals(event.getID())) 
+				{
+					break;
+				}
+				indexOfEvent++;
+			}	
+			indexOfEvent*=20;
+		}
+		return indexOfEvent;
+	}
+
+	private Event getEventFromParamNumber(UserDevice ud, int indexOfEvent)
+	{
+		Event event;
+		if (indexOfEvent < 20)
+		{
+			indexOfEvent--;
+			Trigger trigger = database.getTriggers(new QueryObject().userDevice(ud.getId()))[indexOfEvent];
+			event = new Event(trigger.getId(), trigger.getDescription(), trigger.getJsonParamData(), EventType.TRIGGER);
+		}
+		else
+		{
+			indexOfEvent/=20;
+			indexOfEvent--;
+			Condition condition = database.getConditions(new QueryObject().userDevice(ud.getId()))[indexOfEvent];
+			event = new Event(condition.getId(), condition.getDescription(), condition.getJsonParamData(), EventType.CONDITION);
+		}
+		return event;
+	}
+	
+	private String getStringParameter(PolicyEvent event, int paramNum)
+	{
+		return event.getParameters()[paramNum];
+	}
+
+	private int getIntegerParameter(PolicyEvent event, int paramNum)
+	{
+		return (int)Math.round(Double.parseDouble(getStringParameter(event, paramNum))*INTEGER_MULTIPLIER);
+	}
+
+	private String getUniqueParamName(PolicyEvent event,int paramNum)
+	{
+		return event.getUserDeviceID() + VARIABLE_NAME_SPLITTER +Integer.toString(paramNum);
+	}
+
+	private String formatEventName(PolicyEvent event)
+	{
+		return getUniqueParamName(event, -100);
+	}
+
+	private void initialiseConstraints()
+	{
+		variables = new ArrayList<Var>();
+		thenTerms = new ArrayList<ThenVar>();
+		store = new Store();
+		policyVariables = new HashMap<String, IntVar>();
+	}
+
+	
+	/**
+	 * Declare and store a boolean variable (may not be used in "then"
+	 * constraints).
+	 * 
+	 * @param variable
+	 *            variable name
+	 * @return reference to declared variable
+	 */
+	private BooleanVar boolVar(String variable)
+	{
+		BooleanVar var = new BooleanVar(store, variable);
+		variables.add(var);
+		return (var);
+	}
+
+
+
+	/**
+	 * Declare and store an integer variable. Besides the main variable,
+	 * additional variables are declared and stored for its time field and value
+	 * field.
+	 * 
+	 * @param variable
+	 *            variable name
+	 * @return reference to declared variable
+	 */
+	
+	public class ThenVar
+	{
+		private final String variableName;
+		private final int termGroup;
+		private int counter;
+
+		public ThenVar(String variableName, int termGroup)
+		{
+			this.variableName = variableName;
+			this.termGroup = termGroup;
+			this.counter = 0;
+		}
+
+		@Override
+		public int hashCode()
+		{
+			return (this.getTermGroup() + this.getVariableName()).hashCode();
+		}
+
+		@Override
+		public boolean equals(Object obj)
+		{
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			ThenVar other = (ThenVar) obj;
+			return this.getTermGroup()==other.getTermGroup() && this.getVariableName().equals(other.getVariableName());
+		}
+
+		public int getTermGroup()
+		{
+			return termGroup;
+		}
+		public String getVariableName()
+		{
+			return variableName;
+		}
+		public String next()
+		{
+			counter ++;
+			return variableName+VARIABLE_NAME_SPLITTER + Integer.toString(counter);
+		}
+		
+	}
+	
+	private IntVar intVar(String variable, int termGroup, TermType parentTermType)
+	{
+		if (parentTermType == TermType.THEN)
+		{
+			ThenVar thenVar = new ThenVar(variable, termGroup);
+			if (thenTerms.contains(thenVar))
+			{
+				variable = thenVar.next();
+			}
+			else
+			{
+				thenTerms.add(thenVar);
+			}
+		}
+
+		if (policyVariables.containsKey(variable))
+		{
+			return policyVariables.get(variable);
+		}
+		
+		String variableTime = variable + TIME_SUFFIX;
+		String variableValue = variable + VALUE_SUFFIX;
+		IntVar var = new IntVar(store, variable, VAR_MINIMUM, VAR_MAXIMUM);
+		IntVar varTime = new IntVar(store, variableTime, VAR_MINIMUM, VAR_MAXIMUM);
+		IntVar varValue = new IntVar(store, variableValue, VAR_MINIMUM, VAR_MAXIMUM);
+		variables.add(var);
+		variables.add(varTime);
+		variables.add(varValue);
+		store.impose(new XmodCeqZ(var, TIME_LIMIT, varTime));
+		store.impose(new XdivCeqZ(var, TIME_LIMIT, varValue));
+		
+//		if (event0 instanceof IntVar)
+//		{ // integer variable?
+//			varTime0 = timeVar((IntVar) event0); // get integer variable
+//		} else if (event0 instanceof // primitive constraint?
+//		PrimitiveConstraint)
+//		{
+//			PrimitiveConstraint constraint0 = // get constraint
+//			(PrimitiveConstraint) event0;
+//			varTime0 = timeVar(constraint0); // get constraint variable
+//			constraints.add(constraint0); // add first value constraint
+//		} else
+//			// not variable/constraint
+//			System.err.println("then: event '" + event0
+//					+ "' must be a variable or a comparison");
+//		
+		//store.impose(range(timeVar(var),VAR_MINIMUM, VAR_MAXIMUM));
+		
+		policyVariables.put(variable, var);
+		return (var);
+	}
+
+	/**
+	 * Return the time variable associated with a primitive constraint that must
+	 * be a comparison (eq, le, lt, ge, gt, ne). The variable derives from the
+	 * first-named value in the constraint ("x"). This assumes that Jacop
+	 * respects this naming convention (which is true of version 3.1 at least).
+	 * 
+	 * @param constraint
+	 *            primitive constraint
+	 * @return reference to time variable (null if invalid constraint)
+	 */
+	private IntVar timeVar(PrimitiveConstraint constraint)
+	{
+		IntVar var = null;
+		try
+		{
+			Class<? extends PrimitiveConstraint> constraintClass = constraint.getClass();
+			Field constraintVar = constraintClass.getField("x");
+			var = (IntVar) (constraintVar.get(constraint));
+			var = timeVar(var);
+		} catch (Exception exception)
+		{
+			// ignored
+			exception.printStackTrace();
+		}
+		if (var == null)
+			System.err.println("timeVar: constraint '" + constraint
+					+ "' must be a comparison");
+		return (var);
+	}
+
+	/**
+	 * Return the time variable associated with the given variable (which may be
+	 * a main, time or value variable).
+	 * 
+	 * @param variable
+	 *            variable name
+	 * @return reference to time variable
+	 */
+	private IntVar timeVar(IntVar variable)
+	{
+		String varName = variable.id();
+		if (varName.endsWith(TIME_SUFFIX))
+			varName = varName.substring(0,
+					varName.length() - TIME_SUFFIX.length());
+		else if (varName.endsWith(VALUE_SUFFIX))
+			varName = varName.substring(0,
+					varName.length() - VALUE_SUFFIX.length());
+		Var var = store.findVariable(varName + TIME_SUFFIX);
+		if (var != null && var instanceof IntVar)
+			variable = (IntVar) var;
+		else
+			System.err.println("timeVar: time variable for '" + varName
+					+ "' missing");
+		return (variable);
+	}
+
+	/**
+	 * Return the value variable corresponding to the given main variable.
+	 * 
+	 * @param variable
+	 *            variable name
+	 * @return reference to value variable
+	 */
+	private IntVar valueVar(IntVar variable)
+	{
+		String varName = variable.id();
+		Var var = store.findVariable(varName + VALUE_SUFFIX);
+		if (var != null && var instanceof IntVar)
+			variable = (IntVar) var;
+		else
+			System.err.println("valueVar: value variable for '" + varName
+					+ "' missing");
+		return (variable);
+	}
+
+	/**
+	 * Return the "and" of the given primitive constraints.
+	 * 
+	 * @param constraints
+	 *            two or more primitive constraints
+	 * @return "and" of the given primitive constraints
+	 */
+	private PrimitiveConstraint and(PrimitiveConstraint... constraints)
+	{
+		return (new And(constraints));
+	}
+
+	/**
+	 * Return the negated given primitive constraint.
+	 * 
+	 * @param constraint
+	 *            primitive constraint
+	 * @return negated given primitive constraint
+	 */
+	private PrimitiveConstraint not(PrimitiveConstraint constraint)
+	{
+		return (new Not(constraint));
+	}
+
+	/**
+	 * Return the "or" of the given primitive constraints.
+	 * 
+	 * @param constraints
+	 *            two or more primitive constraints
+	 * @return "or" of the given primitive constraints
+	 */
+	private PrimitiveConstraint or(PrimitiveConstraint... constraints)
+	{
+		return (new Or(constraints));
+	}
+
+	/**
+	 * Return a primitive constraint that says "variable = constant".
+	 * 
+	 * @param variable
+	 *            integer variable
+	 * @param constant
+	 *            integer constant
+	 * @return primitive constraint says "variable = constant"
+	 */
+	private PrimitiveConstraint eq(IntVar variable, int constant)
+	{
+		return (new XeqC(valueVar(variable), constant));
+	}
+
+	private PrimitiveConstraint eq(IntVar variable1, IntVar variable2)
+	{
+		return (new XeqY(valueVar(variable1), valueVar(variable2)));
+	}
+
+	/**
+	 * Return a primitive constraint that says "variable >= constant".
+	 * 
+	 * @param variable
+	 *            integer variable
+	 * @param constant
+	 *            integer constant
+	 * @return primitive constraint says "variable >= constant"
+	 */
+	private PrimitiveConstraint ge(IntVar variable, int constant)
+	{
+		return (new XgteqC(valueVar(variable), constant));
+	}
+
+	/**
+	 * Return a primitive constraint "variable1 >= variable2".
+	 * 
+	 * @param variable1
+	 *            integer variable
+	 * @param variable2
+	 *            integer variable
+	 * @return primitive constraint "variable1 >= variable2"
+	 */
+	private PrimitiveConstraint ge(IntVar variable1, IntVar variable2)
+	{
+		return (new XgteqY(valueVar(variable1), valueVar(variable2)));
+	}
+
+	/**
+	 * Return a primitive constraint "variable > constant".
+	 * 
+	 * @param variable
+	 *            integer variable
+	 * @param constant
+	 *            integer constant
+	 * @return primitive constraint "variable > constant"
+	 */
+	private PrimitiveConstraint gt(IntVar variable, int constant)
+	{
+		return (new XgtC(valueVar(variable), constant));
+	}
+
+	/**
+	 * Return a primitive constraint "variable1 > variable2".
+	 * 
+	 * @param variable1
+	 *            integer variable
+	 * @param variable2
+	 *            integer variable
+	 * @return primitive constraint "variable1 > variable2"
+	 */
+	private PrimitiveConstraint gt(IntVar variable1, IntVar variable2)
+	{
+		return (new XgtY(valueVar(variable1), valueVar(variable2)));
+	}
+
+	/**
+	 * Return a primitive constraint "variable <= constant".
+	 * 
+	 * @param variable
+	 *            integer variable
+	 * @param constant
+	 *            integer constant
+	 * @return primitive constraint "variable <= constant"
+	 */
+	private PrimitiveConstraint le(IntVar variable, int constant)
+	{
+		return (new XlteqC(valueVar(variable), constant));
+	}
+
+	/**
+	 * Return a primitive constraint "variable1 <= variable2".
+	 * 
+	 * @param variable1
+	 *            integer variable
+	 * @param variable2
+	 *            integer variable
+	 * @return primitive constraint "variable1 <= variable2"
+	 */
+	private PrimitiveConstraint le(IntVar variable1, IntVar variable2)
+	{
+		return (new XlteqY(valueVar(variable1), valueVar(variable2)));
+	}
+
+	/**
+	 * Return a primitive constraint "variable < constant".
+	 * 
+	 * @param variable
+	 *            integer variable
+	 * @param constant
+	 *            integer constant
+	 * @return primitive constraint "variable < constant"
+	 */
+	private PrimitiveConstraint lt(IntVar variable, int constant)
+	{
+		return (new XltC(valueVar(variable), constant));
+	}
+
+	/**
+	 * Return a primitive constraint "variable1 < variable2".
+	 * 
+	 * @param variable1
+	 *            integer variable
+	 * @param variable2
+	 *            integer variable
+	 * @return primitive constraint "variable1 < variable2"
+	 */
+	private PrimitiveConstraint lt(IntVar variable1, IntVar variable2)
+	{
+		return (new XltY(valueVar(variable1), valueVar(variable2)));
+	}
+
+	/**
+	 * Return a primitive constraint "variable != constant".
+	 * 
+	 * @param variable
+	 *            integer variable
+	 * @param constant
+	 *            integer constant
+	 * @return primitive constraint "variable != constant"
+	 */
+	private PrimitiveConstraint ne(IntVar variable, int constant)
+	{
+		return (new XneqC(valueVar(variable), constant));
+	}
+
+	/**
+	 * Return a primitive constraint "variable1 != variable2".
+	 * 
+	 * @param variable1
+	 *            integer variable
+	 * @param variable2
+	 *            integer variable
+	 * @return primitive constraint "variable1 != variable2"
+	 */
+	private PrimitiveConstraint ne(IntVar variable1, IntVar variable2)
+	{
+		return (new XneqY(valueVar(variable1), valueVar(variable2)));
+	}
+
+	/**
+	 * Return a primitive constraint "minimum <= variable <= maximum".
+	 * 
+	 * @param variable
+	 *            integer variable
+	 * @param minimum
+	 *            minimum integer constant
+	 * @param maximum
+	 *            maximum integer constant
+	 * @return primitive constraint "minimum <= variable <= maximum"
+	 */
+	private PrimitiveConstraint range(IntVar variable, int minimum, int maximum)
+	{
+		if (minimum > maximum)
+			System.err.println("range: invalid range '" + minimum + ".."
+					+ maximum + "' for '" + variable + "'");
+		return (and(ge(variable, minimum), le(variable, maximum)));
+	}
+
+	/**
+	 * Return a primitive constraint requiring "time0 < time1 < ..." where these
+	 * values refer to the time fields of the variables. Primitive constraints
+	 * are also incorporated into the constraint list.
+	 * 
+	 * @param event
+	 *            two or more events (variables or comparisons)
+	 * @return primitive constraints plus "time0 < time1 < ..."
+	 */
+	private PrimitiveConstraint then(Object... event)
+	{
+		return (new And(thenAux(event)));
+	}
+
+	/**
+	 * Return a list of primitive constraint requiring "time0 < time1 < ..."
+	 * where these values refer to the time fields of the variables. Primitive
+	 * constraints are also incorporated into the constraint list.
+	 * 
+	 * @param event
+	 *            two or more events (variables or comparisons)
+	 * @return primitive constraint "time0 < time1 < ..." (null if error)
+	 */
+	private ArrayList<PrimitiveConstraint> thenAux(Object... event)
+	{
+		ArrayList<PrimitiveConstraint> constraints = // initialise constraints
+		new ArrayList<PrimitiveConstraint>();
+		int length = event.length; // get number of events
+		if (length == 0) // no events?
+			System.err.println("then: cannot have an empty event list");
+		else if (length == 1) // one event?
+			System.err.println("then: cannot have just one event '" + event[0]
+					+ "'");
+		else
+		{
+			Object event0 = event[0]; // get first event
+			IntVar varTime0 = null; // initialise its time variable
+			if (event0 instanceof IntVar)
+			{ // integer variable?
+				varTime0 = timeVar((IntVar) event0); // get integer variable
+			} else if (event0 instanceof // primitive constraint?
+			PrimitiveConstraint)
+			{
+				PrimitiveConstraint constraint0 = // get constraint
+				(PrimitiveConstraint) event0;
+				varTime0 = timeVar(constraint0); // get constraint variable
+				constraints.add(constraint0); // add first value constraint
+			} else
+				// not variable/constraint
+				System.err.println("then: event '" + event0
+						+ "' must be a variable or a comparison");
+
+			Object event1 = event[1]; // get second event
+			IntVar varTime1 = null; // initialise its time variable
+			if (event1 instanceof IntVar)
+			{ // integer variable?
+				varTime1 = timeVar((IntVar) event1); // get integer variable
+			} else if (event1 instanceof // primitive constraint?
+			PrimitiveConstraint)
+			{
+				PrimitiveConstraint constraint1 = // get constraint
+				(PrimitiveConstraint) event1;
+				varTime1 = timeVar(constraint1); // get constraint variable
+				if (length == 2) // last constraint?
+					constraints.add(constraint1); // add second value constraint
+			} else
+				// not variable/constraint
+				System.err.println("then: event '" + event1
+						+ "' must be a variable or a comparison");
+
+			if (varTime0 != null && varTime1 != null)
+			{ // time variables found?
+				PrimitiveConstraint timeConstraint = // set time constraint
+				new XltY(varTime0, varTime1);
+				constraints.add(timeConstraint); // add time constraint
+				if (length > 2)
+				{ // more constraints?
+					Object[] eventRest = Arrays.copyOfRange(event, 1, length);
+					constraints.addAll(thenAux(eventRest));
+				}
+			}
+		}
+		return (constraints);
+	}
+
+}

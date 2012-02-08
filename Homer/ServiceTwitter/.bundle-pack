@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<bundlejar>
+<resource dst="" pattern=".*\.class" src="/ServiceTwitter/out" type="0"/>
+<resource dst="lib/java-twitter-0.9-SNAPSHOT.jar" src="/ServiceTwitter/lib/java-twitter-0.9-SNAPSHOT.jar" type="1"/>
+<resource dst="lib/sunjce_provider.jar" src="/ServiceTwitter/lib/sunjce_provider.jar" type="1"/>
+<resource dst="lib/twitter4j-core-2.1.7-SNAPSHOT.jar" src="/ServiceTwitter/lib/twitter4j-core-2.1.7-SNAPSHOT.jar" type="1"/>
+</bundlejar>

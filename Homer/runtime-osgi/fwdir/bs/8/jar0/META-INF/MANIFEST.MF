@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Export-Package: uk.ac.stir.cs.homer.serviceDatabase, uk.ac.stir.cs.hom
+ er.serviceDatabase.objects, uk.ac.stir.cs.homer.serviceDatabase.query
+ Builder
+Bundle-ClassPath: ., lib/h2.jar
+Bundle-Version: 1.0.0
+Bundle-Name: ServiceDatabase
+Bundle-ManifestVersion: 2
+Bundle-Activator: uk.ac.stir.cs.homer.serviceDatabase.ServiceDatabaseA
+ ctivator
+Import-Package: org.osgi.framework, org.slf4j, javax.sql
+Bundle-SymbolicName: ServiceDatabase
+Build-Date: Sun Feb 05 20:38:17 GMT 2012
+

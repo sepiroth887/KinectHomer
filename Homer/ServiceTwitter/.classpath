@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="**/.svn/**|**/CVS/**" including="**/*.java" kind="src" path="src"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.EXECUTION_ENVIRONMENT_CONTAINER"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.FRAMEWORK_CONTAINER">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/osgi/framework/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="lib/twitter4j-core-2.1.7-SNAPSHOT.jar" sourcepath="C:/Users/cma/Documents/LocalTechWork/twitter4j-2.1.7-SNAPSHOT/twitter4j-core/src"/>
+	<classpathentry kind="src" path="/ServiceLogger"/>
+	<classpathentry kind="src" path="/HomerFramework"/>
+	<classpathentry kind="src" path="/ServiceDatabase"/>
+	<classpathentry kind="lib" path="lib/sunjce_provider.jar"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/ServiceLogger">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/slf4j/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/ServiceDatabase">
+		<accessrules>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceDatabase/objects/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceDatabase/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/org.knopflerfish.bundle.event-API">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/osgi/service/event/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="output" path="out"/>
+</classpath>

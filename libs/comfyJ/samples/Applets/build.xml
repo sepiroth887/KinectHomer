@@ -1,0 +1,36 @@
+<project name="applet sample" default="build" basedir=".">
+
+    <property name="lib.dir" value="../../lib"/>
+
+    <property name="certificate" value=".keystore"/>
+    <property name="jniwrapperLicenseFile" value="../../bin/jniwrap.lic"/>
+    <property name="comfyjrLicenseFile" value="../../bin/comfyj.lic"/>
+    <property name="dllFile" value="../../bin/jniwrap.dll"/>
+
+    <property name="outputJar" value="sample.jar"/>
+
+    <path id="class.path">
+        <fileset dir="${lib.dir}" includes="**.jar"/>
+    </path>
+
+    <target name="build">
+        <mkdir dir="classes"/>
+
+        <javac destdir="classes" debug="on">
+            <classpath refid="class.path"/>
+            <src path="src"/>
+            <include name="**/*.java"/>
+        </javac>
+
+
+        <jar destfile="${outputJar}" index="true">
+            <fileset dir="classes" includes="**/*"/>
+            <zipfileset file="${jniwrapperLicenseFile}" prefix="META-INF"/>
+            <zipfileset file="${comfyjrLicenseFile}" prefix="META-INF"/>
+            <zipfileset file="${dllFile}"/>
+        </jar>
+
+        <signjar jar="${outputJar}" alias="JNIWrapper" keystore="${certificate}" storepass="applet2003"
+                 keypass="applet2003"/>
+    </target>
+</project>

@@ -1,0 +1,1 @@
+SELECT UserDeviceType.id FROM UserDeviceType WHERE UserDeviceType.name=? AND UserDeviceType.image = ?

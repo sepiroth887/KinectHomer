@@ -1,0 +1,11 @@
+HKCR
+{
+	NoRemove AppID
+	{
+		{97987041-A6E7-430B-BA28-8941559EC62A} = s 'DComServer'
+		'DComServer.EXE'
+		{
+			val AppID = s {97987041-A6E7-430B-BA28-8941559EC62A}
+		}
+	}
+}

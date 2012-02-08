@@ -1,0 +1,66 @@
+package uk.ac.stir.cs.homer.homerPolicyServer.overlap;
+
+import uk.ac.stir.cs.homer.homerPolicyServer.overlap.JaCoP.Event;
+import uk.ac.stir.cs.homer.serviceDatabase.objects.UserDevice;
+
+public class OverlappingVariable
+{
+	private final UserDevice userDevice;
+	private int time;
+	private int value;
+
+	private boolean valueSet = false;
+	private boolean timeSet = false;
+	private Event event;
+	
+	public OverlappingVariable(UserDevice userDevice)
+	{
+		this.userDevice = userDevice;
+	}
+
+	public void setTime(int time)
+	{
+		this.time = time;
+		timeSet=true;
+	}
+
+	public void setValue(int value)
+	{
+		this.value = value;
+		valueSet = true;
+	}
+
+	public int getTime()
+	{
+		return time;
+	}
+	public int getValue()
+	{
+		return value;
+	}
+	
+	public UserDevice getUserDevice()
+	{
+		return userDevice;
+	}
+	
+	public boolean isTimeSet()
+	{
+		return timeSet;
+	}
+	public boolean isValueSet()
+	{
+		return valueSet;
+	}
+
+	public void setEvent(Event e)
+	{
+		this.event = e;
+	}
+	
+	public Event getEvent()
+	{
+		return event;
+	}
+	
+}

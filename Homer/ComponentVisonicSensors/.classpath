@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="**/.svn/**|**/CVS/**" including="**/*.java" kind="src" path="src"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.EXECUTION_ENVIRONMENT_CONTAINER"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.FRAMEWORK_CONTAINER">
+		<attributes>
+			<attribute name="org.osgi.framework" value="0.0.0"/>
+		</attributes>
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/osgi/framework/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="src" path="/HomerFramework"/>
+	<classpathentry kind="src" path="/ServiceLogger"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/ServiceLogger">
+		<attributes>
+			<attribute name="bundle-name" value="ServiceLogger"/>
+			<attribute name="org.slf4j" value="0.0.0"/>
+		</attributes>
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/slf4j/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="src" path="/ServiceCOMMs"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/ServiceCOMMs">
+		<attributes>
+			<attribute name="bundle-name" value="ServiceCOMMs"/>
+			<attribute name="javax.comm" value="0.0.0"/>
+			<attribute name="uk.ac.stir.cs.homer.serviceCOMMs" value="0.0.0"/>
+		</attributes>
+		<accessrules>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceCOMMs/"/>
+			<accessrule kind="accessible" pattern="javax/comm/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="output" path="out"/>
+</classpath>

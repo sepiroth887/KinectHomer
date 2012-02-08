@@ -1,0 +1,39 @@
+// DComServer.idl : IDL source for DComServer.dll
+//
+
+// This file will be processed by the MIDL tool to
+// produce the type library (DComServer.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+	[
+		object,
+		uuid(134CA43B-A4F5-4FB5-9AE4-80FC838AB36B),
+		dual,
+		helpstring("IDisk Interface"),
+		pointer_default(unique)
+	]
+	interface IDisk : IDispatch
+	{
+		[id(1), helpstring("method GetDFreeSpace")] HRESULT GetDFreeSpace([in] BSTR drive, [out, retval] __int64 *size);
+	};
+
+[
+	uuid(8F1E4924-7068-46A6-9BDF-0987DC573484),
+	version(1.0),
+	helpstring("DComServer 1.0 Type Library")
+]
+library DCOMSERVERLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(E55F07E6-6548-4FA4-8D91-F818D28BA78D),
+		helpstring("Disk Class")
+	]
+	coclass Disk
+	{
+		[default] interface IDisk;
+	};
+};

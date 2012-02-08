@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-Version: 1.0.0
+Bundle-Name: ComponentVisonicSensors
+Bundle-ManifestVersion: 2
+Bundle-Activator: uk.ac.stir.cs.homer.componentVisonicSensors.Componen
+ tVisonicSensorsActivator
+Import-Package: org.osgi.framework, org.slf4j, uk.ac.stir.cs.homer.hom
+ erFrameworkAPI.componentUtils, uk.ac.stir.cs.homer.homerFrameworkAPI.
+ componentUtils.encoding, uk.ac.stir.cs.homer.homerFrameworkAPI.config
+ Data, uk.ac.stir.cs.homer.homerFrameworkAPI.homerObjects, uk.ac.stir.
+ cs.homer.homerFrameworkAPI.parameterData, uk.ac.stir.cs.homer.homerFr
+ ameworkAPI.tcas, javax.comm, uk.ac.stir.cs.homer.serviceCOMMs
+Bundle-SymbolicName: ComponentVisonicSensors
+

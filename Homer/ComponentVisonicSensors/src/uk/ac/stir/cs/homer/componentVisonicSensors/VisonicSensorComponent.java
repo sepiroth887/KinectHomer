@@ -1,0 +1,280 @@
+package uk.ac.stir.cs.homer.componentVisonicSensors;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.stir.cs.homer.componentVisonicSensors.sensors.ActivableSensor;
+import uk.ac.stir.cs.homer.componentVisonicSensors.sensors.Door;
+import uk.ac.stir.cs.homer.componentVisonicSensors.sensors.Sensor;
+import uk.ac.stir.cs.homer.componentVisonicSensors.sensors.TempAndHum;
+import uk.ac.stir.cs.homer.componentVisonicSensors.sensors.Window;
+import uk.ac.stir.cs.homer.componentVisonicSensors.utils.SensorParameters;
+import uk.ac.stir.cs.homer.componentVisonicSensors.utils.TemperatureReading;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils.ComponentGateway;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils.HomerComponent;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils.WhichHasActions;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils.WhichHasConditions;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils.WhichHasTriggers;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils.encoding.IDUtil;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.configData.ConfigData;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.configData.ConfigPart;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.homerObjects.SystemDeviceType;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.parameterData.Comparitor;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.parameterData.HomerNumber;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.parameterData.HomerText;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.parameterData.Parameter;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.parameterData.ParameterData;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.parameterData.Unit;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.tcas.Action;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.tcas.Condition;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.tcas.Trigger;
+
+public class VisonicSensorComponent implements HomerComponent, WhichHasTriggers, WhichHasConditions, WhichHasActions {
+
+	static final String SENSOR_DOOR_TYPE  = IDUtil.getUniqueIdentifier(VisonicSensorComponent.class, "SENSOR DOOR");
+	static final String SENSOR_WINDOW_TYPE  = IDUtil.getUniqueIdentifier(VisonicSensorComponent.class, "SENSOR WINDOW");
+	
+	static final String SENSOR_TEMPERATURE_TYPE  = IDUtil.getUniqueIdentifier(VisonicSensorComponent.class, "SENSOR TEMP");
+	static final String SENSOR_TEMPERATURE_RISES_ABOVE = IDUtil.getUniqueIdentifier(VisonicSensorComponent.class, "SENSOR_TEMPERATURE_RISES_ABOVE");
+	static final String SENSOR_TEMPERATURE_FALLS_BELOW = IDUtil.getUniqueIdentifier(VisonicSensorComponent.class, "SENSOR_TEMPERATURE_FALLS_BELOW");
+	static final String SENSOR_TEMPERATURE_IS = IDUtil.getUniqueIdentifier(VisonicSensorComponent.class, "SENSOR_TEMPERATURE_IS");
+	
+	static final String SENSOR_HUMIDITY_TYPE  = IDUtil.getUniqueIdentifier(VisonicSensorComponent.class, "SENSOR HUMIDITY");
+	static final String SENSOR_HUMIDITY_RISES_ABOVE = IDUtil.getUniqueIdentifier(VisonicSensorComponent.class, "SENSOR_HUMIDITY_RISES_ABOVE");
+	static final String SENSOR_HUMIDITY_FALLS_BELOW = IDUtil.getUniqueIdentifier(VisonicSensorComponent.class, "SENSOR_HUMIDITY_FALLS_BELOW");
+	static final String SENSOR_HUMIDITY_IS = IDUtil.getUniqueIdentifier(VisonicSensorComponent.class, "SENSOR_HUMIDITY_IS");
+	
+	static final String SENSOR_PENDANT_ALARM_TYPE  = IDUtil.getUniqueIdentifier(VisonicSensorComponent.class, "SENSOR PENDANT ALARM");
+	static final String SENSOR_PENDANT_ALARM_PRESSED = IDUtil.getUniqueIdentifier(VisonicSensorComponent.class, "SENSOR_PENDANT_ALARM_PRESSED");
+	
+	static final String SENSOR_PIR_TYPE  = IDUtil.getUniqueIdentifier(VisonicSensorComponent.class, "SENSOR PIR");
+	static final String SENSOR_PIR_MOVEMENT_DETECTED = IDUtil.getUniqueIdentifier(VisonicSensorComponent.class, "SENSOR_PIR_MOVEMENT_DETECTED");
+	
+	static final String DEFAULT_VISONIC_CODE_OPENING = "04";
+	static final String DEFAULT_VISONIC_CODE_CLOSING = "84";
+	static final String DEFAULT_VISONIC_CODE_ACTIVATED = "0C";
+	
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	private VisonicSensorListener visonicSensorListener;
+	public static Map<String, Sensor> sensors = new HashMap<String, Sensor>();
+	
+	public VisonicSensorComponent() {
+		try {
+			visonicSensorListener = new VisonicSensorListener();
+		} catch (Exception e) {
+			logger.error("Cannot connect to visonic sensor listener hardware.", e);
+			return;
+		}
+		
+		visonicSensorListener.addSensorListener(new Observer(){
+			public void update(Observable arg0, Object sensorParameter) 
+			{
+				SensorParameters s = (SensorParameters) sensorParameter;
+				Sensor sensorActivated = sensors.get(s.getSensorID());
+				if (sensorActivated != null)
+					ComponentGateway.Singleton.get().triggerOccured(sensorActivated.getSystemDeviceID(), 
+																	sensorActivated.getTriggerIDForSensorID(s.getSensorCode()), 
+																	null);
+			}
+		});
+		
+		visonicSensorListener.addHumidityListener(new Observer(){
+			public void update(Observable arg0, Object humReading) 
+			{
+				TemperatureReading t = (TemperatureReading) humReading;
+				Sensor sensorActivated = sensors.get(t.getSensorID());
+				if (sensorActivated != null) {
+					String[] paramData = new String[] {Integer.toString(t.getHumidity())};
+					ComponentGateway.Singleton.get().triggerOccured(sensorActivated.getSystemDeviceID(), 
+																	t.humHasRisen()? SENSOR_HUMIDITY_RISES_ABOVE : SENSOR_HUMIDITY_FALLS_BELOW, 
+																	paramData);
+				}
+			}
+		});
+		
+		visonicSensorListener.addTemperatureListener(new Observer(){
+			public void update(Observable arg0, Object humReading) 
+			{
+				TemperatureReading t = (TemperatureReading) humReading;
+				Sensor sensorActivated = sensors.get(t.getSensorID());
+				if (sensorActivated != null) {
+					String[] paramData = new String[] {Double.toString(t.getTemperature())};
+					ComponentGateway.Singleton.get().triggerOccured(sensorActivated.getSystemDeviceID(), 
+																	t.tempHasRisen()? SENSOR_TEMPERATURE_RISES_ABOVE : SENSOR_TEMPERATURE_FALLS_BELOW, 
+																	paramData);
+				}
+			}
+		});
+	}
+	
+	@Override
+	public SystemDeviceType[] getSystemDeviceTypeData() {
+		
+		ConfigPart sensorCodePart = new ConfigPart("Sensor Code:", new HomerText("", 6, 6, Unit.NONE) ,null);
+		 
+		ConfigPart openingCodePart = new ConfigPart("Opening Code:", new HomerText(DEFAULT_VISONIC_CODE_OPENING, 2, 2, Unit.NONE) ,null);
+		ConfigPart closingCodePart = new ConfigPart("Closing Code:", new HomerText(DEFAULT_VISONIC_CODE_CLOSING, 2, 2, Unit.NONE) ,null);
+		
+		ConfigPart activatedCodePart = new ConfigPart("Activated Code:", new HomerText(DEFAULT_VISONIC_CODE_ACTIVATED, 2, 2, Unit.NONE) ,null);
+		
+		ConfigData openCloseConfigData = new ConfigData(sensorCodePart, openingCodePart, closingCodePart);
+		ConfigData activatatableConfigData = new ConfigData(sensorCodePart, activatedCodePart);
+		
+		return new SystemDeviceType[] { 
+				new SystemDeviceType(SENSOR_DOOR_TYPE, "Visonic Door Sensor", openCloseConfigData),
+				new SystemDeviceType(SENSOR_WINDOW_TYPE, "Visonic Window Sensor", openCloseConfigData),
+				new SystemDeviceType(SENSOR_TEMPERATURE_TYPE, "Oregon Temperature Sensor", new ConfigData(sensorCodePart)),
+				new SystemDeviceType(SENSOR_HUMIDITY_TYPE, "Oregon Humidity Sensor", new ConfigData(sensorCodePart)),
+				new SystemDeviceType(SENSOR_PENDANT_ALARM_TYPE, "Visonic Pendant Alarm", activatatableConfigData),
+				new SystemDeviceType(SENSOR_PIR_TYPE, "Visonic PIR", activatatableConfigData)};
+	}
+	
+
+	@Override
+	public List<Condition> getConditions(String deviceTypeID) {
+		List<Condition> conditions = new ArrayList<Condition>();
+		if (SENSOR_DOOR_TYPE.equals(deviceTypeID))
+		{
+			conditions.add(new Condition(Door.SENSOR_DOOR_TYPE_ISCLOSED, "is closed", Condition.DEFAULT_DOOR_IS_CLOSED_IMAGE, null, null,  Door.SENSOR_DOOR_TYPE_CLOSING));
+			conditions.add(new Condition(Door.SENSOR_DOOR_TYPE_ISOPEN, "is open", Condition.DEFAULT_DOOR_IS_OPEN_IMAGE, null, null, Door.SENSOR_DOOR_TYPE_OPENING));
+			conditions.add(new Condition(Door.SENSOR_DOOR_TYPE_ISLOCKED, "is locked", Condition.DEFAULT_DOOR_IS_CLOSED_IMAGE, null, null,  Door.SENSOR_DOOR_TYPE_CLOSING));
+			conditions.add(new Condition(Door.SENSOR_DOOR_TYPE_ISUNLOCKED, "is unlocked", Condition.DEFAULT_DOOR_IS_OPEN_IMAGE, null, null, Door.SENSOR_DOOR_TYPE_OPENING));
+		}
+		else if (SENSOR_WINDOW_TYPE.equals(deviceTypeID))
+		{
+			conditions.add(new Condition(Window.SENSOR_WINDOW_TYPE_ISCLOSED, "is closed", Condition.DEFAULT_WINDOW_IS_CLOSED_IMAGE, null, null, Window.SENSOR_WINDOW_TYPE_CLOSING));
+			conditions.add(new Condition(Window.SENSOR_WINDOW_TYPE_ISOPEN, "is open", Condition.DEFAULT_WINDOW_IS_OPEN_IMAGE, null, null, Window.SENSOR_WINDOW_TYPE_OPENING));
+		}
+		else if (SENSOR_TEMPERATURE_TYPE.equals(deviceTypeID))
+		{
+			conditions.add(new Condition(SENSOR_TEMPERATURE_IS, "temperature is", "166", new ParameterData(new Parameter(new HomerNumber(-100, 200, .1, 1, 20, Unit.TEMPERATURE), Comparitor.EQUAL)), new String[] {"1"}));
+		}
+		else if (SENSOR_HUMIDITY_TYPE.equals(deviceTypeID))
+		{
+			conditions.add(new Condition(SENSOR_HUMIDITY_IS, "humidity is", "166", new ParameterData(new Parameter(new HomerNumber(0, 100, 1, 0, 50, Unit.PERCENT), Comparitor.EQUAL)), new String[] {"2"}));
+		}
+		return conditions;
+	}
+
+	@Override
+	public List<Trigger> getTriggers(String deviceTypeID) {
+		List<Trigger> triggers = new ArrayList<Trigger>();
+		if (SENSOR_DOOR_TYPE.equals(deviceTypeID))
+		{
+			triggers.add(new Trigger(Door.SENSOR_DOOR_TYPE_OPENING, "opens", Trigger.DEFAULT_DOOR_CLOSES_IMAGE, Trigger.DEFAULT_DOOR_OPENS_IMAGE));
+			triggers.add(new Trigger(Door.SENSOR_DOOR_TYPE_CLOSING, "closes", Trigger.DEFAULT_DOOR_OPENS_IMAGE, Trigger.DEFAULT_DOOR_CLOSES_IMAGE));
+		}
+		else if (SENSOR_WINDOW_TYPE.equals(deviceTypeID))
+		{
+			triggers.add(new Trigger(Window.SENSOR_WINDOW_TYPE_OPENING, "opens", Trigger.DEFAULT_WINDOW_CLOSES_IMAGE, Trigger.DEFAULT_WINDOW_OPENS_IMAGE));
+			triggers.add(new Trigger(Window.SENSOR_WINDOW_TYPE_CLOSING, "closes", Trigger.DEFAULT_WINDOW_OPENS_IMAGE, Trigger.DEFAULT_WINDOW_CLOSES_IMAGE));
+		}
+		else if (SENSOR_TEMPERATURE_TYPE.equals(deviceTypeID))
+		{
+			triggers.add(new Trigger(SENSOR_TEMPERATURE_FALLS_BELOW, "falls below", Trigger.DEFAULT_HOT_IMAGE, Trigger.DEFAULT_COLD_IMAGE, new ParameterData(new Parameter(new HomerNumber(-100, 200, .1, 1, 20, Unit.TEMPERATURE), Comparitor.LESS_THAN))));
+			triggers.add(new Trigger(SENSOR_TEMPERATURE_RISES_ABOVE, "rises above", Trigger.DEFAULT_COLD_IMAGE, Trigger.DEFAULT_HOT_IMAGE, new ParameterData(new Parameter(new HomerNumber(-100, 200, .1, 1, 20, Unit.TEMPERATURE), Comparitor.GREATER_THAN))));
+		}
+		else if (SENSOR_HUMIDITY_TYPE.equals(deviceTypeID))
+		{
+			triggers.add(new Trigger(SENSOR_HUMIDITY_FALLS_BELOW, "falls below", Trigger.DEFAULT_HOT_IMAGE, Trigger.DEFAULT_COLD_IMAGE, new ParameterData(new Parameter(new HomerNumber(0, 100, 1, 0, 50, Unit.PERCENT), Comparitor.LESS_THAN))));
+			triggers.add(new Trigger(SENSOR_HUMIDITY_RISES_ABOVE, "rises above", Trigger.DEFAULT_COLD_IMAGE, Trigger.DEFAULT_HOT_IMAGE, new ParameterData(new Parameter(new HomerNumber(0, 100, 1, 0, 50, Unit.PERCENT), Comparitor.GREATER_THAN))));
+		}
+		else if (SENSOR_PENDANT_ALARM_TYPE.equals(deviceTypeID))
+		{
+			triggers.add(new Trigger(SENSOR_PENDANT_ALARM_PRESSED, "was activated", null, Trigger.DEFAULT_FINGER_POINT_IMAGE));
+		}
+		else if (SENSOR_PIR_TYPE.equals(deviceTypeID))
+		{
+			triggers.add(new Trigger(SENSOR_PIR_MOVEMENT_DETECTED, "detects motion", null, Trigger.DEFAULT_MOVEMENT_IMAGE));
+		}
+		return triggers;
+	}
+	
+
+	@Override
+	public List<Action> getActions(String systemDeviceTypeID)
+	{
+		List<Action> actions = new ArrayList<Action>();
+
+		if (SENSOR_DOOR_TYPE.equals(systemDeviceTypeID))
+		{
+			actions.add(new Action(Door.SENSOR_DOOR_TYPE_OPEN, "open", Trigger.DEFAULT_DOOR_OPENS_IMAGE));
+			actions.add(new Action(Door.SENSOR_DOOR_TYPE_CLOSE, "close", Trigger.DEFAULT_DOOR_CLOSES_IMAGE));
+			actions.add(new Action(Door.SENSOR_DOOR_TYPE_LOCK, "lock", Trigger.DEFAULT_DOOR_CLOSES_IMAGE));
+			actions.add(new Action(Door.SENSOR_DOOR_TYPE_UNLOCK, "unlock", Trigger.DEFAULT_DOOR_OPENS_IMAGE));
+		}
+		else if (SENSOR_WINDOW_TYPE.equals(systemDeviceTypeID))
+		{
+			actions.add(new Action(Window.SENSOR_WINDOW_TYPE_OPEN, "open", Trigger.DEFAULT_WINDOW_OPENS_IMAGE));
+			actions.add(new Action(Window.SENSOR_WINDOW_TYPE_CLOSE, "close", Trigger.DEFAULT_WINDOW_CLOSES_IMAGE));
+		}
+		return actions;
+	}
+	
+	@Override
+	public boolean checkCondition(String deviceTypeID, String deviceID, String conditionID, String[] parameters) {return false;}
+	
+	@Override
+	public void registerComponentInstance(String systemDeviceTypeID, String deviceID, String[] parameters) 
+	{
+		logger.info("New visonic sensor registered: " + deviceID + " with code: " + parameters[0]);
+		if (systemDeviceTypeID.equals(SENSOR_DOOR_TYPE))
+		{
+			sensors.put(parameters[0], new Door(deviceID, parameters[0], parameters[1], parameters[2]));
+		}
+		else if (systemDeviceTypeID.equals(SENSOR_WINDOW_TYPE))
+		{
+			sensors.put(parameters[0], new Window(deviceID, parameters[0], parameters[1], parameters[2]));
+		}
+		else if (systemDeviceTypeID.equals(SENSOR_PIR_TYPE))
+		{
+			sensors.put(parameters[0], new ActivableSensor(deviceID, parameters[0], parameters[1], SENSOR_PIR_MOVEMENT_DETECTED));
+		}
+		else if (systemDeviceTypeID.equals(SENSOR_PENDANT_ALARM_TYPE))
+		{
+			sensors.put(parameters[0], new ActivableSensor(deviceID, parameters[0], parameters[1], SENSOR_PENDANT_ALARM_PRESSED));
+		}
+		else if (systemDeviceTypeID.equals(SENSOR_TEMPERATURE_TYPE))
+		{
+			sensors.put(parameters[0], new TempAndHum(deviceID, parameters[0]));
+		}
+		else if (systemDeviceTypeID.equals(SENSOR_HUMIDITY_TYPE))
+		{
+			sensors.put(parameters[0], new TempAndHum(deviceID, parameters[0]));
+		}
+	}
+
+	@Override
+	public void editComponentInstance(String systemDeviceTypeID, String deviceID, String[] newParameters,  String[] oldParameters)
+	{
+		logger.info("Visonic sensor edited: " + deviceID + " to code: " + newParameters[0]);
+		
+		Sensor sensor = sensors.get(oldParameters[0]);
+		sensor.updateCodes(newParameters);
+		sensors.remove(oldParameters[0]);
+		sensors.put(newParameters[0], sensor);
+		
+	}
+
+	@Override
+	public void deleteComponentInstance(String systemDeviceTypeID, String deviceID, String[] parameters) {
+		logger.info("Visonic sensor deletedl: " + deviceID + " with code: " + parameters[0]);
+		sensors.remove(parameters[0]);
+	}
+
+
+	@Override
+	public void performAction(String sysDeviceTypeID, String sysDeviceID,
+			String actionID, String[] parameters)
+	{
+		System.out.println("The Visonic Sensor Component can't actually do anything, this action was here just for pretend fun!");
+	}
+}

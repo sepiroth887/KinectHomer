@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-Version: 1.0.0
+Bundle-Name: ComponentX10
+Bundle-Activator: uk.ac.stir.cs.homer.componentX10.ComponentX10Activat
+ or
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: ComponentX10
+Import-Package: org.osgi.framework, javax.comm, uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils, uk.
+ ac.stir.cs.homer.homerFrameworkAPI.componentUtils.encoding, uk.ac.sti
+ r.cs.homer.homerFrameworkAPI.configData, uk.ac.stir.cs.homer.homerFra
+ meworkAPI.parameterData, uk.ac.stir.cs.homer.homerFrameworkAPI.tcas, 
+ uk.ac.stir.cs.homer.homerFrameworkAPI.homerObjects, org.slf4j, uk.ac.
+ stir.cs.homer.serviceCOMMs
+

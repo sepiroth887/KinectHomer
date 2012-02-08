@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-Version: 1.0.0
+Bundle-Name: ServiceWeather
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: ServiceWeather
+Import-Package: javax.xml.parsers, org.xml.sax, org.xml.sax.helpers
+Export-Package: uk.ac.stir.cs.homer.serviceWeather
+

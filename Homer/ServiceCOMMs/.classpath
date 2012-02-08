@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="**/.svn/**|**/CVS/**" including="**/*.java" kind="src" path="src"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.EXECUTION_ENVIRONMENT_CONTAINER"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.FRAMEWORK_CONTAINER">
+		<accessrules>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="libs/serialPort-8.3.jar"/>
+	<classpathentry exported="true" kind="src" path="/ServiceLogger"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/ServiceLogger">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/slf4j/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="output" path="out"/>
+</classpath>
