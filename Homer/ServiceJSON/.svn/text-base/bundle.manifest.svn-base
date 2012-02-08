@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ClassPath: ., lib/org.json.jar
+Bundle-Version: 1.0.0
+Bundle-Name: ServiceJSON
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: ServiceJSON
+Export-Package: org.json, uk.ac.stir.cs.homer.serviceJSON
+

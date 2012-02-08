@@ -1,0 +1,72 @@
+package uk.ac.stir.cs.homer.homerPolicyServer.conflicts;
+
+import uk.ac.stir.cs.homer.serviceDatabase.HomerDatabase;
+import uk.ac.stir.cs.homer.serviceDatabase.objects.Action;
+import uk.ac.stir.cs.homer.serviceDatabase.objects.ActionEnvironEffect;
+import uk.ac.stir.cs.homer.serviceDatabase.objects.Environ;
+import uk.ac.stir.cs.homer.serviceDatabase.objects.UserDevice;
+
+public class Conflict
+{
+	private final ConflictType conflictType;
+	private final Environ environ;
+	private final ActionEnvironEffect actionEnvironEffectA;
+	private final ActionEnvironEffect actionEnvironEffectB;
+	private final UserDevice udA;
+	private final UserDevice udB;
+	private final Action aA;
+	private final Action aB;
+	
+	public Conflict(UserDevice udA, UserDevice udB, Action aA, Action aB, ActionEnvironEffect actionEnvironEffectA, ActionEnvironEffect actionEnvironEffectB, Environ environ, ConflictType conflictType)
+	{
+		this.udA = udA;
+		this.udB = udB;
+		this.aA = aA;
+		this.aB = aB;
+		this.actionEnvironEffectA = actionEnvironEffectA;
+		this.actionEnvironEffectB = actionEnvironEffectB;
+		this.environ = environ;
+		this.conflictType = conflictType;
+	}
+	
+	public ConflictType getConflictType()
+	{
+		return conflictType;
+	}
+	public Environ getEnviron()
+	{
+		return environ;
+	}
+	
+	public String toString(HomerDatabase database)
+	{
+		String join = "";
+		switch (conflictType)
+		{
+			case DEFINITE : 
+			case OPPOSING : join = "will";
+			case POTENTIAL : join = "may";
+							if (actionEnvironEffectA.getEnvironEffect().equals(actionEnvironEffectB.getEnvironEffect()))
+							{
+								return aA.getDescription() + " " + udA.getName() + 
+									" " + join+ " conflict with " + aB.getDescription() + " " + udA.getName() + 
+									" as both will " + (environ!=null? actionEnvironEffectB.getEnvironEffectString().toLowerCase() + " " + environ.getName() : "");	
+							}
+							else
+							{								
+								return aA.getDescription() + " " + udA.getName() + 
+								" will " + (environ!=null?  actionEnvironEffectA.getEnvironEffectString().toLowerCase() + " " + environ.getName() : "") +
+								" which "+join+ " conflict with " + aB.getDescription() + " " + udA.getName() + 
+								" as that will " + (environ!=null? actionEnvironEffectB.getEnvironEffectString().toLowerCase() + " " + environ.getName() : "");
+							}
+			
+			case SAME : return aA.getDescription() + " " + udA.getName() + " will be requested to happen in both policies";
+			case NONE : return "";
+		}
+		
+		return conflictType.name() + ": " + aA.getDescription() + " " + udA.getName() + 
+							(environ!=null? " (" + actionEnvironEffectA.getEnvironEffectString() + " " + environ.getName() + ")" : "") +
+			" VS " + aB.getDescription() + " " + udB.getName() + 
+							(environ!=null? " (" + actionEnvironEffectB.getEnvironEffectString() + " " + environ.getName() + ")": "");
+	}
+}

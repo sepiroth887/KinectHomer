@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<!-- README.html        (C) K. J. Turner        17/05/11 -->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+  <title>Plugwise Bundle</title>
+
+  <link rev="made" href="mailto:kjt@cs.stir.ac.uk"/>
+  <meta name="keywords"
+  content="bundle communications protocol Java OSGi power monitoring"/>
+
+</head>
+
+<body>
+
+  <div style="text-align: center">
+
+    <h1>Plugwise Bundle</h1>
+
+    <img src="plugwise.gif" alt="Plug"/>
+
+  </div>
+
+  <p>
+    <img src="warn-red-small.gif"/> This code makes use of only publically
+    available information about the Plugwise protocol. This information is not
+    definitive, so the code should be treated only as indicative. This
+    implementation and the information it is based on are not endorsed by
+    Plugwise.
+  </p>
+
+  <!-- =================== Description =================== -->
+
+  <h2>Description</h2>
+
+  <p>
+    This is a Java implementation of the <a href="http://www.plugwise.com/"
+    target="_blank">Plugwise</a> modules that monitor electricity usage. The
+    code is a a bundle for <a href="http://www.osgi.org/"
+    target="_blank">OSGi</a> (Open Services Gateway initiative). It is therefore
+    not a standard Java application, but the core of the bundle contains
+    everything that would be needed for such an application.
+  </p>
+
+  <p>
+    The <var>PlugwiseTransceiver</var> class supports Plugwise Circles connected
+    via a Stick. The Plugwise network should (perhaps) have first been set up
+    using the Source. The following limitations or uncertainties apply:
+  </p>
+
+  <ul>
+
+    <li>
+      Various aspects of the protocol and its format are not yet known (to me or
+      others).
+    </li>
+
+    <li>
+      Sequence numbers from the Circle+/Circle are not used. Instead commands
+      are sent one at a time, waiting for the response.
+    </li>
+
+    <li>
+      It is unclear whether it is sufficient to periodically set the Circle+
+      clock, or whether all Circle clocks need to be set. This is presumably OK
+      since the Plugwise documentation says that it is the Circle+ that has the
+      clock. It appears that Circles synchronise clocks with the Circle+ on the
+      hour. It appears that clocks follow UTC, and have to be read or written by
+      adjusting local time.
+    </li>
+
+    <li>
+      A Circle sometimes refuses to respond to a valid request for a power
+      buffer, as if the current buffer were locked. This problem goes away after
+      the next buffer is written on the following hour. This may be related to
+      using the Source in between runs of this bundle. The Source successfully
+      reads the buffer even though the bundle does not.
+    </li>
+
+  </ul>
+
+  <p>
+    The bundle is not complete because it relies on the <var>CommAccess</var>
+    bundle from the author to provide a serial port service using Sun/Oracle
+    JavaComm 2.0. However, an alternative bundle (e.g. the Knopflerfish one
+    based on RxTx) could be used.
+  </p>
+
+  <!-- =================== Installation =================== -->
+
+  <h2>Installation</h2>
+
+  <p>
+    As this is a standard OSGi bundle, it should be installed in the usual way
+    for the platform. The only unusual feature is that the bundle uses a
+    configuration properties file. The code to handle this assumes that <a
+    href="http://www.knopflerfish.org/" target="_blank">Knopflerfish</a> is in
+    use, so the properties file is expected to be in the Knopflerfish OSGi root
+    directory.
+  </p>
+
+  <!-- =================== Operation =================== -->
+
+  <h2>Operation</h2>
+
+  <p>
+    Circles are periodically polled to perform the following tasks:
+  </p>
+
+  <ul>
+
+    <li>
+      The Circle+ clock is set every 24 hours to the PC clock, starting
+      immediately after the bundle is started.
+    </li>
+
+    <li>
+      The Circle energy consumption for the past hour is retrieved at 1 minute
+      past the first hour after the bundle is started.
+    </li>
+
+    <li>
+      The Circle instantaneous power consumption is retrieved at the configured
+      interval in minutes, starting at this interval after the bundle is
+      started.
+    </li>
+
+  </ul>
+
+  <p>
+    OSGi events with the following parameters are supported. The format here is
+    that supported by the <a href="http://www.cs.stir.ac.uk/appel/"
+    target="_blank">Appel</a> policy language:
+  </p>
+
+  <ul>
+
+    <li>
+      <var>device_in(energy,lamp,lounge,14:00:00,70)</var> means 70 watt-hours
+      have been consumed by the lounge lamp in the hour starting at 2PM. The
+      total of all energy readings has the form
+      <var>device_in(energy,,,14:00:00,130)</var>.
+    </li>
+
+    <li>
+      <var>device_in(power,lamp,lounge,,110)</var> 110 watts are currently being
+      consumed by the lounge lamp. The total of all power readings has the form
+      <var>device_in(power,,,,650)</var>.
+    </li>
+
+    <li>
+      <var>device_out(on,lamp,lounge)</var> switches the lounge lamp on, while
+      "device_out(off,lamp,lounge)" switches it off. Any message type apart from
+      <var>on</var> and <var>off</var> is an error. If the entity name/instance
+      are not defined in the mapping given by the property files, the event is
+      ignored.
+    </li>
+
+  </ul>
+
+  <!-- =================== Licence =================== -->
+
+  <h2>Licence</h2>
+
+  <p>
+    This program is free software. You can redistribute it and/or modify it
+    under the terms of the <a href="http://www.gnu.org/copyleft/gpl.html"
+    target="_blank">GNU General Public License</a> as published by the Free
+    Software Foundation - either version 2 of the License, or (at your option)
+    any later version.
+  </p>
+
+  <p>
+    This program is distributed in the hope that it will be useful but
+    <strong>without any warranty</strong>, without even the implied warranty
+    of <strong>merchantability</strong> or <strong>fitness for a particular
+    purpose</strong>. See the GNU General Public License for more details.
+  </p>
+
+  <p>
+    You may re-distribute this software provided you preserve this README file.
+    Bug reports should be sent to <a href="http://www.cs.stir.ac.uk/~kjt/"
+    target="_blank">Ken Turner</a>.
+  </p>
+
+  <!-- =================== Acknowledgements =================== -->
+
+  <h2>Acknowledgements</h2>
+
+  <p>
+    The protocol implementation was inspired by information from <a
+    href="http://www.maartendamen.com/category/plugwise-unleashed/">Maarten
+    Damen</a> and <a
+    href="http://roheve.wordpress.com/2011/04/24/plugwise-protocol-analyse/">Roheve</a>.
+    Inspiration was also drawn from code by <a
+    href="https://github.com/gonium/libplugwise">Gonium</a> and by <a
+    href="https://bitbucket.org/hadara/python-plugwise/wiki/Home">Sven
+    Petai</a>. The CRC calculation was adapted from code by <a
+    href="http://www.domoticaforum.eu/viewtopic.php?f=39&t=5803">Tiz</a>.
+  </p>
+
+  <!-- =================== History =================== -->
+
+  <h2>History</h2>
+
+  <ul>
+
+    <li>
+      <p>
+	Version 1.0: First version, Ken Turner, 17th May 2011
+      </p>
+    </li>
+
+  </ul>
+
+</body>
+
+</html>
+
+

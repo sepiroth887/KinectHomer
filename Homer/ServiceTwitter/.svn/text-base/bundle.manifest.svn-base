@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ClassPath: ., lib/twitter4j-core-2.1.7-SNAPSHOT.jar, lib/sunjce
+ _provider.jar
+Bundle-Version: 1.0.0
+Bundle-Name: ServiceTwitter
+Bundle-ManifestVersion: 2
+Import-Package: org.slf4j, uk.ac.stir.cs.homer.homerFrameworkAPI.event
+ s, uk.ac.stir.cs.homer.homerFrameworkAPI.osgi, uk.ac.stir.cs.homer.se
+ rviceDatabase, uk.ac.stir.cs.homer.serviceDatabase.objects, org.osgi.
+ framework, org.osgi.service.event
+Bundle-SymbolicName: ServiceTwitter
+Bundle-Activator: uk.ac.stir.cs.homer.serviceTwitter.ServiceTwitterAct
+ ivator
+

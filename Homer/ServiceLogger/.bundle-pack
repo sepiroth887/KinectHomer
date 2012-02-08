@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<bundlejar>
+<resource dst="" pattern=".*\.class" src="/ServiceLogger/out" type="0"/>
+<resource dst="lib/jul-to-slf4j-1.6.1.jar" src="/ServiceLogger/lib/jul-to-slf4j-1.6.1.jar" type="1"/>
+<resource dst="lib/logback-classic-0.9.24.jar" src="/ServiceLogger/lib/logback-classic-0.9.24.jar" type="1"/>
+<resource dst="lib/logback-core-0.9.24.jar" src="/ServiceLogger/lib/logback-core-0.9.24.jar" type="1"/>
+<resource dst="lib/slf4j-api-1.6.1.jar" src="/ServiceLogger/lib/slf4j-api-1.6.1.jar" type="1"/>
+<resource dst="logback.xml" src="/ServiceLogger/lib/logback.xml" type="2"/>
+</bundlejar>

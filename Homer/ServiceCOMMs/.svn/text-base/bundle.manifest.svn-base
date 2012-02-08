@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Export-Package: com.sun.comm, javax.comm, uk.ac.stir.cs.homer.serviceC
+ OMMs
+Bundle-ClassPath: ., libs/comm.jar
+Bundle-Version: 1.0.0
+Bundle-Name: ServiceCOMMs
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: ServiceCOMMs
+Import-Package: org.slf4j
+DynamicImport-Package: *
+

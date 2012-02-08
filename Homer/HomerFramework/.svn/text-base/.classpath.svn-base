@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="**/.svn/**|**/CVS/**" including="**/*.java" kind="src" path="src"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.FRAMEWORK_CONTAINER">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/osgi/util/tracker/"/>
+			<accessrule kind="accessible" pattern="org/osgi/framework/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.EXECUTION_ENVIRONMENT_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jmock"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/junit"/>
+	<classpathentry kind="src" path="/ServiceLogger"/>
+	<classpathentry exported="true" kind="src" path="/ServiceJSON"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/org.knopflerfish.bundle.desktop-API">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/osgi/service/event/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/ServiceLogger">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/slf4j/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/ServiceDatabase">
+		<accessrules>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceDatabase/queryBuilder/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceDatabase/objects/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceDatabase/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/ServiceJSON">
+		<accessrules>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceJSON/"/>
+			<accessrule kind="accessible" pattern="org/json/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/org.knopflerfish.bundle.axis-osgi">
+		<accessrules>
+			<accessrule kind="accessible" pattern="javax/xml/transform/stream/"/>
+			<accessrule kind="accessible" pattern="javax/xml/transform/sax/"/>
+			<accessrule kind="accessible" pattern="javax/xml/transform/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/org.knopflerfish.bundle.xerces">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/xml/sax/helpers/"/>
+			<accessrule kind="accessible" pattern="org/xml/sax/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="output" path="out"/>
+</classpath>

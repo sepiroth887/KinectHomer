@@ -1,0 +1,68 @@
+package uk.ac.stir.cs.homer.homerPolicyServer.overlap;
+
+import java.util.Collection;
+import java.util.Map;
+
+import uk.ac.stir.cs.homer.homerPolicyServer.LivePolicy;
+import uk.ac.stir.cs.homer.serviceDatabase.HomerDatabase;
+import uk.ac.stir.cs.homer.serviceDatabase.objects.Policy;
+
+public abstract class HomerOverlapChecker
+{
+	protected static final String VARIABLE_NAME_SPLITTER = "_";
+
+	public abstract Map<Policy, Overlap> getOverlappingPolicies(LivePolicy newPolicy, Collection<LivePolicy> existingPolicies);
+	public abstract Overlap getOverlapsWithinOnePolicy(LivePolicy livePolicy);
+	
+	public static String describe(HomerDatabase database, Policy newPolicy, Map<Policy, Overlap> overlaps)
+	{
+		StringBuilder message = new StringBuilder();
+		
+		for (Policy policy : overlaps.keySet()) 
+		{
+			message.append(describeOverlap(database, policy, overlaps.get(policy))); 
+		}
+		
+		return message.toString();
+	}
+	public static String describeOverlap(HomerDatabase database, Policy policy, Overlap overlap)
+	{
+		StringBuilder message = new StringBuilder("\nWhen");
+	
+		int numVars = overlap.getVariables().size();
+		for (int i=0; i < numVars; i++)
+		{
+			OverlappingVariable var = overlap.getVariables().get(i);
+
+			if (i>0 && i<numVars)
+			{
+				if (var.getTime() > 0)
+				{
+					message.append(" then ");
+				}
+				else
+				{
+					message.append(" and ");
+				}
+			}
+			
+			message.append(var.getUserDevice().getName());		
+			
+			if (var.isValueSet())
+			{
+				if (var.getEvent()!=null)
+				{
+					message.append(" " + var.getEvent().getName());
+				}
+				else
+				{
+					message.append(" = " + var.getValue());
+				}
+			}
+		}
+		message.append(", policy \"" + policy.getName() + "\" will also be fired, meaning that ");
+	
+		return message.toString();
+	}
+
+}

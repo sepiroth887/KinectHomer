@@ -1,0 +1,50 @@
+/*
+ * Created on Sat May 29 10:49:15 BST 2010
+ */
+package uk.ac.stir.cs.homer.homerFrameworkAPI;
+
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+
+import uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils.ComponentGateway;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils.OSGiComponentGateway;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.events.ComponentEventBridge;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.events.OSGiComponentEventBridge;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.osgi.ServiceUtils;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.systemUtils.OSGiSystemGateway;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.systemUtils.SystemGateway;
+import uk.ac.stir.cs.homer.homerPolicyServer.PolicyRegistry;
+import uk.ac.stir.cs.homer.serviceDatabase.HomerDatabase;
+import uk.ac.stir.cs.homer.serviceDatabase.objects.Policy;
+
+public class HomerFrameworkAPIActivator implements BundleActivator {
+  
+  /* (non-Javadoc)
+   * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
+   */
+  public void start(BundleContext context) throws Exception {
+	 HomerDatabase database = ServiceUtils.getService(context, HomerDatabase.class);
+	
+	 ComponentEventBridge eventBridge = new OSGiComponentEventBridge(context, database);
+		
+	 PolicyRegistry policyFactory = new PolicyRegistry(database);
+	 
+	 SystemGateway sysHandling = new OSGiSystemGateway(database, context, policyFactory);
+	 SystemGateway.Singleton.set(sysHandling);
+	 
+	 ComponentGateway handling = new OSGiComponentGateway(database, eventBridge, sysHandling);
+	 ComponentGateway.Singleton.set(handling);
+	 
+	 for (Policy p: database.getPolicies())
+	 {
+		policyFactory.add(p);
+	 }
+
+  }
+
+  /* (non-Javadoc)
+   * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
+   */
+  public void stop(BundleContext context) throws Exception {
+  }
+}

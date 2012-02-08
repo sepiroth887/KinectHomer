@@ -1,0 +1,20 @@
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\bin\Debug\COMTest.dll
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\bin\Debug\COMTest.pdb
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\bin\Debug\COMTest.tlb
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\bin\Debug\Coding4Fun.Kinect.WinForm.dll
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\bin\Debug\Emgu.CV.dll
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\bin\Debug\Emgu.CV.GPU.dll
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\bin\Debug\Emgu.Util.dll
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\bin\Debug\Coding4Fun.Kinect.WinForm.pdb
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\bin\Debug\Emgu.CV.xml
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\bin\Debug\Emgu.CV.GPU.xml
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\bin\Debug\Emgu.Util.xml
+D:\DevEnv\libs\KinectCOM.dll
+D:\DevEnv\libs\KinectCOM.pdb
+D:\DevEnv\libs\KinectCOM.tlb
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\obj\Debug\KinectCOM.dll
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\obj\Debug\KinectCOM.pdb
+C:\Users\Admin\Documents\Visual Studio 2010\Projects\KinectCOM\COMTest\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Admin\Documents\Visual Studio 2010\Projects\KinectCOM\COMTest\obj\Debug\KinectCOM.dll
+C:\Users\Admin\Documents\Visual Studio 2010\Projects\KinectCOM\COMTest\obj\Debug\KinectCOM.pdb

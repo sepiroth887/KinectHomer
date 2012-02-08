@@ -1,0 +1,6 @@
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\bin\Debug\COMTest.dll
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\bin\Debug\COMTest.pdb
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\bin\Debug\COMTest.tlb
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\obj\Debug\COMTest.dll
+C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\obj\Debug\COMTest.pdb

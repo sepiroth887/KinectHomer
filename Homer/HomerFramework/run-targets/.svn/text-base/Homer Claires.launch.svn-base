@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.knopflerfish.eclipse.core.launcher.OsgiLaunchDelegate">
+<stringAttribute key="org.eclipse.debug.core.SOURCE_PATH_COMPUTER_ID" value="org.knopflerfish.eclipse.core.launcher.SourcePathComputer"/>
+<stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/OSGi%Minimum-1.2"/>
+<mapAttribute key="org.knopflerfish.eclipse.core.launcher.bundle_projects">
+<mapEntry key="ComponentEmail" value="80,0"/>
+<mapEntry key="ComponentPlugwise" value="80,1"/>
+<mapEntry key="ComponentSimulatedBoiler" value="80,1"/>
+<mapEntry key="ComponentVisonicSensors" value="80,1"/>
+<mapEntry key="ComponentWeather" value="80,0"/>
+<mapEntry key="ComponentX10" value="80,1"/>
+<mapEntry key="HomerFramework" value="40,1"/>
+<mapEntry key="ServiceCOMMs" value="10,0"/>
+<mapEntry key="ServiceDatabase" value="10,1"/>
+<mapEntry key="ServiceJSON" value="10,0"/>
+<mapEntry key="ServiceLogger" value="9,1"/>
+<mapEntry key="ServiceTwitter" value="90,1"/>
+<mapEntry key="ServiceWeather" value="90,0"/>
+<mapEntry key="ServiceWebServer" value="99,1"/>
+<mapEntry key="UserInterfaceJavaClient" value="90,1"/>
+</mapAttribute>
+<mapAttribute key="org.knopflerfish.eclipse.core.launcher.bundles">
+<mapEntry key="C:\Program Files\Knopflerfish\knopflerfish_osgi_3.1.0\osgi\jars\cm\cm_api-3.0.1.jar" value="1,1,C:\Program Files\Knopflerfish\knopflerfish_osgi_3.1.0\osgi\bundles\cm\cm\src"/>
+<mapEntry key="C:\Program Files\Knopflerfish\knopflerfish_osgi_3.1.0\osgi\jars\event\event_all-3.0.4.jar" value="1,1,C:\Program Files\Knopflerfish\knopflerfish_osgi_3.1.0\osgi\bundles\event\src"/>
+<mapEntry key="C:\Program Files\Knopflerfish\knopflerfish_osgi_3.1.0\osgi\jars\log\log_api-3.0.5.jar" value="1,1,C:\Program Files\Knopflerfish\knopflerfish_osgi_3.1.0\osgi\bundles\log\src"/>
+<mapEntry key="C:\Program Files\Knopflerfish\knopflerfish_osgi_3.2.0\osgi\jars\http\http_api-3.0.5.jar" value="2,0,C:\Program Files\Knopflerfish\knopflerfish_osgi_3.2.0\osgi\bundles\http\http\src"/>
+<mapEntry key="C:\Users\cma\Documents\HomerWorkspace\ServiceWebServer\lib\javax.servlet.jar" value="1,0"/>
+</mapAttribute>
+<stringAttribute key="org.knopflerfish.eclipse.core.launcher.install_name" value="Knopflerfish"/>
+<stringAttribute key="org.knopflerfish.eclipse.core.launcher.instance_dir" value="C:\Users\cma\Documents\HomerWorkspace\runtime-osgi"/>
+<booleanAttribute key="org.knopflerfish.eclipse.core.launcher.instance_init" value="true"/>
+<mapAttribute key="org.knopflerfish.eclipse.core.launcher.instance_properties">
+<mapEntry key="org.knopflerfish.log.level" value="System:off"/>
+<mapEntry key="org.osgi.framework.bootdelegation" value="System:*"/>
+<mapEntry key="org.osgi.service.http.port" value="System:8080"/>
+<mapEntry key="uk.ac.stir.cs.homer.componentPlugwise.energyIntervalPollMins" value="System:60"/>
+<mapEntry key="uk.ac.stir.cs.homer.componentPlugwise.port" value="System:COM7"/>
+<mapEntry key="uk.ac.stir.cs.homer.componentPlugwise.powerIntervalPollSecs" value="System:10"/>
+<mapEntry key="uk.ac.stir.cs.homer.componentPlugwise.retryLimit" value="System:3"/>
+<mapEntry key="uk.ac.stir.cs.homer.componentVisonicSensors.port" value="System:COM6"/>
+<mapEntry key="uk.ac.stir.cs.homer.componentX10.port" value="System:COM4"/>
+<mapEntry key="uk.ac.stir.cs.homer.database.dbpath" value="System:../ServiceDatabase/database/homerDatabase"/>
+<mapEntry key="uk.ac.stir.cs.homer.database.initalise.addBasicInformation" value="System:true"/>
+<mapEntry key="uk.ac.stir.cs.homer.database.initalise.addFullInformation" value="System:true"/>
+<mapEntry key="uk.ac.stir.cs.homer.database.querypath" value="System:../ServiceDatabase/database/queries/"/>
+<mapEntry key="uk.ac.stir.cs.homer.email.sendingHost" value="System:smtp.gmail.com"/>
+<mapEntry key="uk.ac.stir.cs.homer.policies.eventTimeFrame" value="System:60"/>
+<mapEntry key="uk.ac.stir.cs.homer.resources.images" value="System:../resources/images/"/>
+<mapEntry key="uk.ac.stir.cs.homer.startup.showJavaUIComponents" value="System:true"/>
+<mapEntry key="uk.ac.stir.cs.homer.triggers.timeBeforeRepost" value="System:30"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.cold" value="System:156"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.door_closed" value="System:43"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.door_open" value="System:44"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.email.received" value="System:98"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.email.send" value="System:81"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.finger_point" value="System:104"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.hot" value="System:89"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.is_off" value="System:80"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.is_on" value="System:152"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.lightoff" value="System:7"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.lighton" value="System:8"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.movement" value="System:91"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.sms.received" value="System:18"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.sms.send" value="System:79"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.turn_off" value="System:80"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.turn_on" value="System:152"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.window_closed" value="System:70"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.icons.window_open" value="System:69"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.twitter.consumerKey" value="System:FKaRZLUWnetLRApdkcg"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.twitter.consumerSecret" value="System:eAQbaf0rU6xewfakt5PVN51rPSsNLitsUywPUFbg8LU"/>
+<mapEntry key="uk.ac.stir.cs.homer.user.twitter.postStatusMessages" value="System:true"/>
+</mapAttribute>
+<intAttribute key="org.knopflerfish.eclipse.core.launcher.startlevel" value="99"/>
+</launchConfiguration>

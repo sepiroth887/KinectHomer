@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<bundlejar>
+<resource dst="" pattern=".*\.class" src="/Kinect/out" type="0"/>
+<resource dst="libs/KinectCOM/kinect.jar" src="/Kinect/libs/KinectCOM/kinect.jar" type="1"/>
+<resource dst="libs/comfyJ/lib/comfyj-2.9.jar" src="/Kinect/libs/comfyJ/lib/comfyj-2.9.jar" type="1"/>
+<resource dst="libs/comfyJ/lib/jniwrap-3.8.3.jar" src="/Kinect/libs/comfyJ/lib/jniwrap-3.8.3.jar" type="1"/>
+<resource dst="libs/comfyJ/lib/slf4j-api-1.5.8.jar" src="/Kinect/libs/comfyJ/lib/slf4j-api-1.5.8.jar" type="1"/>
+<resource dst="libs/comfyJ/lib/slf4j-simple-1.5.8.jar" src="/Kinect/libs/comfyJ/lib/slf4j-simple-1.5.8.jar" type="1"/>
+<resource dst="libs/comfyJ/lib/winpack-3.8.3.jar" src="/Kinect/libs/comfyJ/lib/winpack-3.8.3.jar" type="1"/>
+</bundlejar>

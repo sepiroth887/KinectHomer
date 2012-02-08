@@ -1,0 +1,4056 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<HTML
+><HEAD
+><TITLE
+>ComfyJ Programmer's Guide</TITLE
+><style type="text/css"><!--
+.note {border: 1px solid white; background-color: white; padding: 0pt;}
+.important {border: 1px solid white; background-color: white; padding: 0pt;}
+.note table {border: 1px solid white; background-color: white; padding: 5px; vertical-align: middle;}
+.important table {border: 1px solid white; background-color: white; padding: 5px; vertical-align: middle;}
+.note td {border: 1px solid white; background-color: white; padding: 5px; vertical-align: middle;}
+.important td {border: 1px solid white; background-color: white; padding: 5px; vertical-align: middle;}
+.TOC { font-family: Verdana, Sans-Serif; font-size: 12px;}
+.filename { font-family: courier, monospace; font-size: 14px;}
+.parameter {FONT-WEIGHT: bold;}
+.methodname { font-family: courier, monospace; font-size: 14px; FONT-WEIGHT: bold;}
+.classname { color: #204E80; font-family: courier, monospace; font-size: 14px; FONT-WEIGHT: bold;}
+.programlisting{border: 1px solid #AEBDCC; background-color: #F3F5F7; padding: 5pt; FONT-FAMILY:  courier, monospace; FONT-SIZE: 12px}
+.title{color: white; text-align: center; border: 1pt solid #7B8798; background-color: #A9BAD1; padding: 5pt; FONT-FAMILY:  Verdana, Sans-Serif; FONT-SIZE: 22px}
+FONT {FONT-FAMILY: Verdana, Sans-Serif; FONT-SIZE: 12px}
+TD {FONT-FAMILY: Verdana, Sans-Serif; FONT-SIZE: 12px}
+BODY {FONT-FAMILY: Verdana, Sans-Serif; FONT-SIZE: 12px}
+P {FONT-FAMILY: Verdana, Sans-Serif; FONT-SIZE: 12px}
+H1 {FONT-FAMILY: Verdana, Sans-Serif; FONT-SIZE: 22px; FONT-WEIGHT: bold;}
+H2 {FONT-FAMILY: Verdana, Sans-Serif; FONT-SIZE: 18px; FONT-WEIGHT: bold;}--></style
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.7"></HEAD
+><BODY
+CLASS="book"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#204E80"
+VLINK="#204E80"
+ALINK="#204E89" background="images/bg.png"><table border="0" cellpadding="30" cellspacing="0" width="100%"><tbody><tr><td
+><table border="0" cellpadding="1" cellspacing="0" width="100%"><tbody><tr><td bgcolor="#788598"
+><table border="0" cellpadding="30" cellspacing="0" width="100%"><tbody><tr><td bgcolor="#ffffff"
+><DIV
+CLASS="BOOK"
+><A
+NAME="AEN1"
+></A
+><DIV
+CLASS="TITLEPAGE"
+><P></P><H1
+CLASS="title"
+><A
+NAME="AEN1"
+></A
+>ComfyJ Programmer's Guide</H1
+><HR size=1 noshadow color=#0066CC
+><SPAN
+CLASS="releaseinfo"
+>Version: 2.9<BR></SPAN
+><SPAN
+CLASS="date"
+>Last Updated: December 05, 2011<BR></SPAN
+><P
+CLASS="copyright"
+>Copyright &copy; 2002-2011 TeamDev Ltd. </P
+> </DIV
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+></B><P></P><B>Table of Contents</B><HR size=1 noshadow color=#0066CC
+></DT
+><DT
+>1. <A
+HREF="#AEN8"
+>Introduction</A
+></DT
+><DD
+><DL
+><DT
+>1.1. <A
+HREF="#AEN76"
+>Prerequisites</A
+></DT
+><DT
+>1.2. <A
+HREF="#AEN83"
+>Related Documents</A
+></DT
+></DL
+></DD
+><DT
+>2. <A
+HREF="#AEN98"
+>Getting Started</A
+></DT
+><DD
+><DL
+><DT
+>2.1. <A
+HREF="#AEN100"
+>ComfyJ Distribution Overview</A
+></DT
+><DT
+>2.2. <A
+HREF="#AEN119"
+>System Requirements</A
+></DT
+><DT
+>2.3. <A
+HREF="#AEN129"
+>Package Contents</A
+></DT
+></DL
+></DD
+><DT
+>3. <A
+HREF="#ConfigSoftware"
+>Configuring ComfyJ</A
+></DT
+><DD
+><DL
+><DT
+>3.1. <A
+HREF="#AEN185"
+>Library JAR Files</A
+></DT
+><DT
+>3.2. <A
+HREF="#AEN189"
+>Native Code Library</A
+></DT
+><DT
+>3.3. <A
+HREF="#AEN200"
+>License Files</A
+></DT
+></DL
+></DD
+><DT
+>4. <A
+HREF="#AEN206"
+>Using COM Integration</A
+></DT
+><DD
+><DL
+><DT
+>4.1. <A
+HREF="#AEN212"
+>COM Support Initialization and Shutdown</A
+></DT
+><DD
+><DL
+><DT
+>4.1.1. <A
+HREF="#AEN215"
+>COM Memory Management in JNIWrapper</A
+></DT
+><DT
+>4.1.2. <A
+HREF="#AEN228"
+>Initializing COM</A
+></DT
+><DT
+>4.1.3. <A
+HREF="#AEN267"
+>Performing Clean-up</A
+></DT
+></DL
+></DD
+><DT
+>4.2. <A
+HREF="#AEN281"
+>Using COM in Multi-Threaded Applications</A
+></DT
+><DD
+><DL
+><DT
+>4.2.1. <A
+HREF="#AEN285"
+><TT
+CLASS="keycap"
+><B
+>OleMessageLoop</B
+></TT
+> Class</A
+></DT
+><DT
+>4.2.2. <A
+HREF="#AEN290"
+>Invoking COM Methods Without Return Values</A
+></DT
+><DT
+>4.2.3. <A
+HREF="#AEN299"
+>Invoking COM Methods with Return Values</A
+></DT
+><DT
+>4.2.4. <A
+HREF="#AEN322"
+>Displaying Errors</A
+></DT
+><DT
+>4.2.5. <A
+HREF="#AEN329"
+>Creating New OLE Message Loop Thread</A
+></DT
+><DT
+>4.2.6. <A
+HREF="#AEN345"
+>Invoking Functions Synchronously</A
+></DT
+><DT
+>4.2.7. <A
+HREF="#AEN354"
+>Invoking Functions Asynchronously</A
+></DT
+><DT
+>4.2.8. <A
+HREF="#AEN360"
+>Binding Objects to OLE Message Loop Thread</A
+></DT
+></DL
+></DD
+><DT
+>4.3. <A
+HREF="#ComToJava"
+>Exposing COM to Java</A
+></DT
+><DD
+><DL
+><DT
+>4.3.1. <A
+HREF="#AEN370"
+>Creating Server Implementation</A
+></DT
+><DT
+>4.3.2. <A
+HREF="#AEN378"
+>Creating Class Factory</A
+></DT
+><DT
+>4.3.3. <A
+HREF="#AEN393"
+>Creating Instances</A
+></DT
+></DL
+></DD
+><DT
+>4.4. <A
+HREF="#COM_OLE_Automation"
+>Using COM/OLE Automation</A
+></DT
+><DD
+><DL
+><DT
+>4.4.1. <A
+HREF="#AEN408"
+><TT
+CLASS="keycap"
+><B
+>Automation</B
+></TT
+> Class</A
+></DT
+></DL
+></DD
+><DT
+>4.5. <A
+HREF="#AEN418"
+>Using OCX Components Without GUI</A
+></DT
+><DT
+>4.6. <A
+HREF="#Embedding_ActiveX_OLE_Components_into_Swing_Application"
+>Embedding ActiveX/OLE Components into Swing Applications</A
+></DT
+><DD
+><DL
+><DT
+>4.6.1. <A
+HREF="#AEN429"
+>Displaying Java Menus over ActiveX Component</A
+></DT
+></DL
+></DD
+><DT
+>4.7. <A
+HREF="#Registering_Callbacks"
+>Registering Callbacks for Generated COM
+      Components (COM Events Handling)</A
+></DT
+></DL
+></DD
+><DT
+>5. <A
+HREF="#CodeGen"
+>Code Generator for ComfyJ</A
+></DT
+><DD
+><DL
+><DT
+>5.1. <A
+HREF="#Code_Generation_Utility"
+>Running Code Generator</A
+></DT
+><DD
+><DL
+><DT
+>5.1.1. <A
+HREF="#AEN512"
+>Running Code Generator in GUI Mode</A
+></DT
+><DT
+>5.1.2. <A
+HREF="#AEN556"
+>Detecting GUID, ProgID and Version</A
+></DT
+></DL
+></DD
+><DT
+>5.2. <A
+HREF="#AEN561"
+>Namespaces and Package Naming</A
+></DT
+><DT
+>5.3. <A
+HREF="#AEN572"
+>Generated Code Structure</A
+></DT
+><DD
+><DL
+><DT
+>5.3.1. <A
+HREF="#AEN575"
+>Structures, Unions, Enumerations</A
+></DT
+><DT
+>5.3.2. <A
+HREF="#AEN578"
+>Interfaces</A
+></DT
+><DT
+>5.3.3. <A
+HREF="#AEN581"
+>Implementation Classes</A
+></DT
+><DT
+>5.3.4. <A
+HREF="#AEN588"
+>CoClasses</A
+></DT
+><DT
+>5.3.5. <A
+HREF="#AEN603"
+>VTBL Classes</A
+></DT
+></DL
+></DD
+></DL
+></DD
+><DT
+>6. <A
+HREF="#AEN607"
+>COM to Java Integration</A
+></DT
+><DD
+><DL
+><DT
+>6.1. <A
+HREF="#AEN609"
+>Developing Java COM Servers</A
+></DT
+><DD
+><DL
+><DT
+>6.1.1. <A
+HREF="#AEN617"
+>Developing Java Dispinterface</A
+></DT
+><DT
+>6.1.2. <A
+HREF="#AEN634"
+>Developing Java COM Server Class</A
+></DT
+></DL
+></DD
+><DT
+>6.2. <A
+HREF="#AEN654"
+>Registering Java COM Servers</A
+></DT
+><DD
+><DL
+><DT
+>6.2.1. <A
+HREF="#AEN664"
+>ComfyJ ServerManager: Registering in Command-Line Mode</A
+></DT
+><DT
+>6.2.2. <A
+HREF="#AEN675"
+>ComfyJ ServerManager: Registering in GUI Mode</A
+></DT
+><DT
+>6.2.3. <A
+HREF="#AEN703"
+>Registering at Run Time</A
+></DT
+></DL
+></DD
+><DT
+>6.3. <A
+HREF="#AEN712"
+>Using Java COM Servers</A
+></DT
+><DD
+><DL
+><DT
+>6.3.1. <A
+HREF="#AEN715"
+>Java Client</A
+></DT
+><DT
+>6.3.2. <A
+HREF="#AEN726"
+>C++ Client</A
+></DT
+><DT
+>6.3.3. <A
+HREF="#AEN741"
+>Visual Basic Client</A
+></DT
+></DL
+></DD
+></DL
+></DD
+><DT
+>7. <A
+HREF="#AEN757"
+>Using ComfyJ in Java Web Start Applications</A
+></DT
+><DT
+>8. <A
+HREF="#AEN796"
+>ComfyJ Samples</A
+></DT
+><DT
+>9. <A
+HREF="#AEN809"
+>Support</A
+></DT
+><DD
+><DL
+><DT
+>9.1. <A
+HREF="#AEN825"
+>ComfyJ Forum</A
+></DT
+><DT
+>9.2. <A
+HREF="#AEN831"
+>Reporting Problems</A
+></DT
+><DT
+>9.3. <A
+HREF="#AEN838"
+>Troubleshooting</A
+></DT
+></DL
+></DD
+><DT
+>10. <A
+HREF="#AEN847"
+>Where to Get a New Version</A
+></DT
+></DL
+></DIV
+><DIV
+CLASS="chapter"
+> <P></P><H1
+><A
+NAME="AEN8"
+></A
+>Chapter 1. Introduction</H1
+><HR size=1 noshadow color=#0066CC
+><P
+>ComfyJ is a product for Java-to-COM and COM-to-Java
+    integration.</P
+><P
+><B
+CLASS="emphasis"
+>Java-to-COM</B
+> integration allows a
+    Java application to easily integrate with any COM/OLE/OCX/ActiveX
+    libraries in pure Java without writing any native code. The following
+    features are available in this version of ComfyJ:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>Wrappers for all standard COM interfaces, such as
+        <TT
+CLASS="interfacename"
+>IUnknown</TT
+>,
+        <TT
+CLASS="interfacename"
+>IDispatch</TT
+>, etc.</P
+></LI
+><LI
+><P
+>Support for standard COM types, such as <TT
+CLASS="type"
+>Variant</TT
+>,
+        <TT
+CLASS="type"
+>SafeArray</TT
+> (single and multi-dimensional arrays),
+        <TT
+CLASS="type"
+>BStr</TT
+>, etc.</P
+></LI
+><LI
+><P
+>Support for VTBL method calling mechanism. You can invoke COM
+        object methods by using function index.</P
+></LI
+><LI
+><P
+>Automation support enabling you to:</P
+><P
+></P
+><UL
+><LI
+><P
+>Invoke any method of a COM object by using a dynamic method
+            invocation technique.</P
+></LI
+><LI
+><P
+>Get any property of the COM object, including indexed and
+            named ones.</P
+></LI
+><LI
+><P
+>Set COM object properties.</P
+></LI
+></UL
+></LI
+><LI
+><A
+NAME="COMevents"
+></A
+><P
+>Support for COM events. You have the ability to create a Java
+        COM event handler and connect it to a COM object using a standard
+        (findConnectionPoint/advise) COM technique.</P
+></LI
+><LI
+><A
+NAME="OleContainer"
+></A
+><P
+>Embedding any OLE/OCX/ActiveX controls into a Swing application.
+        ComfyJ provides a special <TT
+CLASS="classname"
+>OleContainer</TT
+> class
+        allowing you to:</P
+><P
+></P
+><UL
+><LI
+><P
+>Create an embedded object using ProgID, CLSID, or from a
+            file. Also, there is a way to insert an IOleObject into the
+            container.</P
+></LI
+><LI
+><P
+>Embed various OLE/OCX/ActiveX components, such as Internet
+            Explorer, Acrobat Reader, Microsoft Office documents, and various
+            media components such as Windows MediaPlayer, DVD player,
+            QuickTime, ShockwaveFlash, etc.</P
+></LI
+><LI
+><P
+>Perform static drawing of an embedded component.</P
+></LI
+><LI
+><P
+>Save/Load an embedded OLE Object to/from a file in a special
+            binary format.</P
+></LI
+><LI
+><P
+>Do various kinds of in-place activation such as SHOW,
+            INPLACEACTIVE, etc.</P
+></LI
+></UL
+></LI
+><LI
+><P
+>DCOM support. ComfyJ allows creating COM objects on a remote
+        server.</P
+></LI
+><LI
+><P
+>Support for different threading models.</P
+></LI
+><LI
+><P
+>CodeGenerator application. This specially designed application
+        allows you to generate Java COM wrappers for custom COM objects.
+        Generated classes can be compiled and packed to a JAR file, if
+        necessary.</P
+></LI
+></OL
+><P
+><B
+CLASS="emphasis"
+>COM-to-Java</B
+> integration allows you
+    to implement and expose Java COM objects as usual COM objects in pure Java
+    without writing any native code. In this version of ComfyJ you can use the
+    following features:</P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+><TT
+CLASS="classname"
+>IUnknownServer</TT
+> - The server
+        implementation of the <TT
+CLASS="interfacename"
+>IUnknown</TT
+> COM
+        interface. All custom Java COM objects that implement the
+        <TT
+CLASS="interfacename"
+>IUnknown</TT
+> COM interface can be derived
+        from this class.</P
+></LI
+><LI
+><P
+><TT
+CLASS="classname"
+>DispatchServer</TT
+> - The server
+        implementation of the <TT
+CLASS="interfacename"
+>IDispatch</TT
+> COM
+        interface. All custom Java COM objects that implement the
+        <TT
+CLASS="interfacename"
+>IDispatch</TT
+> COM interface can be derived
+        from this class.</P
+></LI
+><LI
+><P
+>Ability to create and register custom Java COM classes at run
+        time. This technique is widely used in the implementation of
+        <TT
+CLASS="classname"
+>OleContainer</TT
+> (see <A
+HREF="#OleContainer"
+>item 6 </A
+> on the list above) and in COM
+        events support (see <A
+HREF="#COMevents"
+>item 5</A
+> on the
+        list above).</P
+></LI
+><LI
+><P
+>ServerManager application. This application allows you to create
+        any custom COM classes and register them as COM servers in the system
+        registry.</P
+></LI
+></OL
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN76"
+></A
+>1.1. Prerequisites</H2
+><P
+>ComfyJ is based on <A
+HREF="http://www.teamdev.com/jniwrapper"
+TARGET="_top"
+>JNIWrapper</A
+> and <A
+HREF="http://www.teamdev.com/winpack"
+TARGET="_top"
+>WinPack</A
+> products developed
+      by TeamDev. Therefore, to start effectively using ComfyJ, you need to
+      have basic knowledge of JNIWrapper and WinPack API. You can find the
+      documentation on these products online. We recommend you to start with
+      JNIWrapper <A
+HREF="http://www.teamdev.com/jniwrapper/documentation.jsf"
+TARGET="_top"
+>Programmer's
+      Guide</A
+>.</P
+><P
+>To get the full package of JNIWrapper and WinPack, including
+      samples' source code, please download the full JNIWrapper
+      distribution.</P
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN83"
+></A
+>1.2. Related Documents</H2
+><P
+>The documents provided on the Documentation page at the JNIWrapper
+      area (<A
+HREF="http://www.teamdev.com/jnjwrapper"
+TARGET="_top"
+>http://www.teamdev.com/jnjwrapper</A
+>)
+      at TeamDev site are intended to help you in understanding and effective
+      use of ComfyJ. We suggest that you read the ComfyJ documentation in the
+      following order:</P
+><P
+></P
+><UL
+><LI
+><P
+>You can start with this <I
+CLASS="emphasis"
+>Programmer's
+          Guide</I
+> that describes the basics and underlying ideas of
+          ComfyJ.</P
+></LI
+><LI
+><P
+>To get some hands-on experience in using ComfyJ, you can
+          proceed from this <I
+CLASS="emphasis"
+>Programmer's Guide</I
+> to
+          <I
+CLASS="emphasis"
+>ComfyJ Tutorial</I
+></P
+></LI
+><LI
+><P
+>You can also find helpful information in <I
+CLASS="emphasis"
+>Frequently
+          Asked Questions</I
+> that we regularly update based on the
+          questions we get from our users. You can access them online at the
+          JNIWrapper site.</P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="chapter"
+> <P></P><H1
+><A
+NAME="AEN98"
+></A
+>Chapter 2. Getting Started</H1
+><HR size=1 noshadow color=#0066CC
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN100"
+></A
+>2.1. ComfyJ Distribution Overview</H2
+><P
+>The ComfyJ distribution includes:</P
+><P
+></P
+><UL
+><LI
+><P
+><B
+CLASS="emphasis"
+>ComfyJ library.</B
+> This library
+          provides Java and COM integration functionality.</P
+></LI
+><LI
+><P
+><B
+CLASS="emphasis"
+>JNIWrapper library.</B
+> This is
+          the core library of Java-to-Native integration for Windows.</P
+></LI
+><LI
+><P
+><B
+CLASS="emphasis"
+>WinPack library.</B
+> This is the
+          library for Windows Desktop integration.</P
+></LI
+><LI
+><P
+><B
+CLASS="emphasis"
+>Code Generator application.</B
+>
+          This application allows you to generate Java wrappers for interfaces
+          and coclasses of the specified component, type library or
+          module.</P
+></LI
+><LI
+><P
+><B
+CLASS="emphasis"
+>Java COM ServerManager.</B
+> The
+          application is designed for registering and removing COM servers
+          written in Java using ComfyJ.</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN119"
+></A
+>2.2. System Requirements</H2
+><P
+>The following are the general requirements for running ComfyJ on
+      the supported platforms:</P
+><P
+><P
+></P
+><UL
+><LI
+><P
+>OS: Windows 9x, Me, NT 4.0, 2000, XP and 2003.</P
+></LI
+><LI
+><P
+>Java: Java 2 SDK/JRE 1.3.x and higher. For Code Generator
+            GUI mode, the preferred JDK is 1.4.2 or higher.</P
+></LI
+></UL
+></P
+><P
+>There are no specific memory or other hardware requirements for
+      developing an application based on ComfyJ.</P
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN129"
+></A
+>2.3. Package Contents</H2
+><P
+>The ComfyJ package consists of the following main files required
+      for work:</P
+><P
+></P
+><UL
+><LI
+><P
+>Library JAR file -
+          <TT
+CLASS="filename"
+>comfyj-&#60;version&#62;.jar</TT
+>, where
+          <I
+CLASS="emphasis"
+>&#60;version&#62;</I
+> is the product version, for
+          example "2.0".</P
+></LI
+><LI
+><P
+>JNIWrapper library -
+          <TT
+CLASS="filename"
+>jniwrap-&#60;version&#62;.jar</TT
+>, where
+          <I
+CLASS="emphasis"
+>&#60;version&#62;</I
+> is the product version.</P
+></LI
+><LI
+><P
+>WinPack library -
+          <TT
+CLASS="filename"
+>winpack-&#60;version&#62;.jar</TT
+>, where
+          <I
+CLASS="emphasis"
+>&#60;version&#62;</I
+> is the product version.</P
+></LI
+><LI
+><P
+>Native code library</P
+><P
+></P
+><UL
+><LI
+><P
+>JNIWrapper native library - <TT
+CLASS="filename"
+>jniwrap.dll
+              </TT
+></P
+></LI
+></UL
+></LI
+><LI
+><P
+>License files</P
+><P
+></P
+><UL
+><LI
+><P
+>JNIWrapper developer's license -
+              <TT
+CLASS="filename"
+>jniwrap.lic</TT
+></P
+></LI
+><LI
+><P
+>ComfyJ developer's license -
+              <TT
+CLASS="filename"
+>comfyj.lic</TT
+></P
+></LI
+></UL
+></LI
+></UL
+><P
+>The Code Generator application has the following related
+      libraries:</P
+><P
+></P
+><UL
+><LI
+><P
+>Code Generator application -
+          <TT
+CLASS="filename"
+>comfyj-generator-&#60;version&#62;.jar</TT
+>, where
+          <I
+CLASS="emphasis"
+>&#60;version&#62;</I
+> is the product version.</P
+></LI
+><LI
+><P
+>Velocity library - <TT
+CLASS="filename"
+>velocity-dep-1.3.1.jar</TT
+>
+          is used for creating template-based Java wrappers.</P
+></LI
+><LI
+><P
+>Commons library - <TT
+CLASS="filename"
+>commons-cli-1.0.jar</TT
+> is
+          used for parsing command-line parameters.</P
+></LI
+></UL
+><P
+>The Java COM ServerManager application is based on the
+      following:</P
+><P
+></P
+><UL
+><LI
+><P
+>ServerManager library -
+          <TT
+CLASS="filename"
+>comfyj-svrmanager-&#60;version&#62;.jar</TT
+>, where
+          <I
+CLASS="emphasis"
+>&#60;version&#62;</I
+> is the product version.</P
+></LI
+></UL
+><P
+>Note that all the files need to be placed in the appropriate
+      locations. For more details about the product installation instructions,
+      see the section "<A
+HREF="#ConfigSoftware"
+>Configuring
+      Software"</A
+>.</P
+><P
+>The package may also contain other files providing some useful
+      information for the user, for example the <TT
+CLASS="filename"
+>Readme.txt
+      </TT
+>file.</P
+></DIV
+></DIV
+><DIV
+CLASS="chapter"
+> <P></P><H1
+><A
+NAME="ConfigSoftware"
+></A
+>Chapter 3. Configuring ComfyJ</H1
+><HR size=1 noshadow color=#0066CC
+><P
+>As mentioned earlier, ComfyJ consists of six main files required for
+    the software functioning: JAR files, native code library, and license
+    files. The following sections describe where each file should be located.
+    No other configuration is required.</P
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN185"
+></A
+>3.1. Library JAR Files</H2
+><P
+>The ComfyJ, JNIWrapper and WinPack JAR files should be located in
+      the program classpath. Due to the limitations of the Java native library
+      loading mechanism, it is not recommended to load ComfyJ in custom class
+      loaders unless you are sure that it will be loaded in only one such
+      class loader.</P
+><P
+>The library files can also be placed on the boot class path or in
+      the extension directory of Java runtime, but this is not
+      required.</P
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN189"
+></A
+>3.2. Native Code Library</H2
+><P
+>The JNIWrapper native code library is loaded using the standard
+      Java native code loading mechanism. There are no known problems with
+      placing the native code library file on a mapped drive or even using it
+      from the network share using a UNC path.<DIV
+CLASS="important"
+><P
+></P
+><TABLE
+CLASS="important"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="images/important.gif"
+HSPACE="5"
+ALT="Important"></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Do not rename the library file, or else it will not be
+          loaded.</P
+></TD
+></TR
+></TABLE
+></DIV
+>Even though the native code library can be placed
+      virtually anywhere, its actual location should be specified considering
+      the fact that Java code should find the library to load. It can be
+      placed somewhere within the program library search path (value of the
+      <TT
+CLASS="property"
+>java.library.path</TT
+> system property, which is by
+      default equal to the value of the system variable PATH on
+      Windows).</P
+><P
+>Alternatively, you can add a search path to the default library
+      loader used by JNIWrapper or even write a custom one that searches for
+      native code in a predefined location. Using the default path may be
+      preferable for development and the library loader as a much better way
+      for distributing a complete application.</P
+><P
+>The <TT
+CLASS="filename"
+>jniwrap.dll</TT
+> can be placed in any JAR
+      library from the application classpath, but not in the
+      <TT
+CLASS="filename"
+>META-INF</TT
+> subfolder.</P
+><P
+>You may want to install the native code library into the
+      directories on the default system path, for example the root of Windows
+      installation or Windows\System32. Note that this requires having
+      appropriate access rights to the Windows NT/2000/XP system. Installing
+      the native code library using this way may be convenient, but is not a
+      required procedure.</P
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN200"
+></A
+>3.3. License Files</H2
+><P
+>Placing the license files is very simple: They need to be located
+      in the same directory as the native code library file. <DIV
+CLASS="important"
+><P
+></P
+><TABLE
+CLASS="important"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="images/important.gif"
+HSPACE="5"
+ALT="Important"></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>Do not rename the license files, or else they will not be
+          recognized.</P
+></TD
+></TR
+></TABLE
+></DIV
+>Alternatively, the license files can be placed in the
+      <TT
+CLASS="filename"
+>META-INF</TT
+> folder of any JAR library from the
+      application classpath.</P
+></DIV
+></DIV
+><DIV
+CLASS="chapter"
+> <P></P><H1
+><A
+NAME="AEN206"
+></A
+>Chapter 4. Using COM Integration</H1
+><HR size=1 noshadow color=#0066CC
+><P
+>The functionality of ComfyJ COM integration is based on run-time
+    classes that come in the core library and code generated for specific COM
+    objects of your application.</P
+><P
+>Although it is possible to work with COM/OLE objects via COM/OLE
+    Automation (see the section <A
+HREF="#COM_OLE_Automation"
+>"Using
+    COM/OLE Automation"</A
+> ), which does not require generating code, for
+    complex integration tasks it is much more convenient to work with API
+    generated for COM functionality by Code Generator (see the section <A
+HREF="#CodeGen"
+>"Code Generator Application"</A
+>).</P
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN212"
+></A
+>4.1. COM Support Initialization and Shutdown</H2
+><P
+>Each Java thread that invokes COM functions and works with COM
+      classes should initialize a COM library at the beginning of its
+      lifecycle and uninitialize it at the end.</P
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN215"
+></A
+>4.1.1. COM Memory Management in JNIWrapper</H3
+><P
+>All COM resources as well as other native resources that are
+        allocated by JNIWrapper are garbage-collected automatically by
+        JNIWrapper's NativeResourceCollector (NRC). NRC starts automatically
+        on the application startup and runs permanently while the application
+        runs.</P
+><P
+>There is no need to call the <TT
+CLASS="methodname"
+>addRef()</TT
+>
+        and <TT
+CLASS="methodname"
+>release()</TT
+> methods. The
+        <TT
+CLASS="methodname"
+>addRef()</TT
+> method is called when an object is
+        created and the <TT
+CLASS="methodname"
+>release()</TT
+> method is called
+        automatically when the instance is not used any more by NRC. Also,
+        when an instance of some COM class is created, it is automatically
+        registered in NRC.</P
+><P
+>Alternatively, there is an ability to control the process of
+        instance deallocation by setting its <TT
+CLASS="property"
+>AutoDelete</TT
+>
+        property to <TT
+CLASS="constant"
+>false</TT
+> using the
+        <TT
+CLASS="methodname"
+>setAutoDelete(false)</TT
+> method. The example
+        below demonstrates how to do this:</P
+><PRE
+CLASS="programlisting"
+>IUnknownImpl object = getObject();
+object.setAutoDelete(false);
+try {
+// do something with the object here
+} finally {
+object.release();
+} </PRE
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN228"
+></A
+>4.1.2. Initializing COM</H3
+><P
+>The initialization should be called at least once for each
+        thread that uses the COM classes or functions. You can do this by
+        invoking one of the following methods:</P
+><DIV
+CLASS="procedure"
+><OL
+TYPE="1"
+><LI
+><P
+><TT
+CLASS="methodname"
+>ComFunctions.coInitialize()</TT
+>-
+            initializes the COM library in the current thread and identifies
+            the concurrency model as a single-threaded apartment (STA). It
+            corresponds to the <TT
+CLASS="methodname"
+>CoInitialize</TT
+> native
+            function.</P
+></LI
+><LI
+><P
+><TT
+CLASS="methodname"
+>OleFunctions.oleInitialize()</TT
+> - is
+            similar to <TT
+CLASS="methodname"
+>coInitialize()</TT
+> and corresponds
+            to the <TT
+CLASS="methodname"
+>OleInilialize</TT
+> native
+            function.</P
+></LI
+><LI
+><P
+><TT
+CLASS="methodname"
+>ComFunctions.coInitializeEx(CoInit value)
+            </TT
+>- initializes the COM library in the current thread
+            with the passed concurrency model.</P
+></LI
+></OL
+></DIV
+><DIV
+CLASS="section"
+> <H4
+CLASS="section"
+><A
+NAME="AEN244"
+></A
+>4.1.2.1. Concurrency Models</H4
+><P
+>To specify a concurrency model different from single-threaded
+          apartment, use the <TT
+CLASS="methodname"
+>coInitializeEx()</TT
+> method
+          that takes a specified concurrency model as a parameter.</P
+><P
+>There are four concurrency models available from the
+          <TT
+CLASS="type"
+>CoInit</TT
+> enumeration that can be used for
+          initialization:</P
+><P
+></P
+><UL
+><LI
+><P
+><TT
+CLASS="type"
+>MULTITHREADED</TT
+></P
+></LI
+><LI
+><P
+><TT
+CLASS="type"
+>APARTMENTTHREADED</TT
+></P
+></LI
+><LI
+><P
+><TT
+CLASS="type"
+>DISABLE_OLE1DDE</TT
+></P
+></LI
+><LI
+><P
+><TT
+CLASS="type"
+>SPEED_OVER_MEMORY</TT
+>.</P
+></LI
+></UL
+><P
+>Most of the COM/ActiveX objects use the
+          <TT
+CLASS="type"
+>APARTMENTTHREADED</TT
+> model.</P
+><P
+>You can read about the concurrency model requirements in the
+          documentation of your COM object, or check the value of the
+          <TT
+CLASS="methodname"
+>ThreadingModel</TT
+> key in the Windows Registry
+          corresponding to your class.</P
+></DIV
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN267"
+></A
+>4.1.3. Performing Clean-up</H3
+><P
+>The COM support should be uninitialized when the application
+        shuts down. To uninitialize the COM integration,
+        <TT
+CLASS="methodname"
+>OleFunctions.oleUninitialize()</TT
+> should be
+        called if initialization was performed by
+        <TT
+CLASS="methodname"
+>oleInitialize()</TT
+>; otherwise
+        <TT
+CLASS="methodname"
+>ComFunctions.coUninitialize()</TT
+> should be
+        used.</P
+><P
+>Both these methods do the following:</P
+><P
+></P
+><UL
+><LI
+><P
+>Close the COM library in the current thread.</P
+></LI
+><LI
+><P
+>Free allocated resources.</P
+></LI
+><LI
+><P
+>Release any class factories or services.</P
+></LI
+></UL
+></DIV
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN281"
+></A
+>4.2. Using COM in Multi-Threaded Applications</H2
+><P
+>As said earlier, COM objects can be accessed only from the thread
+      that initialized COM integration. In multi-threaded applications, it may
+      be necessary to work with COM objects from multiple threads. This can be
+      achieved by having a single thread for invoking COM methods so that
+      other Java threads post actions for execution. JNIWrapper provides the
+      <TT
+CLASS="classname"
+>OleMessageLoop</TT
+> class for this purpose.</P
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN285"
+></A
+>4.2.1. <TT
+CLASS="keycap"
+><B
+>OleMessageLoop</B
+></TT
+> Class</H3
+><P
+>The
+        <TT
+CLASS="classname"
+>com.jniwrapper.win32.automation.OleMessageLoop</TT
+>
+        class provides implementation for the COM dispatch thread and methods
+        for starting and stopping the loop thread, and invoking COM functions
+        in this thread.</P
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN290"
+></A
+>4.2.2. Invoking COM Methods Without Return Values</H3
+><P
+>If a COM function you intend to invoke does not return results
+        or you are not interested in returning these results to the calling
+        thread, you can add the
+        <TT
+CLASS="action"
+><TT
+CLASS="classname"
+>Runnable</TT
+></TT
+> action to the
+        execution queue of the <TT
+CLASS="classname"
+>OleMessageLoop</TT
+>
+        class.</P
+><PRE
+CLASS="programlisting"
+>...
+  Runnable action = new Runnable() {
+     public void run()
+     {
+       // working with COM here
+     }
+  };
+  OleMessageLoop.addAction(action);
+... </PRE
+><P
+>The calling thread will continue its execution after the
+        <TT
+CLASS="methodname"
+>addAction()</TT
+> call. The action will be run
+        after all actions already set in the queue are executed.</P
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN299"
+></A
+>4.2.3. Invoking COM Methods with Return Values</H3
+><P
+>Returning values to the calling thread is a bit more
+        complicated. To do this, the following steps should be
+        performed:</P
+><DIV
+CLASS="procedure"
+><OL
+TYPE="1"
+><LI
+><P
+>A method that deals with a COM object should be implemented
+            in the class that requests the execution from
+            <TT
+CLASS="methodname"
+>OleMessageLoop</TT
+>. Later, this method will
+            be invoked in the COM thread using reflection.</P
+></LI
+><LI
+><P
+>Request invocation of the wrapper method (created during the
+            previous step) by calling the
+            <TT
+CLASS="methodname"
+>OleMessageLoop.invoke()</TT
+> method with the
+            following parameters:</P
+><P
+></P
+><UL
+><LI
+><P
+>Caller instance</P
+></LI
+><LI
+><P
+>Function name</P
+></LI
+><LI
+><P
+>Function parameters</P
+></LI
+></UL
+></LI
+></OL
+></DIV
+><P
+>After the function call is requested, the calling thread will
+        wait until the function returns the result. The following example
+        demonstrates this invocation technique:</P
+><PRE
+CLASS="programlisting"
+>public class Test
+{
+  private _PropertyReaderImpl _pr = null;
+  public Test()
+  {
+     _pr = (_PropertyReaderImpl)OleMessageLoop.invokeMethod(
+      <B
+CLASS="emphasis"
+>this</B
+>, // caller
+      <B
+CLASS="emphasis"
+>"createPropertyReaderClass"</B
+>, // function name
+      <B
+CLASS="emphasis"
+>new Object[]{</B
+> // parameters
+      <B
+CLASS="emphasis"
+>new ClsCtx(ClsCtx.CLSCTX_INPROC_SERVER)})</B
+>;
+  }
+
+  public Object createPropertyReaderClass(ClsCtx dwClsContext)
+  {
+     final _PropertyReaderImpl prClass = PropertyReader.create(
+                           dwClsContext);
+     return prClass;
+  }
+}</PRE
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN322"
+></A
+>4.2.4. Displaying Errors</H3
+><P
+>By following the rules mentioned in the previous sections, you
+        should achieve stable COM integration in your application. Generally,
+        if code appears to be non-working,
+        <TT
+CLASS="exceptionname"
+>ComException</TT
+> is thrown with the error
+        code <TT
+CLASS="errorcode"
+>0x800401f0</TT
+>:</P
+><PRE
+CLASS="programlisting"
+>com.jniwrapper.win32.com.ComException: COM object method returns error code: --&#62;
+--&#62; Unknown code(0x800401f0)</PRE
+><P
+>If you get such an exception, please verify that your code is
+        written according to the COM integration guidelines described in this
+        document.</P
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN329"
+></A
+>4.2.5. Creating New OLE Message Loop Thread</H3
+><P
+>The <TT
+CLASS="classname"
+>OleMessageLoop</TT
+> class can be used as a
+        singleton or as an ordinary class. Every instance of
+        <TT
+CLASS="classname"
+>OleMessageLoop</TT
+> reflects to its own
+        thread.</P
+><P
+><TT
+CLASS="classname"
+>OleMessageLoop</TT
+> has a static
+        <TT
+CLASS="methodname"
+>getInstance()</TT
+> method that allows you to
+        access a single <TT
+CLASS="classname"
+>OleMessageLoop</TT
+> instance.</P
+><P
+>There are three public constructors for creating
+        <TT
+CLASS="classname"
+>OleMessageLoop</TT
+> instances. When an
+        <TT
+CLASS="classname"
+>OleMessageLoop</TT
+> instance is created, the message
+        loop thread is not started yet. It should be started manually by
+        calling the <TT
+CLASS="methodname"
+>OleMessageLoop.doStart()</TT
+>
+        method.</P
+><P
+>A message loop thread can be a daemon (by default) or not. Use
+        the <TT
+CLASS="methodname"
+>OleMessageLoop(boolean)</TT
+> constructor to
+        specify whether the thread is a daemon:</P
+><PRE
+CLASS="programlisting"
+>    //Creating a daemon message loop thread
+    OleMessageLoop oleMessageLoop = new OleMessageLoop(true);
+    //Starting the thread
+    oleMessageLoop.doStart();</PRE
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN345"
+></A
+>4.2.6. Invoking Functions Synchronously</H3
+><P
+>Use <TT
+CLASS="methodname"
+>OleMessageLoop.doInvokeAndWait()</TT
+>
+        (or static <TT
+CLASS="methodname"
+>OleMessageLoop.invokeAndWait()</TT
+> for
+        a singleton) to execute code in the message loop thread
+        synchronously:</P
+><PRE
+CLASS="programlisting"
+>    Runnable runnable = new Runnable()
+    {
+        public void run()
+        {
+            _Workbook workbook = new _WorkbookImpl(oleContainer.getOleObject());
+            String name = workbook.getName().getValue();
+            System.out.println("Workbook name = " + name);
+        }
+    };
+    try
+    {
+        oleMessageLoop.doInvokeAndWait(runnable);
+    }
+    catch (InterruptedException e)
+    {
+        e.printStackTrace();
+    }
+    catch (InvocationTargetException e)
+    {
+        e.printStackTrace();
+    }</PRE
+><P
+>Any exceptions that are thrown in executing code are wrapped
+        into the <TT
+CLASS="classname"
+>InvocationTargetException</TT
+> class. Call
+        the <TT
+CLASS="methodname"
+>InvocationTargetException.getCause()</TT
+>
+        method to get the original exception.</P
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN354"
+></A
+>4.2.7. Invoking Functions Asynchronously</H3
+><P
+>Use <TT
+CLASS="methodname"
+>OleMessageLoop.doInvokeLater()</TT
+> (or
+        static <TT
+CLASS="methodname"
+>OleMessageLoop.invokeLater()</TT
+> for a
+        singleton) to execute code in the message loop thread
+        asynchronously:</P
+><PRE
+CLASS="programlisting"
+>    Runnable runnable = new Runnable()
+    {
+        public void run()
+        {
+            OleContainer oleContainer = new OleContainer();
+            oleContainer.createObject("Excel.Sheet");
+            _Workbook workbook = new _WorkbookImpl(oleContainer.getOleObject());
+            String name = workbook.getName().getValue();
+            System.out.println("Workbook name = " + name);
+        }
+    };
+    oleMessageLoop.doInvokeLater(runnable);</PRE
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN360"
+></A
+>4.2.8. Binding Objects to OLE Message Loop Thread</H3
+><P
+><TT
+CLASS="classname"
+>OleMessageLoop</TT
+> provides the ability to
+        invoke all methods of an object in the OLE message loop thread using
+        the binding operation:</P
+><PRE
+CLASS="programlisting"
+>    //Creating a new _Workbook instance in the OLE message loop thread
+    Runnable runnable = new Runnable()
+    {
+        public void run()
+        {
+            workbook = new _WorkbookImpl(oleContainer.getOleObject());
+        }
+    };
+    try
+    {
+        oleMessageLoop.doInvokeAndWait(runnable);
+    }
+    catch (InterruptedException e)
+    {
+        e.printStackTrace();
+    }
+    catch (InvocationTargetException e)
+    {
+        e.printStackTrace();
+    }
+
+    //Binding the workbook object
+    workbook = (_Workbook) oleMessageLoop.bindObject(workbook);
+    //Invoking a workbook function in the OLE message loop thread
+    String name = workbook.getName().getValue();</PRE
+><P
+>If the method of a bound object returns an object, the returned
+        object is not bound to the OLE message loop thread:</P
+><PRE
+CLASS="programlisting"
+>    //Binding the workbook object
+    workbook = (_Workbook) oleMessageLoop.bindObject(workbook);
+    //Invoking a workbook function in the OLE message loop thread.
+    //The sheets object is not bound
+    Sheets sheets = workbook.getSheets();
+    //Binding the sheets objects
+    sheets = (Sheets) oleMessageLoop.bindObject(sheets);</PRE
+></DIV
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="ComToJava"
+></A
+>4.3. Exposing COM to Java</H2
+><P
+>To implement a Java COM class, the following steps should be
+      performed.</P
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN370"
+></A
+>4.3.1. Creating Server Implementation</H3
+><P
+>Create a Java class that extends the
+        <TT
+CLASS="classname"
+>IUnknownServer</TT
+> class and implements required
+        COM interfaces as shown in the example below:</P
+><PRE
+CLASS="programlisting"
+>// COM class implementation
+public static class OleClientSiteImpl extends IUnknownServer
+    implements IOleClientSite,
+            IOleInPlaceSite,
+            IOleDocumentSite,
+            IOleWindow,
+            IOleInPlaceFrame
+{
+    ...
+}</PRE
+><P
+>If your server-side implementation of a COM object needs to
+        provide automation functionality via the
+        <TT
+CLASS="interfacename"
+>IDispatch</TT
+> interface, you can derive
+        your class from <TT
+CLASS="classname"
+>IDispatchServer</TT
+> that provides
+        default implementation.</P
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN378"
+></A
+>4.3.2. Creating Class Factory</H3
+><P
+>Create a class factory server for a given COM class
+        implementation:</P
+><PRE
+CLASS="programlisting"
+>// Creating a class factory server for our COM class
+IClassFactoryServer oleClientSiteClass =
+  new IClassFactoryServer(OleClientSiteImpl.class);</PRE
+><P
+><TT
+CLASS="classname"
+>IClassFactoryServer</TT
+> will automatically
+        register the interfaces that are implemented by the specified class
+        and its parents. If the class
+        (<TT
+CLASS="classname"
+>OleClientSiteImpl</TT
+> in the example above)
+        extends <TT
+CLASS="classname"
+>IDispatchServer</TT
+>, the default interface
+        will be automatically set to <TT
+CLASS="interfacename"
+>IDispatch</TT
+>;
+        otherwise the default interface will be set to
+        <TT
+CLASS="interfacename"
+>IUnknown</TT
+>.</P
+><P
+>If you need to specify a custom default interface, call the
+        <TT
+CLASS="methodname"
+>IClassFactoryServer.setDefaultInterface()</TT
+>
+        method:</P
+><PRE
+CLASS="programlisting"
+>// register a default interface for our COM class
+oleClientSiteClass.setDefaultInterface(IOleClientSite.class);</PRE
+><P
+>And finally, retrieve a class factory from the class factory
+        server instance:</P
+><PRE
+CLASS="programlisting"
+>IClassFactoryImpl classFactory =
+                      oleClientSiteClass.createIClassFactory();</PRE
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN393"
+></A
+>4.3.3. Creating Instances</H3
+><P
+>Now that you have the instance of the class factory, you can use
+        it to create an instance of your COM class using the following
+        example:</P
+><PRE
+CLASS="programlisting"
+>IOleClientSiteImpl oleClientSite = new IOleClientSiteImpl();
+classFactory.createInstance(null, oleClientSite.getIID(), oleClientSite);</PRE
+><P
+>The <TT
+CLASS="parameter"
+><I
+>null</I
+></TT
+> parameter above means that the
+        object is not created as part of an aggregate. Pass a valid
+        <TT
+CLASS="classname"
+>IUnknown</TT
+> instance instead of
+        <TT
+CLASS="parameter"
+><I
+>null</I
+></TT
+> if you work with aggregates.</P
+></DIV
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="COM_OLE_Automation"
+></A
+>4.4. Using COM/OLE Automation</H2
+><P
+>In some cases, it is necessary to invoke COM class functions or
+      set and get properties having only the <TT
+CLASS="classname"
+>IUnknown</TT
+>
+      instance and knowing the function name and its parameters or just a
+      property name and its type: For example, if a COM class was instantiated
+      by GUID. For these cases, ComfyJ provides the ability to invoke
+      functions via the <TT
+CLASS="interfacename"
+>IDispatch</TT
+> interface.
+      This technique is called <I
+CLASS="emphasis"
+>Automation</I
+> and is handled
+      in ComfyJ by the
+      <TT
+CLASS="classname"
+>com.jniwrapper.win32.automation.Automation</TT
+>
+      class.</P
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN408"
+></A
+>4.4.1. <TT
+CLASS="keycap"
+><B
+>Automation</B
+></TT
+> Class</H3
+><P
+>You can invoke a method of a dispatchable object using the
+        <TT
+CLASS="methodname"
+>invoke()</TT
+> method of the
+        <TT
+CLASS="classname"
+>com.jniwrapper.win32. automation.Automation</TT
+>
+        class. Setting and getting properties is done using the
+        <TT
+CLASS="methodname"
+>setProperty()</TT
+> and
+        <TT
+CLASS="methodname"
+>getProperty()</TT
+> methods, respectively.</P
+><P
+>All calls to this "automated" class are performed in its OLE
+        message loop thread. The following example demonstrates this.</P
+><PRE
+CLASS="programlisting"
+>// retrieve the dispatched interface
+IUnknownImpl dispatchable = getDispatchable();
+String fileName = getFileName();
+
+// create an Automation for instance
+Automation automation = new Automation(dispatchable);
+
+// set the COM object property using automation
+automation.setProperty("FileName", fileName);
+
+// invoke the COM object method using automation
+automation.invoke("LoadFile", new Object[] {fileName});</PRE
+></DIV
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN418"
+></A
+>4.5. Using OCX Components Without GUI</H2
+><P
+>You can work with OCX components without embedding them into
+      OleContainer. The following code sample shows how to do it.</P
+><PRE
+CLASS="programlisting"
+>IUnknown ocxComponentWrapper = ...;
+
+IOleObjectImpl oleObject = new IOleObjectImpl(ocxComponentWrapper);
+
+// Initialize storage
+ILockBytesImpl lockBytes = (ILockBytesImpl)
+        StorageFunctions.createILockBytesOnHGlobal(new GlobalMemoryBlock(), true);
+IStorage storage = StorageFunctions.stgCreateDocfileOnILockBytes(lockBytes,
+        new StgMode(StgMode.STGM_READWRITE |
+        StgMode.STGM_SHARE_EXCLUSIVE | StgMode.STGM_CREATE),
+        new Int32());
+
+// Initialize persist storage
+IPersistStorageImpl persistStorage = new IPersistStorageImpl();
+oleObject.queryInterface(persistStorage.getIID(), persistStorage);
+persistStorage.initNew(storage);</PRE
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="Embedding_ActiveX_OLE_Components_into_Swing_Application"
+></A
+>4.6. Embedding ActiveX/OLE Components into Swing Applications</H2
+><P
+>ComfyJ provides custom client-side implementation of the OLE
+      container that allows embedding ActiveX/OLE controls into Swing
+      applications.</P
+><P
+>ComfyJ provides its own implementation of the OLE container. There
+      is a special
+      <TT
+CLASS="classname"
+>com.jniwrapper.win32.automation.OleContainer</TT
+>
+      class that represents a usual AWT component and is designed to embed
+      various OLE/ActiveX components into Java Swing/AWT applications.</P
+><P
+><TT
+CLASS="classname"
+>OleContainer</TT
+> acts as a host site for OLE
+      objects. It can create an OLE object by ProgID, CLSID, or from a file.
+      Also, it provides the ability to insert an externally initialized OLE
+      object into the container. The communication with a created OLE object
+      is handled using the default OLE verbs.</P
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN429"
+></A
+>4.6.1. Displaying Java Menus over ActiveX Component</H3
+><P
+>In many cases, it is necessary to display Java menus over an
+        ActiveX component embedded into OleContainer. However, by default all
+        Java menus are "lightweight" and cannot be displayed over the
+        "heavyweight" ActiveX components. To solve this problem, just add the
+        following piece of code to your program:</P
+><PRE
+CLASS="programlisting"
+>JPopupMenu.setDefaultLightWeightPopupEnabled(false);</PRE
+></DIV
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="Registering_Callbacks"
+></A
+>4.7. Registering Callbacks for Generated COM
+      Components (COM Events Handling)</H2
+><P
+>This section describes the way of implementing custom event
+      handlers for ActiveX components. In many cases, it appears necessary to
+      be notified about events in a COM component and to handle them somehow.
+      Normally, for this purpose, COM components provide so-called connection
+      points. Connection points allow attaching custom event handlers by using
+      their <TT
+CLASS="methodname"
+>advise()</TT
+> and
+      <TT
+CLASS="methodname"
+>unadvise()</TT
+> methods. Such event handlers are
+      usually defined as dispatch interfaces in the type library.</P
+><P
+>You can see how to do this using ComfyJ and generated stubs for a
+      COM component in the samples below. They demonstrate how to attach a
+      custom event handler (implementing the
+      <TT
+CLASS="classname"
+>DWebBrowserEvents2</TT
+> dispinterface) to the
+      <TT
+CLASS="classname"
+>WebBrowser</TT
+> ActiveX component embedded in
+      OleContainer.</P
+><P
+>Note that in order to execute the samples, you need to generate
+      Java stubs for the <TT
+CLASS="classname"
+>WebBrowser</TT
+> component using the
+      Code Generator application. Among the generated files, you will find
+      three files that correspond to the
+      <TT
+CLASS="classname"
+>DWebBrowserEvents2</TT
+> dispinterface, namely
+      <TT
+CLASS="classname"
+>DWebBrowserEvents2</TT
+>,
+      <TT
+CLASS="classname"
+>DWebBrowserEvents2Impl</TT
+>, and
+      <TT
+CLASS="classname"
+>DWebBrowserEvents2Server</TT
+> classes.</P
+><P
+>As mentioned earlier, <TT
+CLASS="classname"
+>DWebBrowserEvents2</TT
+> is
+      a Java interface, <TT
+CLASS="classname"
+>DWebBrowserEvents2Impl</TT
+> is the
+      default implementation of the <TT
+CLASS="classname"
+>DWebBrowserEvents2</TT
+>
+      interface, and <TT
+CLASS="classname"
+>DWebBrowserEvents2Server</TT
+> is a
+      server adapter for that interface.</P
+><P
+>The technique of advising custom event handler is quite
+      simple:</P
+><PRE
+CLASS="programlisting"
+>// Create IConnectionPointContainer to ActiveX object
+//that is embedded in OleContainer
+IConnectionPointContainer connectionPointContainer =
+        new IConnectionPointContainerImpl(container.getOleObject());
+// Find a necessary connection point
+IConnectionPoint connectionPoint =
+        connectionPointContainer.findConnectionPoint(new IID(
+                          DWebBrowserEvents2.INTERFACE_IDENTIFIER));
+// Advise our handler
+connectionPoint.advise(handler);</PRE
+><P
+>The handler itself is an instance of the
+      <TT
+CLASS="classname"
+>DWebBrowserEvents2Handler</TT
+> class and is created as
+      shown below:</P
+><PRE
+CLASS="programlisting"
+>public class DWebBrowserEvents2Handler extends DWebBrowserEvents2Server {
+    public static final String PROPERTY_STATUS = "status";
+    public static final String PROPERTY_PROGRESS = "progress";
+    private final PropertyChangeSupport _propertyChangeSupport =
+                                      new PropertyChangeSupport(this);
+    public DWebBrowserEvents2Handler(CoClassMetaInfo info) {
+        super(info);
+    }
+    public void statusTextChange(BStr /*[in]*/ Text) {
+        _propertyChangeSupport.firePropertyChange(PROPERTY_STATUS,
+                                                 "", Text.getValue());
+    }
+    public void progressChange(Int32 /*[in]*/ Progress, Int32 /*[in]*/ ProgressMax)
+    {
+        _propertyChangeSupport.firePropertyChange(PROPERTY_PROGRESS,
+                ProgressMax,
+                Progress);
+    }
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        _propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+}</PRE
+><P
+>As you can see, the
+      <TT
+CLASS="classname"
+>DWebBrowserEvents2Handler</TT
+> class handles only two
+      events - <TT
+CLASS="action"
+><TT
+CLASS="property"
+>statusTextChange</TT
+></TT
+> and
+      <TT
+CLASS="action"
+><TT
+CLASS="property"
+>progressChange</TT
+></TT
+> - and notifies the
+      registered Java property change listeners. But any other events can also
+      be handled in the same way by overriding the appropriate methods of the
+      <TT
+CLASS="classname"
+>DWebBrowserEvents2Server</TT
+> class.</P
+><P
+>Also take notice that if you wish to have an inner event handler
+      class, you shall make it <TT
+CLASS="methodname"
+>static</TT
+>. For example,
+      if you declare the <TT
+CLASS="classname"
+>DWebBrowserEvents2Handler</TT
+>
+      class inside any other class, you shall declare it as <TT
+CLASS="classname"
+>public
+      static class DWebBrowserEvents2Handler</TT
+>.</P
+><P
+>Since <TT
+CLASS="classname"
+>DWebBrowserEvents2Handler</TT
+> is a Java
+      COM class, it should be created using
+      <TT
+CLASS="classname"
+>ClassFactory</TT
+>. The technique and principles of
+      creating Java COM objects are described in the above sections.</P
+><P
+>You should bear in mind, however, that
+      <TT
+CLASS="classname"
+>DWebBrowserEvents2</TT
+> is not a dual dispatch
+      interface because it does not have a corresponding VTBL. Its methods are
+      invoked only using the <TT
+CLASS="methodname"
+>IDispacth.invoke()</TT
+>
+      method by predefined <TT
+CLASS="parameter"
+><I
+>dispIDs</I
+></TT
+> for each method of
+      the dispinterface.</P
+><P
+>Therefore, we will use the following technique for creating a
+      handler:</P
+><PRE
+CLASS="programlisting"
+>    // Create a class factory server for DWebBrowserEvents2Handler
+    IClassFactoryServer server =
+                     new IClassFactoryServer(DWebBrowserEvents2Handler.class);
+    IClassFactory factory = server.createIClassFactory();
+
+    // Create an instance of DWebBrowserEvents2Handler with a class factory
+    IDispatchImpl handler = new IDispatchImpl();
+    factory.createInstance(null, handler.getIID(), handler);
+
+    // Get the new instance of Java COM object from the server
+    DWebBrowserEvents2Handler webBrowserEvents2Handler =
+                         (DWebBrowserEvents2Handler)server.getInstances().pop();
+    // Add a property change listener to monitor property changing
+    webBrowserEvents2Handler.addPropertyChangeListener(new PropertyChangeListener()
+    {
+        public void propertyChange(PropertyChangeEvent evt)
+        {
+                //your handling goes here
+        }
+    }</PRE
+><P
+>Using this technique, you can create your custom event handlers
+      virtually for any COM component.</P
+><P
+>In some cases, it is necessary to register an event handler
+      interface and the IDispatch interface in the instance of
+      <TT
+CLASS="classname"
+>IClassFactoryServer</TT
+>, like shown below:</P
+><PRE
+CLASS="programlisting"
+>server.registerInterface(IDispatch.class, new IDispatchVTBL(server));
+server.registerInterface(DWebBrowserEvents2.class, new IDispatchVTBL(server));</PRE
+><P
+>Such additional registration is necessary because some
+      <TT
+CLASS="classname"
+>ConnectionPoint</TT
+> implementations do not accept a
+      handler that implements the <TT
+CLASS="classname"
+>IDispatch</TT
+> interface
+      only and throws the <TT
+CLASS="classname"
+>CONNECT_E_ADVISELIMIT</TT
+> COM
+      exception.</P
+></DIV
+></DIV
+><DIV
+CLASS="chapter"
+> <P></P><H1
+><A
+NAME="CodeGen"
+></A
+>Chapter 5. Code Generator for ComfyJ</H1
+><HR size=1 noshadow color=#0066CC
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="Code_Generation_Utility"
+></A
+>5.1. Running Code Generator</H2
+><P
+>As the name of the Code Generator application suggests, its
+      purpose is to generate Java code for COM, OLE and ActiveX objects. You
+      can start the program by running
+      <TT
+CLASS="classname"
+>CodegenForComfyJ.bat</TT
+> from the
+      <TT
+CLASS="filename"
+>bin</TT
+> folder of ComfyJ installation.</P
+><P
+><TT
+CLASS="classname"
+>CodegenForComfyJ.bat</TT
+> takes the following
+      parameters:</P
+><P
+></P
+><UL
+><LI
+><P
+><TT
+CLASS="parameter"
+><I
+>GUID</I
+></TT
+> of the type library or
+          <TT
+CLASS="parameter"
+><I
+>ProgID</I
+></TT
+> of one of the components that belongs
+          to the library.</P
+></LI
+><LI
+><P
+>Version of the library.</P
+></LI
+><LI
+><P
+>Destination folder for generated sources.</P
+></LI
+><LI
+><P
+>Root package name for Java source code to be generated.</P
+></LI
+><LI
+><P
+>Optional parameter <TT
+CLASS="parameter"
+><I
+>-disp</I
+></TT
+> for generating
+          stubs of dispatch interfaces.</P
+></LI
+></UL
+><P
+>Note that the parameters should appear in the command line in the
+      order listed above. Below are given command-line examples:</P
+><P
+><PRE
+CLASS="programlisting"
+>CodegenForComfyJ.bat guid 00062FFF-0000-0000-C000-000000000046 9.2 src outlook</PRE
+><PRE
+CLASS="programlisting"
+>CodegenForComfyJ.bat progid shell.explorer 1.1 src explorer -disp</PRE
+></P
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN512"
+></A
+>5.1.1. Running Code Generator in GUI Mode</H3
+><P
+>Apart from the command-line version, you can work with Code
+        Generator in GUI mode. To start a GUI-based program, run
+        <TT
+CLASS="filename"
+>CodegenForComfyJ.bat</TT
+> without any parameters. The
+        first wizard step will be as follows:</P
+><P
+><DIV
+CLASS="figure"
+><A
+NAME="AEN517"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="images/comfyjgen_start.png"
+ALIGN="center"></P
+></DIV
+><P
+><B
+>Figure 5-1. </B
+></P
+></DIV
+>Select, for example, the "Generate for a registered COM
+        type library" option. At the next step, you need to select a COM
+        component:</P
+><P
+><DIV
+CLASS="figure"
+><A
+NAME="AEN525"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="images/comfyjgen_select.png"
+ALIGN="center"
+WIDTH="620"></P
+></DIV
+><P
+><B
+>Figure 5-2. </B
+></P
+></DIV
+>To quickly find a needed component, just place focus in the
+        list and start typing. Let's select Google Earth Type Library. At the
+        next step, you need to provide the wizard with additional information:
+        specify where to save the generated code, the package name that will
+        be used and whether to generate wrappers for disinterfaces:</P
+><P
+><DIV
+CLASS="figure"
+><A
+NAME="AEN533"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="images/comfyjgen_options.png"
+ALIGN="center"
+WIDTH="620"></P
+></DIV
+><P
+><B
+>Figure 5-3. </B
+></P
+></DIV
+>The last step allows you to select generation-related
+        options:</P
+><P
+><DIV
+CLASS="figure"
+><A
+NAME="AEN541"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="images/comfyjgen_options2.png"
+ALIGN="center"
+WIDTH="620"></P
+></DIV
+><P
+><B
+>Figure 5-4. </B
+></P
+></DIV
+>That is all information required for code generation. Just
+        click the "Generate" button and in a few seconds, the stubs will be
+        created:</P
+><P
+><DIV
+CLASS="figure"
+><A
+NAME="AEN549"
+></A
+><DIV
+CLASS="mediaobject"
+><P
+><IMG
+SRC="images/comfyjgen_result.png"
+ALIGN="center"></P
+></DIV
+><P
+><B
+>Figure 5-5. </B
+></P
+></DIV
+></P
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN556"
+></A
+>5.1.2. Detecting GUID, ProgID and Version</H3
+><P
+>Normally, GUIDs are declared in documentation for COM objects.
+        If you don't have the GUID for the COM library, you may want to search
+        for it in Windows Registry under:</P
+><PRE
+CLASS="programlisting"
+>HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID</PRE
+><P
+>The type library can hold multiple versions of COM objects. Like
+        with GUID, consult the documentation for the correct version
+        number.</P
+></DIV
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN561"
+></A
+>5.2. Namespaces and Package Naming</H2
+><P
+>The destination root package passed to Code Generator in the
+      command line is actually the root for other subpackages automatically
+      generated by the application. The program generates a subpackage for
+      each namespace it detects in the specified type library.</P
+><P
+>For example, if the type library defines two namespaces
+      <TT
+CLASS="markup"
+>outlook</TT
+> and <TT
+CLASS="markup"
+>office</TT
+>, you would have the
+      following package structure:</P
+><PRE
+CLASS="programlisting"
+>mypackage
+mypackage.outlook
+mypackage.office</PRE
+><P
+>If there are no namespaces defined in the type library, the code
+      will be generated under the passed package.<DIV
+CLASS="note"
+><P
+></P
+><TABLE
+CLASS="note"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="images/note.gif"
+HSPACE="5"
+ALT="Note"></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>In this document, the term <I
+CLASS="emphasis"
+>root package</I
+>
+          will be used to designate a package created for a namespace (if
+          defined), or the package specified in the command line if namespaces
+          are not used.</P
+></TD
+></TR
+></TABLE
+></DIV
+></P
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN572"
+></A
+>5.3. Generated Code Structure</H2
+><P
+>The Code Generator application produces the code described in the
+      following sections.</P
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN575"
+></A
+>5.3.1. Structures, Unions, Enumerations</H3
+><P
+>These data type classes are created in the root package.</P
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN578"
+></A
+>5.3.2. Interfaces</H3
+><P
+>Interfaces are created in the package root. The code for each
+        interface defines methods for corresponding COM interface and the
+        interface identifier.</P
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN581"
+></A
+>5.3.3. Implementation Classes</H3
+><P
+>The Java code for each generated COM interface is accompanied by
+        the implementing classes. These classes serve as client-side code for
+        invoking methods of corresponding COM interfaces. These classes are
+        generated under the <TT
+CLASS="filename"
+>impl</TT
+> subpackage.</P
+><P
+>Each implementation class contains a constructor that takes
+        <TT
+CLASS="methodname"
+>IUnknown</TT
+> as a parameter. Using this
+        constructor, you can cast one interface to another if it is
+        implemented by the COM class you integrate with. This is similar to
+        calling the <TT
+CLASS="methodname"
+>QueryInterface()</TT
+> COM
+        method.</P
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN588"
+></A
+>5.3.4. CoClasses</H3
+><P
+>The Microsoft COM documentation defines a class as "an
+        implementation that allows QueryInterface between a set of interfaces"
+        (see <SPAN
+CLASS="QUOTE"
+>"Platform SDK: Microsoft Interface Definition Language
+        (MIDL)"</SPAN
+>).</P
+><P
+>Code Generator creates classes derived from
+        <TT
+CLASS="classname"
+>com.jniwrapper.win32.com.CoClass</TT
+> for each
+        coclass found in the type library. Coclasses serve as a factory for
+        objects that implement default interfaces associated with the
+        coclass.</P
+><P
+>Each CoClass provides methods with the following
+        signatures:</P
+><PRE
+CLASS="programlisting"
+>public static DefInterface create(ClsCtx dwClsContext)
+                                       throws ComException;
+
+public static DefInterface queryInterface(IUnknown unknown)
+                                       throws ComException;</PRE
+><P
+>where <TT
+CLASS="interfacename"
+>DefInterface</TT
+> is the default
+        interface associated with the coclass.</P
+><P
+>The <TT
+CLASS="methodname"
+>create()</TT
+> method creates an object
+        implementing the default interface of the coclass. The parameter
+        passed to the method designates the execution context for the
+        class.</P
+><P
+>The <TT
+CLASS="methodname"
+>queryInterface()</TT
+> method allows to
+        get the default interface from the existing COM object passed as
+        <TT
+CLASS="methodname"
+>IUnknown</TT
+>.</P
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN603"
+></A
+>5.3.5. VTBL Classes</H3
+><P
+>JNIWrapper provides the ability to expose a Java class as a COM
+        object, so it can be called by the native side of the integrated
+        application. VTBL classes provide callbacks for the native side code
+        exposing a Java class as a COM object. For more information on calling
+        Java from native side, please see the section <A
+HREF="#ComToJava"
+>"Exposing COM to Java"</A
+>.</P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="chapter"
+> <P></P><H1
+><A
+NAME="AEN607"
+></A
+>Chapter 6. COM to Java Integration</H1
+><HR size=1 noshadow color=#0066CC
+><DIV
+CLASS="section"
+><H2
+CLASS="section"
+><A
+NAME="AEN609"
+></A
+>6.1. Developing Java COM Servers</H2
+><P
+>To create your Java COM server means to develop your own Java
+      class that extends the <TT
+CLASS="classname"
+>com.jniwrapper.
+      win32.com.DispatchComServer</TT
+> class. This class should
+      implement at least one interface. You can access only the methods listed
+      in the interfaces the class implements as the COM server methods. So you
+      can implement any of the existing interfaces (like
+      <TT
+CLASS="interfacename"
+>IPersist</TT
+>) or develop your own one.
+      However, the current implementation of Java Com servers supports
+      <I
+CLASS="emphasis"
+>only</I
+> dispatch custom interfaces. This means that
+      you can interact with the Java COM object via custom interfaces using
+      the Automation technology only.<DIV
+CLASS="note"
+><P
+></P
+><TABLE
+CLASS="note"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="images/note.gif"
+HSPACE="5"
+ALT="Note"></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>In the current version of ComfyJ, no properties of COM servers
+          are supported.</P
+></TD
+></TR
+></TABLE
+></DIV
+></P
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN617"
+></A
+>6.1.1. Developing Java Dispinterface</H3
+><P
+>When developing Java dispinterfaces, please pay attention to the
+        following:</P
+><P
+></P
+><UL
+><LI
+><P
+>Custom interfaces should derive from the
+            <TT
+CLASS="interfacename"
+>com.jniwrapper.win32.automation.IDispatch</TT
+>
+            interface.</P
+></LI
+><LI
+><P
+>The return values and arguments of the dispinterface methods
+            should be of JNIWrapper types (such as <TT
+CLASS="type"
+>DoubleFloat</TT
+> or
+            <TT
+CLASS="type"
+>BStr</TT
+>).</P
+></LI
+><LI
+><P
+>Your Java interfaces will not be available as regular COM
+            interfaces.</P
+></LI
+></UL
+><P
+>The sample dispinterface is shown below:<PRE
+CLASS="programlisting"
+>public interface ISample extends IDispatch
+{
+    public BStr getProgId();
+}</PRE
+></P
+><P
+>For the full code sample, please see
+        <TT
+CLASS="classname"
+>ComToJava/src/ISample.java</TT
+></P
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN634"
+></A
+>6.1.2. Developing Java COM Server Class</H3
+><P
+>A Java COM server class should implement all the interfaces you
+        want to provide in your COM server. When developing a Java COM server,
+        pay attention to the following:</P
+><P
+></P
+><UL
+><LI
+><P
+>This class should declare
+            <TT
+CLASS="constant"
+>COM_SERVER_CLSID</TT
+> as the <TT
+CLASS="constant"
+>public
+            static final</TT
+> field that describes your COM server's
+            globally unique class identifier (CLSID). In the same way, it can
+            also declare <TT
+CLASS="constant"
+>PROG_ID</TT
+>,
+            <TT
+CLASS="constant"
+>VERSION_INDEPENDENT _PROG_ID</TT
+> and
+            <TT
+CLASS="constant"
+>COM_SERVER_DESCRIPTION</TT
+>, but only
+            <TT
+CLASS="constant"
+>CLSID</TT
+> is required.</P
+></LI
+><LI
+><P
+>The return values and attributes of the methods should be of
+            JNIWrapper types (such as <TT
+CLASS="classname"
+>DoubleFloat</TT
+> or
+            <TT
+CLASS="classname"
+>BStr</TT
+>).</P
+></LI
+></UL
+><P
+>Here is the example of the COM server class:<PRE
+CLASS="programlisting"
+>public class JavaComServerSample extends DispatchComServer implements IPersist, ISample
+{
+    public static final CLSID COM_SERVER_CLSID =
+         new CLSID("{A35B432E-5274-4146-9858-638313EDCEA6}");
+    public static final String PROG_ID = "jniwrapper.comtojavasample.1";
+
+    public void getClassID(CLSID pClassID) throws ComException
+    {
+        pClassID.setData1(COM_SERVER_CLSID.getData1());
+        pClassID.setData2(COM_SERVER_CLSID.getData2());
+        pClassID.setData3(COM_SERVER_CLSID.getData3());
+        pClassID.setData4(COM_SERVER_CLSID.getData4());
+    }
+
+    public BStr getProgId()
+    {
+        return new BStr(PROG_ID);
+    }
+}</PRE
+></P
+><P
+>For the full code sample, see
+        <TT
+CLASS="classname"
+>ComToJava/src/JavaComServerSample.java</TT
+></P
+></DIV
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN654"
+></A
+>6.2. Registering Java COM Servers</H2
+><P
+>Before the Java COM server can be used, it should be registered in
+      the Windows Registry. The necessary configuration can be done with the
+      help of ComfyJ ServerManager application or using ComfyJ API
+      directly.</P
+><P
+>During the registration, paths to all the necessary Java libraries
+      are saved in the Windows Registry. Note that the Java COM server should
+      have access to all the ComfyJ necessary libraries and core files.</P
+><P
+>For more information on the necessary libraries and files, please
+      refer to the section <A
+HREF="#ConfigSoftware"
+>Configuring
+      Software</A
+>.</P
+><P
+>Also consider that the CLASSPATH can not be very long, so if you
+      want to add a huge number of JARs you shall use the following
+      workaround. You put a list of JARs separated by one or more spaces as a
+      value of the Class-Path attribute in the manifest file
+      (<TT
+CLASS="filename"
+>Manifest.mf</TT
+>). Then you put this file to the
+      <TT
+CLASS="filename"
+>META-INF</TT
+> folder at the root of any other JAR which
+      shall be added to the CLASSPATH of the server. Look at the following
+      code as an example of the manifest file. Note that jniwrap-3.0.jar,
+      comfyj-2.0.jar, winpack-3.0.jar and jniwraplib.jar are in the same
+      folder as the deafult.jar, which contains the following manifest file.
+      <PRE
+CLASS="programlisting"
+>Manifest-Version: 1.0
+Class-Path: jniwrap-3.0.jar comfyj-2.0.jar winpack-3.0.jar jniwraplib.jar</PRE
+></P
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN664"
+></A
+>6.2.1. ComfyJ ServerManager: Registering in Command-Line Mode</H3
+><P
+>The ServerManager application allows you to register the Java
+        COM server using the command line. If you run
+        <TT
+CLASS="filename"
+>ServerManager.bat</TT
+> with the "/?" or "-h"
+        paramater, you will see a quick guide to using the program in console
+        mode:</P
+><PRE
+CLASS="programlisting"
+>Usage 1: Command line mode
+
+    Registering Java COM server
+    ---------------------------------
+    Usage: ServerManager.bat serverClassName -classpath classpath [-jvm jvmPath]
+
+       serverClassName    Java COM server class name.
+       classpath          Classpath that will be used for running the server.
+                          Make sure that classpath includes jniwrap.jar, comfyj.jar,
+                          and winpack.jar libraries.
+       jvmPath            Optional. Specifies the JVM (java.exe or javaw.exe) that
+                          will be used for running the server. If it is not defined,
+                          the default JVM will be used.
+
+    For example: ServerManager.bat com.project.MyServer
+                      -classpath "c:/MyServer/jniwrap.jar;c:/MyServer/comfyj.jar;
+                            c:/MyServer/winpack.jar;c:/MyServer/myserver.jar"
+                      -jvm "c:\j2sdk1.4.2_06\bin\javaw.exe"
+
+    Unregistering Java COM server
+    ---------------------------------
+    Usage: ServerManager.bat -unregister {serverClassName -classpath classpath
+                  or -clsid clsid}
+
+       serverClassName    Java COM server class name to be unregistered.
+       classpath          Classpath of the server.
+       clsid              Class ID (CLSID) of a Java COM server to be unregistered.
+
+    For example (by class): ServerManager.bat -unregister com.project.MyServer
+                            -classpath "c:/MyServer/jniwrap.jar;c:/MyServer/comfyj.jar;
+                                     c:/MyServer/winpack.jar;c:/MyServer/myserver.jar"
+    For example (by clsid): ServerManager.bat -unregister
+                                 -clsid {A35B432E-5274-4146-9858-638313EDCEA6}
+
+Usage 2: To run ServerManager GUI, start without parameters.</PRE
+><P
+>If you want to register the Java COM server, make sure to
+        specify the fully qualified class name and the classpath to be used
+        for running this server. Note that the classpath should include at
+        least the <TT
+CLASS="filename"
+>jniwrap.jar</TT
+>,
+        <TT
+CLASS="filename"
+>comfyj.jar</TT
+> and <TT
+CLASS="filename"
+>winpack.jar</TT
+>
+        libraries and the library that contains the specified COM
+        server.</P
+><P
+>The ServerManager application allows you to unregister the
+        server by its class name or by its globally unique class identifier
+        (CLSID). If you unregister the COM server by its class name, you need
+        to specify the full classpath of the server too (the
+        <TT
+CLASS="parameter"
+><I
+>-classpath</I
+></TT
+> parameter). Unregistering the COM
+        server by CLSID doesn't require any additional information.</P
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN675"
+></A
+>6.2.2. ComfyJ ServerManager: Registering in GUI Mode</H3
+><P
+>Start the ServerManager application using the
+        <TT
+CLASS="filename"
+>bin/ServerManager.bat</TT
+> file from the ComfyJ
+        distribution. When the application is opened, follow these
+        steps:</P
+><DIV
+CLASS="procedure"
+><OL
+TYPE="1"
+><LI
+><P
+>In the upper part of the window, click the <B
+CLASS="guibutton"
+>Load
+            From</B
+> button to load Java COM servers from a JAR
+            library or directory.</P
+><P
+>All COM servers from the specified path are displayed in
+            <B
+CLASS="guilabel"
+>Server List</B
+>. If the selected server is
+            registered, its details appear read-only; otherwise you can edit
+            the server's startup parameters on the right.</P
+></LI
+><LI
+><P
+>In the <B
+CLASS="guilabel"
+>CLASSPATH</B
+> area, click the
+            <B
+CLASS="guibutton"
+>Add JAR/Directory </B
+>button to add necessary
+            libraries and directories that are specific to this server
+            only.</P
+></LI
+><LI
+><P
+>In the <B
+CLASS="guilabel"
+>CLASSPATH</B
+> area, click the
+            <B
+CLASS="guibutton"
+>Add from Common</B
+> button to add necessary
+            libraries and directories from the list of common libraries. These
+            can be at least <TT
+CLASS="filename"
+>jniwrap.jar, winpack.jar</TT
+> and
+            <TT
+CLASS="filename"
+>comfyj.jar</TT
+> libraries. The dialog box that
+            appears allows editing the list of common libraries. This list
+            will be saved to the <TT
+CLASS="filename"
+>manager.properties</TT
+> file
+            in the working directory of the ServerManager application.</P
+></LI
+><LI
+><P
+>Select the server you want to register and click the
+            <B
+CLASS="guibutton"
+>Register</B
+> button.</P
+></LI
+></OL
+></DIV
+><P
+>Also, you can remove the Java COM Server from the Windows
+        Registry by selecting the appropriate server from the list and
+        clicking the <B
+CLASS="guibutton"
+>Unregister</B
+> button.</P
+><P
+>If you need to list all Java COM servers registered in the
+        system, click the <B
+CLASS="guibutton"
+>List Registered</B
+>
+        button.</P
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN703"
+></A
+>6.2.3. Registering at Run Time</H3
+><P
+>You can also register the Java COM Server object at run time of
+        the program using the <TT
+CLASS="methodname"
+>registerComServer()</TT
+>
+        method and the
+        <TT
+CLASS="classname"
+>com.jniwrapper.win32.tools.RegisterDispatchComServer.ComServerDescriptor</TT
+>
+        class. In this case, you need to create an instance of the
+        <TT
+CLASS="classname"
+>ComServerDescriptor</TT
+> class and pass it to the
+        <TT
+CLASS="function"
+>registerComServer()</TT
+> method.</P
+><P
+>Take a look at the following code as the example of the run-time
+        component registration and its further usage:</P
+><PRE
+CLASS="programlisting"
+>public class RuntimeRegistrationSample
+{
+    public static void main(String[] args) throws Exception
+    {
+        String classPath =
+              "C:\\JavaComServer\\comfyj.jar;" +
+              "C:\\JavaComServer\\jniwrap.jar;" +
+              "C:\\JavaComServer\\winpack.jar;" +
+              "C:\\JavaComServer\\classes";
+
+        RegisterDispatchComServer.ComServerDescriptor descriptor =
+                new RegisterDispatchComServer.ComServerDescriptor
+                        (JavaComServerSample.class, "C:\\JavaComServer\\classes",
+                                System.getProperty("jvm.path"), classPath, null, false);
+        RegisterDispatchComServer.registerComServer(descriptor);
+
+        Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+
+                IDispatch dispatch =
+                 new IDispatchImpl(CLSID.createFromProgID
+                         ("jniwrapper.comtojavasample"), ClsCtx.LOCAL_SERVER);
+
+                IPersistImpl p = new IPersistImpl(dispatch);
+                CLSID clsid = new CLSID();
+                p.getClassID(clsid);
+                System.out.println("ClassID = " + clsid);
+
+            }
+        };
+        OleMessageLoop.invokeAndWait(runnable);
+        OleMessageLoop.stop();
+
+    }
+}</PRE
+></DIV
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN712"
+></A
+>6.3. Using Java COM Servers</H2
+><P
+>You can use the Java COM Servers as usual native COM servers.
+      Let's consider the usage of the previous sample COM server in different
+      programming languages.</P
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN715"
+></A
+>6.3.1. Java Client</H3
+><P
+>If you want to use the Java COM server via a standard interface
+        (like <TT
+CLASS="interfacename"
+>IPersist</TT
+>), you can access its
+        methods by creating the appropriate implementing object (like
+        <TT
+CLASS="classname"
+>IPersistImpl</TT
+>, see the sample code below) and
+        calling its methods.</P
+><P
+>To interact with the Java COM sever via a custom interface, you
+        need to use the
+        <TT
+CLASS="classname"
+>com.jniwrapper.win32.automation.Automation</TT
+>
+        class. In this case, the arguments of all the custom interface's
+        methods and their return values are of the automation-specific types,
+        so you need to wrap all the values into
+        <TT
+CLASS="classname"
+>com.jniwrapper.win32.
+        automation.types.Variant</TT
+>s.</P
+><PRE
+CLASS="programlisting"
+>public class JavaComClientSample
+{
+    public static void main(String[] args) throws Exception
+    {
+        Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                IDispatch dispatch =
+                 new IDispatchImpl(CLSID.createFromProgID("jniwrapper.comtojavasample"),
+                 ClsCtx.LOCAL_SERVER);
+
+                IPersistImpl p = new IPersistImpl(dispatch);
+                CLSID clsid = new CLSID();
+                p.getClassID(clsid);
+                System.out.println("ClassID = " + clsid);
+
+                Variant result = new Variant();
+                Automation automation = new Automation(dispatch);
+
+                result = automation.invoke("getProgId");
+                System.out.println("PROG_ID = " + result.getValue());
+
+             }
+        };
+        OleMessageLoop.invokeAndWait(runnable);
+        OleMessageLoop.stop();
+    }
+}</PRE
+><P
+>For the full code sample, please see
+        <TT
+CLASS="classname"
+>ComToJava/src/JavaComClientSample.java</TT
+></P
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN726"
+></A
+>6.3.2. C++ Client</H3
+><P
+>You can use the <TT
+CLASS="methodname"
+>CoCreateInstance</TT
+>
+        function to create an instance of the COM server via its CLSID. If you
+        are going to interact with the Java COM server via a standard
+        interface, specify its <TT
+CLASS="classname"
+>IID</TT
+> in the
+        <TT
+CLASS="methodname"
+>CoCreateInstance</TT
+> function call; otherwise you
+        should specify the <TT
+CLASS="constant"
+>IID_Dispatch</TT
+> constant. As a
+        result, you will be able to work with the created object via the
+        specified interface.</P
+><P
+>To call methods from custom interfaces, you need to call the
+        <TT
+CLASS="methodname"
+>IDispatch.Invoke()</TT
+> method. The first
+        parameter for the <TT
+CLASS="function"
+>Invoke()</TT
+> method is
+        <TT
+CLASS="varname"
+>dispid</TT
+> of the called function that was obtained
+        using the <TT
+CLASS="methodname"
+>GetIDsOfNames()</TT
+> method. Here is an
+        extract from the sample:</P
+><PRE
+CLASS="programlisting"
+>int _tmain(int argc, _TCHAR* argv[])
+{
+
+using namespace std;
+HRESULT  hr;
+
+//Initialize COM.
+CoInitialize(NULL );
+
+LPCOLESTR progID =  OLESTR("jniwrapper.comtojavasample");
+LPCLSID clsID = new CLSID;
+CLSIDFromProgID(progID , clsID);
+
+//Working with Java COM Server via the IPersist interface
+IPersist* iPersistInst;
+hr = CoCreateInstance(*clsID,
+                           NULL,
+                           CLSCTX_LOCAL_SERVER,
+                           IID_IPersist,
+                           (void **)&#38;iPersistInst);
+
+CLSID resultClsID;
+iPersistInst-&#62;GetClassID(&#38;resultClsID);
+LPOLESTR  stringClsID;
+hr = StringFromCLSID(resultClsID , &#38;stringClsID);
+wprintf(L"GetClassID = %s%s", (wchar_t*)stringClsID, "\n");
+
+//Working with Java COM Server via the IDispatch interface
+IDispatch* iDispatchInst;
+hr = CoCreateInstance(*clsID,
+                           NULL,
+                           CLSCTX_LOCAL_SERVER,
+                           IID_IDispatch,
+                           (void **)&#38;iDispatchInst);
+
+DISPID dispid;
+VARIANT result;
+OLECHAR* funcName;
+DISPPARAMS dispparamsNoArgs = {NULL, NULL, 0, 0,};
+
+//Calling the "getProgID" method
+funcName = L"getProgId";
+iDispatchInst-&#62;GetIDsOfNames(IID_NULL,&#38;funcName,1,GetUserDefaultLCID(),&#38;dispid);
+iDispatchInst-&#62;Invoke(dispid,
+      IID_NULL,
+      GetUserDefaultLCID(),
+      DISPATCH_METHOD,
+      &#38;dispparamsNoArgs,
+      &#38;result,
+      NULL,
+      NULL);
+wprintf(L"ProgID = %s%s", (wchar_t*)result.bstrVal, "\n");
+
+// Free COM resources
+CoUninitialize();
+}</PRE
+><P
+>For the full code sample, please see
+        <TT
+CLASS="filename"
+>ComToJava/native/CppSample.cpp</TT
+></P
+></DIV
+><DIV
+CLASS="section"
+> <H3
+CLASS="section"
+><A
+NAME="AEN741"
+></A
+>6.3.3. Visual Basic Client</H3
+><P
+>The Visual Basic language uses Automation technology to create
+        the COM server object by default. So you just need to create an
+        <TT
+CLASS="classname"
+>Object</TT
+> variable and use the
+        <TT
+CLASS="function"
+>CreateObject</TT
+><SPAN
+CLASS="phrase"
+><SPAN
+CLASS="phrase"
+> function with
+        <TT
+CLASS="parameter"
+><I
+>PROG_ID</I
+></TT
+> or <TT
+CLASS="parameter"
+><I
+>CLSID</I
+></TT
+> as its
+        parameter to return the COM server object instance. As a result, you
+        will be able to call the object's methods declared in your custom
+        interface. </SPAN
+></SPAN
+></P
+><P
+><SPAN
+CLASS="phrase"
+><SPAN
+CLASS="phrase"
+>In the following example, <TT
+CLASS="varname"
+>JavaServer</TT
+>
+        is a COM server and we're calling its <TT
+CLASS="function"
+>getClassID</TT
+>
+        and <TT
+CLASS="function"
+>getProgId</TT
+> methods. </SPAN
+></SPAN
+></P
+><PRE
+CLASS="programlisting"
+>Public Class Sample
+
+    &#60;STAThread()&#62; _
+    Public Shared Sub Main()
+        'Creating Java Com Server object by its ProgID
+        Dim JavaServer As Object
+        JavaServer = CreateObject("jniwrapper.comtojavasample")
+        'Calling the server's methods
+        Dim myClsID As Guid
+        JavaServer.getClassID(myClsID)
+        Console.WriteLine("ClassID = {" + myClsID.ToString + "}")
+        Console.WriteLine("ProgID = " + JavaServer.getProgId)
+
+    End Sub 'Main
+
+End Class</PRE
+><P
+>For the full code sample, please see
+        <TT
+CLASS="filename"
+>ComToJava/native/VBSample</TT
+></P
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="chapter"
+> <P></P><H1
+><A
+NAME="AEN757"
+></A
+>Chapter 7. Using ComfyJ in Java Web Start Applications</H1
+><HR size=1 noshadow color=#0066CC
+><P
+>This section describes the way of deploying your application that
+    uses ComfyJ with the help of Java Web Start (JWS).</P
+><P
+>To deploy your application with the help of JWS, please follow the
+    next simple steps:</P
+><DIV
+CLASS="procedure"
+><OL
+TYPE="1"
+><LI
+><P
+>Pack application classes to JAR file(s);</P
+></LI
+><LI
+><P
+>Put license files for ComfyJ to the META-INF folder of an
+        application JAR file;</P
+></LI
+><LI
+><P
+>Sign the application JAR files.</P
+></LI
+></OL
+></DIV
+><P
+>One of the major requirements for any JWS application is that all
+    its JAR files must be signed. Even though a JAR files can be signed
+    multiple times, JWS does not accept JAR files which have more than one
+    signature. It is also mandatory that all application JAR files are signed
+    with the same signature.</P
+><P
+>To include the ComfyJ license files and sign JWS application you can
+    use the following ant template:</P
+><PRE
+CLASS="programlisting"
+>&#60;project name="Sample" default="build" basedir="."&#62;
+    &#60;target name="signjar"&#62;
+        &#60;property name="applicatonJarName" value="demo.jar"/&#62;
+        &#60;jar destfile="${applicatonJarName }"&#62;
+            &#60;metainf dir="${licensesPath}" includes="*.lic"/&#62;
+        &#60;/jar&#62;
+        &#60;signjar jar="${licensesjarName}" alias="alias" keystore="keystore" keypass=" keypass" storepass=" storepass"/&#62;
+    &#60;/target&#62;
+&#60;/project&#62;</PRE
+><P
+>Where:</P
+><P
+><B
+CLASS="guibutton"
+>alias</B
+>, <B
+CLASS="guibutton"
+>keystore</B
+>,
+    <B
+CLASS="guibutton"
+>keypass</B
+>, <B
+CLASS="guibutton"
+>storepass</B
+> are
+    parameters for signjar ant target. You can see more details about using of
+    signjar in the Apache Ant User Manual that can be found here:</P
+><P
+><A
+HREF="http://ant.apache.org/manual/CoreTasks/signjar.html"
+TARGET="_top"
+>http://ant.apache.org/manual/CoreTasks/signjar.html</A
+></P
+><P
+>All ComfyJ libraries are already signed with TeamDev's certificate
+    and signing them with a new signature makes them unacceptable for JWS.
+    Fortunately, there is a simple solution. The main idea is to use the
+    &#60;extension&#62; tag in the <TT
+CLASS="filename"
+>.jnlp</TT
+> file and to create
+    two different <TT
+CLASS="filename"
+>.jnlp</TT
+> files for your application. One
+    <TT
+CLASS="filename"
+>.jnlp</TT
+> file should contain your application files and
+    the other - ComfyJ resources. This technique is demonstrated in the
+    example below. The first file is the application
+    <TT
+CLASS="filename"
+>.jnlp</TT
+> file (<TT
+CLASS="filename"
+>demo.jnlp</TT
+>):</P
+><PRE
+CLASS="programlisting"
+>&#60;?xml version="1.0" encoding="utf-8"?&#62;
+&#60;jnlp spec="1.0+" codebase="http://www.teamdev.com/" href="demo.jnlp"&#62;
+  &#60;information&#62;
+    &#60;title&#62;ComfyJ Demo&#60;/title&#62;
+    &#60;vendor&#62;TeamDev Ltd.&#60;/vendor&#62;
+    &#60;description&#62;ComfyJ Demo&#60;/description&#62;
+    &#60;description kind="short"&#62;The demo of ComfyJ library&#60;/description&#62;
+    &#60;offline-allowed/&#62;
+  &#60;/information&#62;
+  &#60;security&#62;
+      &#60;all-permissions/&#62;
+  &#60;/security&#62;
+  &#60;resources&#62;
+    &#60;j2se version="1.4+" initial-heap-size="64m"/&#62;
+    &#60;property name="sun.java2d.noddraw" value="true"/&#62;
+    &#60;property name="javax.swing.adjustPopupLocationToFit" value="false"/&#62;
+    &#60;jar href="demo.jar"/&#62;&#60;!-- demo.jar is your jar file signed with your own signature--&#62;
+    &#60;extension name="cmfj" href="cmfj.jnlp"/&#62;
+  &#60;/resources&#62;
+  &#60;component-desc/&#62;
+  &#60;application-desc main-class=" com.jniwrapper.win32.samples.demo.ComfyjDemo"/&#62;
+&#60;/jnlp&#62;</PRE
+><P
+>The &#60;extension&#62; tag above makes the reference to the other
+    <TT
+CLASS="filename"
+>cmfj.jnlp</TT
+> file which is declared in the following
+    way:</P
+><PRE
+CLASS="programlisting"
+>&#60;?xml version="1.0" encoding="utf-8"?&#62;
+&#60;jnlp spec="1.0+" codebase="http://www.teamdev.com/" href="cmfj.jnlp"&#62;
+  &#60;information&#62;
+    &#60;title&#62;ComfyJ resources&#60;/title&#62;
+    &#60;vendor&#62;TeamDev Ltd.&#60;/vendor&#62;
+    &#60;description&#62;ComfyJ Library Resources&#60;/description&#62;
+    &#60;description kind="short"&#62;ComfyJ Library Resources&#60;/description&#62;
+    &#60;offline-allowed/&#62;
+  &#60;/information&#62;
+  &#60;security&#62;
+      &#60;all-permissions/&#62;
+  &#60;/security&#62;
+  &#60;resources os="Windows"&#62;
+    &#60;nativelib href="jniwraplib.jar"/&#62;
+  &#60;/resources&#62;
+  &#60;resources&#62;
+    &#60;jar href="jniwrap.jar"/&#62;
+    &#60;jar href="winpack.jar"/&#62;
+    &#60;jar href="comfyj.jar"/&#62;
+  &#60;/resources&#62;
+  &#60;component-desc/&#62;
+&#60;/jnlp&#62;</PRE
+><P
+>The second <TT
+CLASS="filename"
+>cmfj.jnlp</TT
+> file represents the ComfyJ
+    resources bundle for redistribution as part of another JWS application.
+    The <TT
+CLASS="filename"
+>jniwraplib.jar</TT
+> package should only include one
+    file: <TT
+CLASS="filename"
+>jniwrap.dll</TT
+>.</P
+><P
+>After you have configured the <TT
+CLASS="filename"
+>.jnlp</TT
+> files,
+    place them to your Web site and create a link to your main
+    <TT
+CLASS="filename"
+>.jnlp</TT
+> file that will also download ComfyJ resources
+    by the reference.</P
+></DIV
+><DIV
+CLASS="chapter"
+> <P></P><H1
+><A
+NAME="AEN796"
+></A
+>Chapter 8. ComfyJ Samples</H1
+><HR size=1 noshadow color=#0066CC
+><P
+>The ComfyJ distribution includes a number of samples that
+    demonstrate different aspects of ComfyJ functionality. Among them are
+    samples showing how to embed and interact with popular ActiveX controls
+    such as Microsoft Office applications, Acrobat Reader, Macromedia Flash
+    Player, QuickTime and others. Please use the ComfyJDemo application to see
+    all these samples in action.</P
+><P
+>Some of the samples require generated stubs. You can generate stubs
+    using the Code Generator application. Follow these steps after launching
+    the 'Code Generator for ComfyJ' application to generate the stubs:</P
+><DIV
+CLASS="procedure"
+><OL
+TYPE="1"
+><LI
+><P
+>Select the Generate for a registered COM type library from the
+        list.</P
+></LI
+><LI
+><P
+>Select the necessary COM type library by its Description or
+        GUID, which can be found in the java docs of the sample class. For
+        example, if you want to try the WordIntegrationSample, you will need
+        to choose the Microsoft Word 11.0 Object Library.</P
+></LI
+><LI
+><P
+>Fill the Destination Folder field with any folder you wish to.
+        Fill the Target Package Name field with the package name from the 'In
+        the package:' line of the sample java docs. For example, if you want
+        to try the WordIntegrationSample, you will need to fill it with
+        word.</P
+></LI
+><LI
+><P
+>Link up the generated sources to your project.</P
+></LI
+></OL
+></DIV
+></DIV
+><DIV
+CLASS="chapter"
+> <P></P><H1
+><A
+NAME="AEN809"
+></A
+>Chapter 9. Support</H1
+><HR size=1 noshadow color=#0066CC
+><P
+>If you have any problems or questions regarding ComfyJ, please check
+    the documents listed below. The answer to your question may already be
+    there:</P
+><P
+></P
+><UL
+><LI
+><P
+>Installation instructions</P
+></LI
+><LI
+><P
+>Programmer's Guide</P
+></LI
+><LI
+><P
+>Frequently Asked Questions (FAQ) page at:</P
+><P
+><A
+HREF="http://www.teamdev.com/comfyj/faq.jsf "
+TARGET="_top"
+>http://www.teamdev.com/comfyj/faq.jsf</A
+></P
+></LI
+></UL
+><P
+>If none of the above resources contain the required information,
+    please e-mail us at:</P
+><A
+NAME="AEN822"
+></A
+><BLOCKQUOTE
+CLASS="BLOCKQUOTE"
+><P
+><A
+HREF="mailto:comfyj-support@teamdev.com"
+TARGET="_top"
+>comfyj-support@teamdev.com</A
+></P
+></BLOCKQUOTE
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN825"
+></A
+>9.1. ComfyJ Forum</H2
+><P
+>If you want to discuss topics related to COM integration, please
+      visit a specialized forum on the TeamDev integrated customer support and
+      troubleshooting center at:<A
+NAME="AEN828"
+></A
+><BLOCKQUOTE
+CLASS="BLOCKQUOTE"
+><P
+><A
+HREF="http://support.teamdev.com/category.jspa?categoryID=11"
+TARGET="_top"
+>http://support.teamdev.com/category.jspa?categoryID=11</A
+></P
+></BLOCKQUOTE
+></P
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN831"
+></A
+>9.2. Reporting Problems</H2
+><P
+>If you find any bugs in ComfyJ, please submit the issue to us
+      using a special report form on the TeamDev integrated customer support
+      and troubleshooting center at:</P
+><A
+NAME="AEN834"
+></A
+><BLOCKQUOTE
+CLASS="BLOCKQUOTE"
+><P
+><A
+HREF="http://www.support.teamdev.com/"
+TARGET="_top"
+>http://www.support.teamdev.com/
+        </A
+></P
+></BLOCKQUOTE
+><P
+>The form will help you provide all necessary information.</P
+></DIV
+><DIV
+CLASS="section"
+> <H2
+CLASS="section"
+><A
+NAME="AEN838"
+></A
+>9.3. Troubleshooting</H2
+><P
+>To find a solution to your problem, please visit the
+      Troubleshooting page at:</P
+><A
+NAME="AEN841"
+></A
+><BLOCKQUOTE
+CLASS="BLOCKQUOTE"
+><P
+><A
+HREF="http://www.teamdev.com/jniwrapper/tshoot.jsf"
+TARGET="_top"
+>http://www.teamdev.com/jniwrapper/tshoot.jsf</A
+></P
+></BLOCKQUOTE
+><P
+>This page is regularly updated using information from support
+      requests.</P
+><P
+>If you didn't find a solution, please e-mail us at <A
+HREF="mailto:comfyj-support@teamdev.com"
+TARGET="_top"
+>comfyj-support@teamdev.com</A
+>
+      or report the problem as described in the previous section.</P
+></DIV
+></DIV
+><DIV
+CLASS="chapter"
+> <P></P><H1
+><A
+NAME="AEN847"
+></A
+>Chapter 10. Where to Get a New Version</H1
+><HR size=1 noshadow color=#0066CC
+><P
+>To get the latest version of ComfyJ, please visit:</P
+><A
+NAME="AEN850"
+></A
+><BLOCKQUOTE
+CLASS="BLOCKQUOTE"
+><P
+><A
+HREF="http://www.teamdev.com/comfyj/downloads.jsf"
+TARGET="_top"
+>http://www.teamdev.com/comfyj/downloads.jsf
+      </A
+></P
+></BLOCKQUOTE
+></DIV
+></DIV
+><P></P></td></tr></tbody></table><table valign="top" border="0" cellpadding="10" cellspacing="0" width="100%"><tbody><tr><td  bgcolor=white><img src=images/clear.gif width=10 height=10></td><td bgcolor=#A9BAD1 width="100%" align=center><font face ="Verdana, Tahoma,  Sans-Serif" size=3 color=white><b>Copyright &copy; 2002-2011 TeamDev Ltd.</b></font></td><td  bgcolor=white><img src=images/clear.gif width=10 height=10></td></tr></table></td></tr></tbody></table></td></tr></tbody></table></BODY
+></HTML
+>

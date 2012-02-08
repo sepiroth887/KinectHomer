@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="**/.svn/**|**/CVS/**" including="**/*.java" kind="src" path="src"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.EXECUTION_ENVIRONMENT_CONTAINER"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.FRAMEWORK_CONTAINER">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/osgi/framework/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="src" path="/HomerFramework"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/ServiceDatabase"/>
+	<classpathentry kind="src" path="/ServiceJSON"/>
+	<classpathentry kind="lib" path="D:/Development Programs/knopflerfish.org/osgi/jars/event/event_api-3.0.4.jar"/>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/ServiceJSON">
+		<accessrules>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceJSON/"/>
+			<accessrule kind="accessible" pattern="org/json/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/org.knopflerfish.bundle.desktop">
+		<accessrules>
+			<accessrule kind="accessible" pattern="org/osgi/service/event/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/HomerFramework">
+		<accessrules>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/systemUtils/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/parameterData/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/osgi/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/events/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/configData/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/ServiceDatabase">
+		<accessrules>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceDatabase/queryBuilder/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceDatabase/objects/"/>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceDatabase/"/>
+			<accessrule kind="nonaccessible" pattern="**/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry kind="lib" path="D:/Development Programs/knopflerfish.org/osgi/jars/event/event_all-3.0.4.jar"/>
+	<classpathentry kind="output" path="out"/>
+</classpath>

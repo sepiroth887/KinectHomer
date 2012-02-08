@@ -1,0 +1,1 @@
+SELECT MAX(id), name, enabled FROM Policy;

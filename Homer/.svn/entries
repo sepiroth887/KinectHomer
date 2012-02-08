@@ -1,0 +1,76 @@
+10
+
+dir
+1041
+svn://svn.cs.stir.ac.uk/maternaghan/Tech%20Work/Homer
+svn://svn.cs.stir.ac.uk/maternaghan
+
+
+
+2011-12-31T16:39:54.709151Z
+1024
+cma
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+d1ff6347-c711-46c5-ad72-3da2db1b8f4d
+
+ServiceWeather
+dir
+
+ComponentPlugwise
+dir
+
+ServiceTwitter
+dir
+
+ServiceWebServer
+dir
+
+ServiceDatabase
+dir
+
+HomerFramework
+dir
+
+ServiceJSON
+dir
+
+ComponentX10
+dir
+
+ServiceCOMMs
+dir
+
+UserInterfaceJavaClient
+dir
+
+ServiceLogger
+dir
+
+ComponentWeatherForecaster
+dir
+
+ComponentSimulatedBoiler
+dir
+
+ComponentVisonicSensors
+dir
+
+ComponentEmail
+dir
+
+resources
+dir
+

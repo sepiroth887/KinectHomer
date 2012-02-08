@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Kenneth J. Turner
+Bundle-ContactAddress: Computing Science and Mathematics, University o
+ f Stirling
+Bundle-Version: 1.0
+Bundle-Name: PlugwiseDriver
+Bundle-ManifestVersion: 2
+Bundle-Activator: uk.ac.stir.cs.homer.componentPlugwise.Activator
+Bundle-Description: PlugwiseDriver receives signals from Plugwise modu
+ les, sending them as energy/power events, and also allows Plugwise mo
+ dules to be turned on/off
+Bundle-SymbolicName: PlugwiseDriver
+Import-Package: javax.comm, org.osgi.framework, uk.ac.stir.cs.homer.se
+ rviceCOMMs, org.slf4j, uk.ac.stir.cs.homer.homerFrameworkAPI.componen
+ tUtils, uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils.encoding
+ , uk.ac.stir.cs.homer.homerFrameworkAPI.configData, uk.ac.stir.cs.hom
+ er.homerFrameworkAPI.homerObjects, uk.ac.stir.cs.homer.homerFramework
+ API.parameterData, uk.ac.stir.cs.homer.homerFrameworkAPI.tcas
+Bundle-Copyright: University of Stirling
+

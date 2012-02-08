@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<bundlejar>
+<resource dst="" pattern=".*\.class" src="/ServiceJSON/out" type="0"/>
+<resource dst="lib/org.json.jar" src="/ServiceJSON/lib/org.json.jar" type="1"/>
+</bundlejar>
