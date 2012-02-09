@@ -10,5 +10,5 @@ Bundle-Activator: uk.ac.stir.cs.homer.serviceDatabase.ServiceDatabaseA
  ctivator
 Import-Package: org.osgi.framework, org.slf4j, javax.sql
 Bundle-SymbolicName: ServiceDatabase
-Build-Date: Sun Feb 05 20:38:17 GMT 2012
+Build-Date: Thu Feb 09 15:30:07 GMT 2012
 

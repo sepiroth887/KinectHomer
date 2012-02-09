@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Export-Package: javax.comm, uk.ac.stir.cs.homer.serviceCOMMs, gnu.io
+Export-Package: javax.comm, uk.ac.stir.cs.homer.serviceCOMMs
 DynamicImport-Package: *
 Bundle-ClassPath: ., libs/serialPort-8.3.jar
 Bundle-Version: 1.0.0

@@ -1,4 +1,4 @@
--Dorg.osgi.framework.dir=D:\DevEnv\Homer\runtime-osgi/fwdir
+-Dorg.osgi.framework.dir=D:\DevEnv\Honours\Homer\runtime-osgi/fwdir
 -Duk.ac.stir.cs.homer.user.icons.email.send=81
 -Duk.ac.stir.cs.homer.user.icons.turn_off=80
 -Dorg.osgi.framework.bootdelegation=*

@@ -108,6 +108,8 @@ public class X10TransmitterCM12Impl implements
     for (int j = 0; j < events.length; j++)
       transmitter.transmit(events[j]);
     
+    System.out.println("Event transmitted");
+    
     //closeTransmitterGateway();
   }
 

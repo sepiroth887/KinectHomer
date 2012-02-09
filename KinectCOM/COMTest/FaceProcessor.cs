@@ -71,42 +71,54 @@ namespace Kinect
             this.kinectHandler = p;
             this.featureProcessor = featureProcessor;
             this.recProcessor = recProcessor;
-            // check if the GPU can work with CUDA support
-            hasCuda = GpuInvoke.HasCuda;
 
-            // choose the appropriate haarCascade for face detection
-            if (hasCuda)
+            try
             {
-                haarGPU = new GpuCascadeClassifier("../../ExtLibs/haarcascade_frontalface_default.xml");
-            }
-            else
-            {
-                haar = new HaarCascade("../../ExtLibs/haarcascade_frontalface_default.xml");
-            }
+                // check if the GPU can work with CUDA support
+                hasCuda = GpuInvoke.HasCuda;
 
+                // choose the appropriate haarCascade for face detection
+                if (hasCuda)
+                {
+                    haarGPU = new GpuCascadeClassifier(FileLoader.DEFAULT_PATH+"haarcascade_frontalface_default.xml");
+                }
+                else
+                {
+                    haar = new HaarCascade(FileLoader.DEFAULT_PATH + "haarcascade_frontalface_default.xml");
+                }
+            }
+            catch (Exception ex) {
+                Console.Out.WriteLine(ex.StackTrace);
+            }
         }
 
         // init method is called during the prototype startup.
         public void init()
         {
-            // opend required data streams and attach event handlers
-            kinect.attachRGBHandler(rgbHandler);
-            kinect.attachDepthHandler(depthHandler);
+            try
+            {
+                // opend required data streams and attach event handlers
+                kinect.attachRGBHandler(rgbHandler);
+                kinect.attachDepthHandler(depthHandler);
 
-            // initialize the Background workers required for face detection, face recognition, and recognition initialization.
-            bw = new BackgroundWorker();
-            bw.DoWork += new DoWorkEventHandler(bw_DoWork);
-            bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
+                // initialize the Background workers required for face detection, face recognition, and recognition initialization.
+                bw = new BackgroundWorker();
+                bw.DoWork += new DoWorkEventHandler(bw_DoWork);
+                bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
 
-            recognizerWorker = new BackgroundWorker();
+                recognizerWorker = new BackgroundWorker();
 
-            recognizerWorker.DoWork += new DoWorkEventHandler(recognizerWorker_DoWork);
-            recognizerWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(recognizerWorker_RunWorkerCompleted);
+                recognizerWorker.DoWork += new DoWorkEventHandler(recognizerWorker_DoWork);
+                recognizerWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(recognizerWorker_RunWorkerCompleted);
 
-            recognizerInitWorker = new BackgroundWorker();
+                recognizerInitWorker = new BackgroundWorker();
 
-            recognizerInitWorker.DoWork += new DoWorkEventHandler(recognizerInitWorker_DoWork);
-            recognizerInitWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(recognizerInitWorker_RunWorkerCompleted);
+                recognizerInitWorker.DoWork += new DoWorkEventHandler(recognizerInitWorker_DoWork);
+                recognizerInitWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(recognizerInitWorker_RunWorkerCompleted);
+            }
+            catch (Exception ex) {
+                Console.Out.WriteLine(ex.StackTrace);
+            }
 
         }
 
@@ -473,11 +485,16 @@ namespace Kinect
                     // db needs to be loaded so retrieve the faces and labels from HDD
                     Dictionary<Image<Gray, byte>[], String[]> database = new Dictionary<Image<Gray, byte>[], String[]>();
 
-                    database = FileLoader.loadFaceDB("../../FaceDB");
+                    database = FileLoader.loadFaceDB("FaceDB");
 
                     // empty database??? cant be right... no need to load the recognizer then.
-                    if (database == null) return;
+                    if (database == null)
+                    {
+                        Console.Out.WriteLine("Database could not be loaded");
+                        return;
 
+                    } 
+                    
                     // for each entry in the database retrieve the faces and labels and append them to the local
                     // faceDatabase and labelDatabase arrays.
                     foreach (KeyValuePair<Image<Gray, byte>[], String[]> entry in database)
@@ -487,6 +504,7 @@ namespace Kinect
 
                         if (faceDatabase != null && labelDatabase != null)
                         {
+                            Console.Out.WriteLine(label[0]);
                             faceDatabase = faceDatabase.Concat(images).ToArray();
                             labelDatabase = labelDatabase.Concat(label).ToArray();
                         }

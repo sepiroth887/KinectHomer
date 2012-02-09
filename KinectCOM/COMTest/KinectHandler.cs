@@ -15,7 +15,7 @@ namespace KinectCOM
     {
         private KinectData kinect;
         private FeatureProcessor featureProcessor;
-        //private FaceProcessor faceProcessor;
+        private FaceProcessor faceProcessor;
         private RecognitionProcessor recognitionProcessor;
         private GestureProcessor gestureProcessor;
         private ArrayList skeletons;
@@ -53,13 +53,13 @@ namespace KinectCOM
             Console.Out.WriteLine("Feature processor init complete");
 
             //initialize the FaceProcessor
-            //faceProcessor = new FaceProcessor(kinect, featureProcessor, recognitionProcessor, this);
+            faceProcessor = new FaceProcessor(kinect, featureProcessor, recognitionProcessor, this);
             
-            //faceProcessor.init();
+            faceProcessor.init();
             
             // pass face and feature processor references to the recongition processor.
-            //recognitionProcessor.setFaceProcessor(faceProcessor);
-            //recognitionProcessor.setFeatureProcessor(featureProcessor);
+            recognitionProcessor.setFaceProcessor(faceProcessor);
+            recognitionProcessor.setFeatureProcessor(featureProcessor);
 
             gestureProcessor = new GestureProcessor(this, kinect);
 
@@ -71,6 +71,7 @@ namespace KinectCOM
             featureProcessor.stopProcess();
             recognitionProcessor = null;
             featureProcessor = null;
+            faceProcessor = null;
             kinect.getSensor().Stop();
         }
 
@@ -134,6 +135,8 @@ namespace KinectCOM
             if(skeletons.Contains(skeletonID)){
                featureProcessor.setActiveUser(skeletonID);
                gestureProcessor.setActiveUser(skeletonID);
+               faceProcessor.doProcess();
+               recognitionProcessor.startRecognition(skeletonID);
                Console.Out.WriteLine("Tracking user success");
                return true;
             }else{
@@ -165,7 +168,13 @@ namespace KinectCOM
 
         public void userDetected(UserFeature user)
         {
-            throw new NotImplementedException();
+            if (!"".Equals(user.Name))
+            {
+                Console.Out.WriteLine("User detected:" + user.Name +" Confidence: "+user.Confidence);
+            }
+            else {
+                Console.Out.WriteLine("No User detected:" + user.Name);
+            }
         }
 
         public void userLost(UserFeature user)

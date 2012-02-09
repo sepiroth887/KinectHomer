@@ -1,4 +1,4 @@
--Dorg.osgi.framework.dir=D:\DevEnv\Homer\runtime-osgi/fwdir
+-Dorg.osgi.framework.dir=D:\DevEnv\Honours\Homer\runtime-osgi/fwdir
 -Duk.ac.stir.cs.homer.user.icons.email.send=81
 -Duk.ac.stir.cs.homer.user.icons.turn_off=80
 -Dorg.osgi.framework.bootdelegation=*
@@ -41,27 +41,27 @@
 -install file:D:\Development Programs\knopflerfish.org\osgi\jars\cm\cm_all-3.0.1.jar
 -install file:D:\Development Programs\knopflerfish.org\osgi\jars\event\event_all-3.0.4.jar
 -initlevel 9
--install file:D:\DevEnv\Homer\ServiceLogger\out\ServiceLogger-1.0.0.jar
+-install file:D:\DevEnv\Honours\Homer\ServiceLogger\out\ServiceLogger-1.0.0.jar
 -initlevel 10
--install file:D:\DevEnv\Homer\ServiceJSON\out\ServiceJSON-1.0.0.jar
--install file:D:\DevEnv\Homer\ServiceCOMMs\out\ServiceCOMMs-1.0.0.jar
--install file:D:\DevEnv\Homer\ServiceDatabase\out\ServiceDatabase-1.0.0.jar
+-install file:D:\DevEnv\Honours\Homer\ServiceJSON\out\ServiceJSON-1.0.0.jar
+-install file:D:\DevEnv\Honours\Homer\ServiceCOMMs\out\ServiceCOMMs-1.0.0.jar
+-install file:D:\DevEnv\Honours\Homer\ServiceDatabase\out\ServiceDatabase-1.0.0.jar
 -initlevel 60
--install file:D:\DevEnv\Homer\HomerFramework\out\HomerFramework-1.0.0.jar
+-install file:D:\DevEnv\Honours\Homer\HomerFramework\out\HomerFramework-1.0.0.jar
 -initlevel 61
--install file:D:\DevEnv\Homer\ComponentX10\out\ComponentX10-1.0.0.jar
+-install file:D:\DevEnv\Honours\Homer\ComponentX10\out\ComponentX10-1.0.0.jar
 -initlevel 70
--install file:D:\DevEnv\ecWorkspace\Kinect\out\Kinect-0.1.4.jar
+-install file:D:\DevEnv\Honours\Kinect\out\Kinect-0.1.4.jar
 -initlevel 90
--install file:D:\DevEnv\Homer\UserInterfaceJavaClient\out\UserInterfaceJavaClient-1.0.0.jar
+-install file:D:\DevEnv\Honours\Homer\UserInterfaceJavaClient\out\UserInterfaceJavaClient-1.0.0.jar
 -startlevel 99
 -launch 
 -start file:D:\Development Programs\knopflerfish.org\osgi\jars\log\log_all-3.0.5.jar
 -start file:D:\Development Programs\knopflerfish.org\osgi\jars\cm\cm_all-3.0.1.jar
 -start file:D:\Development Programs\knopflerfish.org\osgi\jars\event\event_all-3.0.4.jar
--start file:D:\DevEnv\Homer\ServiceLogger\out\ServiceLogger-1.0.0.jar
--start file:D:\DevEnv\Homer\ServiceDatabase\out\ServiceDatabase-1.0.0.jar
--start file:D:\DevEnv\Homer\HomerFramework\out\HomerFramework-1.0.0.jar
--start file:D:\DevEnv\Homer\ComponentX10\out\ComponentX10-1.0.0.jar
--start file:D:\DevEnv\ecWorkspace\Kinect\out\Kinect-0.1.4.jar
--start file:D:\DevEnv\Homer\UserInterfaceJavaClient\out\UserInterfaceJavaClient-1.0.0.jar
+-start file:D:\DevEnv\Honours\Homer\ServiceLogger\out\ServiceLogger-1.0.0.jar
+-start file:D:\DevEnv\Honours\Homer\ServiceDatabase\out\ServiceDatabase-1.0.0.jar
+-start file:D:\DevEnv\Honours\Homer\HomerFramework\out\HomerFramework-1.0.0.jar
+-start file:D:\DevEnv\Honours\Homer\ComponentX10\out\ComponentX10-1.0.0.jar
+-start file:D:\DevEnv\Honours\Kinect\out\Kinect-0.1.4.jar
+-start file:D:\DevEnv\Honours\Homer\UserInterfaceJavaClient\out\UserInterfaceJavaClient-1.0.0.jar

@@ -131,14 +131,17 @@ public class X10Component implements HomerComponent, WhichHasTriggers, WhichHasC
 	
 	@Override
 	public void performAction(String deviceTypeID, String deviceID, String actionID, String[] parameters) {
+	
 		if (LM_TURN_OFF_ID.equals(actionID) )
 		{
 			x10commander.turnOff(deviceID);
+			System.err.println("X10 LM OFF Event received");
 			//ComponentGateway.Singleton.get().triggerOccured(deviceID, LM_TURNS_OFF_ID, null);
 		}
 		else if (AM_TURN_OFF_ID.equals(actionID))
 		{
 			x10commander.turnOff(deviceID);
+			System.err.println("X10 AM OFF Event received");
 			//ComponentGateway.Singleton.get().triggerOccured(deviceID, AM_TURNS_OFF_ID, null);
 		}
 		else if (LM_TURN_ON_ID.equals(actionID))

@@ -14,7 +14,7 @@ import uk.ac.stir.cs.homer.homerFrameworkAPI.tcas.Trigger;
 
 import java.util.List;
 
-public class KinectSensorComponent implements HomerComponent, WhichHasTriggers, WhichHasConditions {
+public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 	
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -29,23 +29,14 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers, 
 		} catch (Exception ex){
 			logger.error("Could not create Kinect sensor listener : "+ex.getMessage());
 		}
+		
+		Trigger presenceTrigger = new Trigger(sysDeviceID, sysDeviceID);
+		
 
 	}
 	
 	public void disconnect(){
 		kinectSensorListener.disconnect();
-	}
-
-	@Override
-	public List<Condition> getConditions(String systemDeviceTypeID) {
-		return null;
-	}
-
-	@Override
-	public boolean checkCondition(String sysDeviceTypeID, String sysDeviceID,
-			String conditionID, String[] parameters) {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	@Override

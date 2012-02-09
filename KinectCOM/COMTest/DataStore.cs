@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Collections;
+using Kinect;
 
 namespace KinectCOM
 {
     class DataStore
     {
         // location of the user info file
-        private static string user_xml_path = "../../users.xml";
+        private static string user_xml_path = FileLoader.DEFAULT_PATH+"users.xml";
 
 
         /**
