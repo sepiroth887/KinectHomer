@@ -17,13 +17,15 @@ namespace KinectCOM
     public delegate void OnContextSelectedDel(String ctxt);
     public delegate void OnVoiceCommandDetectedDel(string command);
     public delegate void OnAddonGestureValueChangeDel(float value);
+    public delegate void OnUserFoundDel(String user,float confidence);
+    public delegate void OnUserLostDel(String user);
     // Declare COM Event interfaces for the Processors (Recognition, Speech, Gesture)
     [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIDispatch)]
     public interface IUserEvents {
         [DispId(1)]
         void OnPresenceDetected(int skeletonID);
         [DispId(2)]
-        void OnUserFound(String user);
+        void OnUserFound(String user,float confidence);
         [DispId(3)]
         void OnUserLost(String user);
         [DispId(4)]
@@ -91,6 +93,8 @@ namespace KinectCOM
         public event OnContextSelectedDel OnContextSelected;
         public event OnVoiceCommandDetectedDel OnVoiceCommandDetected;
         public event OnAddonGestureValueChangeDel OnAddonGestureValueChange;
+        public event OnUserLostDel OnUserLost;
+        public event OnUserFoundDel OnUserFound;
   
         public Device(){
             
@@ -191,6 +195,14 @@ namespace KinectCOM
 
         public void onAddonGestureValueChange(float value) {
             OnAddonGestureValueChange(value);
+        }
+
+        public void userFound(String name, float confidence) {
+            OnUserFound(name, confidence);
+        }
+
+        public void userLost(String name) {
+            OnUserLost(name);
         }
     }
 }

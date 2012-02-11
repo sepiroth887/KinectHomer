@@ -27,12 +27,8 @@ namespace KinectCOM
             this.COMInterface = comInterface;
             skeletons = new ArrayList();
             this.kinect = kinect;
-            commands = new string[5];
-            commands[0] = "lamp";
-            commands[1] = "tv";
-            commands[2] = "window";
-            commands[3] = "mark one";
-            commands[4] = "mark two";
+
+            commands = DataStore.loadVoiceCommands();
 
             vocCom = new VoiceCommander(commands);
             vocCom.OrderDetected += new Action<string>(voiceCommandDetected);
@@ -171,6 +167,7 @@ namespace KinectCOM
             if (!"".Equals(user.Name))
             {
                 Console.Out.WriteLine("User detected:" + user.Name +" Confidence: "+user.Confidence);
+                COMInterface.userFound(user.Name, user.Confidence);
             }
             else {
                 Console.Out.WriteLine("No User detected:" + user.Name);
@@ -179,7 +176,7 @@ namespace KinectCOM
 
         public void userLost(UserFeature user)
         {
-            throw new NotImplementedException();
+            COMInterface.userLost(user.Name);
         }
 
 

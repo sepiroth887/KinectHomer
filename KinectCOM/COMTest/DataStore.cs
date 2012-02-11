@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml;
 using System.Collections;
 using Kinect;
+using System.IO;
 
 namespace KinectCOM
 {
@@ -12,6 +13,7 @@ namespace KinectCOM
     {
         // location of the user info file
         private static string user_xml_path = FileLoader.DEFAULT_PATH+"users.xml";
+        private static string voice_commands_path = FileLoader.DEFAULT_PATH + "voiceCommands.cfg";
 
 
         /**
@@ -106,6 +108,8 @@ namespace KinectCOM
                 userFeatures.Add(FeatureType.HipHeadHeight, HipHeight);
                 userFeatures.Add(FeatureType.Face, Face);
 
+                Console.Out.WriteLine("User in DB:"+Face);
+
                 users.Add(Face, userFeatures);
                 
             }
@@ -118,5 +122,55 @@ namespace KinectCOM
         {
            //nothing here
         }
+
+        public static string[] loadVoiceCommands()
+        {
+            string[] commands = null;
+
+            if (!File.Exists(DataStore.voice_commands_path)) {
+                Console.Out.WriteLine("Voice command config file does not exists");
+                return null;
+            }
+
+            StreamReader reader = new StreamReader(DataStore.voice_commands_path);
+
+            String line;
+            int index = 0;
+
+            while ((line = reader.ReadLine()) != null) {
+                if (line.StartsWith("//"))
+                {
+                    String[] split = line.Split('=');
+                    int numCommands = 0;
+                    try
+                    {
+                        numCommands = int.Parse(split[1]);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Out.WriteLine(ex.Message);
+                        return null;
+                    }
+
+                    commands = new string[numCommands];
+                }
+                else { 
+                    commands[index++] = line;
+                }
+            }
+
+            return commands;
+        }
+
+        public void storeVoiceCommand(String command)
+        {
+            StreamWriter writer = File.AppendText(DataStore.voice_commands_path);
+
+            writer.WriteLine(command);
+
+            writer.Flush();
+            writer.Close();
+        }
     }
+
 }
