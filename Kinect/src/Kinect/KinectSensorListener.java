@@ -30,10 +30,16 @@ public class KinectSensorListener {
 	private _DeviceImpl comDevice;
 	private IDispatchImpl userEventsHandlerDP;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private KinectSensorComponent kinectComponent ;
 	
-	public KinectSensorListener() throws Exception{
+	public KinectSensorListener(KinectSensorComponent kinectComponent) throws Exception{
 		
+		this.kinectComponent = kinectComponent;
 		connect();
+	}
+	
+	public String getSysDeviceID(){
+		return kinectComponent.getSysDeviceID();
 	}
 	
 	private void connect() throws Exception{

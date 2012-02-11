@@ -5,6 +5,8 @@ import kinect.kinectcom.server.IUserEventsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils.ComponentGateway;
+
 import com.jniwrapper.Int32;
 import com.jniwrapper.win32.automation.types.BStr;
 import com.jniwrapper.win32.automation.types.Variant;
@@ -24,6 +26,7 @@ public class UserEventsHandler extends IUserEventsServer {
 	
 	public void onPresenceDetected(Int32 skelID){
 		logger.info("User presence detected with userID: "+skelID);
+		ComponentGateway.Singleton.get().triggerOccured(kinectListener.getSysDeviceID(), KinectSensorComponent.PRESENCE_DETECTED, new String[]{skelID.toString()});
 		try {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
@@ -35,7 +38,7 @@ public class UserEventsHandler extends IUserEventsServer {
 	
 	public void onPresenceLost(Int32 skelID){
 		logger.info("User presence lost with userID: "+skelID);
-		
+		ComponentGateway.Singleton.get().triggerOccured(kinectListener.getSysDeviceID(), KinectSensorComponent.PRESENCE_LOST, new String[]{skelID.toString()});
 	}
 	
 	public void onGestureRecognitionCompleted(BStr gestureName){
