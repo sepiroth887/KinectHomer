@@ -1,0 +1,91 @@
+#
+# Startup file additions for running Axis2 ADB Client test suite
+#
+# NOTE: The base URLs for bundles assumes that the current working
+#       directory is the osgi-direcotry when this xargs-file is used.
+#
+
+# List of test IDs
+-Forg.knopflerfish.junit_runner.tests=filter:(objectclass=junit.framework.TestSuite)
+
+# true means "quit framework when all tests are run"
+-Forg.knopflerfish.junit_runner.quit=true
+
+# Initial startup verbosity, 0 is low verbosity
+-Forg.knopflerfish.verbosity=0
+
+# Prefix for searching for bundle URLs from console or command line
+-Dorg.knopflerfish.gosg.jars=file:jars/;file:test_jars/
+
+# Various debug flags
+-Forg.knopflerfish.framework.debug.packages=false
+-Forg.knopflerfish.framework.debug.errors=true
+-Forg.knopflerfish.framework.debug.classloader=false
+-Forg.knopflerfish.framework.debug.startlevel=false
+-Forg.knopflerfish.framework.debug.ldap=false
+
+# Comma-separated list of packages exported by the system bundle
+#-Forg.osgi.framework.system.packages=
+
+# Comma-separated list of packages to be added to the set of packages
+# exported by system classloader.
+#-Forg.osgi.framework.system.packages.extra=
+
+# Comma-separated list of packages that may be loaded by system classloader
+-Forg.osgi.framework.bootdelegation=sun.*,com.sun.*
+
+# Web server properties
+-Forg.knopflerfish.http.dnslookup=false
+-Forg.osgi.service.http.port=0
+
+-Forg.knopflerfish.startlevel.use=true
+
+# Log service properties
+-Forg.knopflerfish.log.out=false
+-Forg.knopflerfish.log.level=info
+-Forg.knopflerfish.log.grabio=true
+-Forg.knopflerfish.log.file=true
+
+
+-init
+
+-initlevel 1
+-install log/log_all-3.0.5.jar
+-install cm/cm_all-3.0.1.jar
+-install console/console_all-3.0.1.jar
+-install event/event_all-3.0.4.jar
+
+-initlevel 2
+-install jsdk/jsdk_api-2.5.0.kf3.jar
+-install xerces/xerces-2.10.1.kf3.jar
+-install xalan/xalan-2.7.1.kf3_01.jar
+-istart  junit/junit_all-3.0.0.jar
+
+-initlevel 3
+-istart commons-logging/commons-logging_all-2.0.0.kf3.jar
+
+-initlevel 4
+-install http/http_all-3.0.5.jar
+-install io/io_all-3.0.0.jar
+-istart  axis2-osgi/axis2-osgi_all-1.3.0.kf3.jar
+
+# the test cases
+-istart axis2_soapobject/axis2_soapobject_all-1.0.0.jar
+-istart axis2_soapclient_adb/axis2_soapclient_adb-1.0.0.jar
+
+
+-startlevel 7
+
+-start log/log_all-3.0.5.jar
+-start cm/cm_all-3.0.1.jar
+-start xerces/xerces-2.10.1.kf3.jar
+-start xalan/xalan-2.7.1.kf3_01.jar
+-start http/http_all-3.0.5.jar
+-start event/event_all-3.0.4.jar
+-start io/io_all-3.0.0.jar
+
+-launch
+
+# the test case runner bundle.
+-istart junit_runner/junit_runner_all-3.0.0.jar
+

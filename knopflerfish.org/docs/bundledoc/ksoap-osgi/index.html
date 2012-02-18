@@ -1,0 +1,88 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <link href="../../css/knopflerfish.css" rel="stylesheet" type="text/css">
+    <link href="../../css/kf_man.css" rel="stylesheet" type="text/css">
+    <title>Bundle User Documentation - ksoap-osgi, v2.0.0</title>
+    <script type="text/javascript">
+      function windowTitle() {
+        if (location.href.indexOf('is-external=true') == -1) {
+           parent.document.title=document.title;
+        }
+      }
+    </script>
+    <noscript></noscript>
+  </head>
+  <body class="mainblock" onload="windowTitle();">
+    <div class="manpage">
+      <div class="userdoc_hdr_left">
+	Bundle: ksoap-osgi
+      </div>
+      <div class="userdoc_hdr_right">
+	Version 2.0.0
+      </div>
+      <h1 class="man">kSOAP OSGi</h1>
+
+<div class="abstract">
+This is an OSGi bundlification of the lean kSOAP2 Java SOAP library.
+</div>
+
+<p> The bundle is part of the <a href="../soap/index.html#ksoap">The
+Knopflerfish kSOAP</a> package.  </p>
+
+
+<h2 class="man">Description</h2>
+
+<p> The kSOAP OSGi bundle is bundle wrapper around the kSOAP 2 Java
+SOAP library that provides a SOAP server that is much smaller than
+those based on Axis 1 or Axis 2. The size of the kSOAP bundle is only
+138&nbsp;kb. </p>
+
+<p>The ksoap-osgi bundle offers the ability to export services,
+registered on the OSGi framework service registry, as SOAP
+services. It should be noted that for this to work the exported
+objects must not expose any data types not supported by SOAP. In order
+to export a service object as a SOAP service, the only thing needed is
+to set a property named "SOAP.service.name" on the registered
+service. As a convenience
+<tt>org.knopflerfish.service.ksoap.KSoapAdmin.SOAP_SERVICE_NAME</tt> is a
+String constant that holds this name. The property value should be of
+type java.lang.String and its value will be used as the name of the
+exposed SOAP service.</p>
+
+<p> The set of service methods exported from a service with the
+<tt>SOAP.service.name</tt> property set can be controlled via another
+service property named, <tt>SOAP.service.methods</tt>. If not set, or
+set to the value <tt>*</tt> then <b>all</b> methods in the registered
+classes are exposed as web service methods. If set to a string with
+space separated method names, only those methods will be exposed as
+web service methods. As a convenience
+<tt>org.knopflerfish.service.ksoap.KSoapAdmin.SOAP_SERVICE_METHODS</tt>
+is a String constant that holds this service property name.  </p>
+
+
+<p> To learn more about kSOAP please visit <a
+href="http://ksoap2.sourceforge.net/">http://ksoap2.sourceforge.net/</a>.
+</p>
+
+<h2 class="man">See Also</h2>
+<a href="../soap/index.html">SOAP - WebServices</a>
+
+
+
+      <h2 class="man">Bundle Jar docs</h2>
+      <a target="_top" href="../../jars/index.html?bundle=ksoap-osgi/ksoap-osgi_all-2.0.0.html">ksoap-osgi_all-2.0.0</a>
+
+      <h2 class="man">Exported Packages</h2>
+      <table class="man">
+ <tr><th>Package</th><th>Version</th><th>Providers</th></tr>
+ <tr><td><a target="_top" href="../../javadoc/index.html?org/knopflerfish/service/ksoap/package-summary.html">org.knopflerfish.service.ksoap</a></td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=ksoap-osgi/ksoap-osgi_all-2.0.0.html">ksoap-osgi_all-2.0.0</a></td></tr>
+ <tr><td>org.ksoap2</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=ksoap-osgi/ksoap-osgi_all-2.0.0.html">ksoap-osgi_all-2.0.0</a></td></tr>
+ <tr><td>org.ksoap2.serialization</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=ksoap-osgi/ksoap-osgi_all-2.0.0.html">ksoap-osgi_all-2.0.0</a></td></tr>
+ <tr><td>org.ksoap2.transport</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=ksoap-osgi/ksoap-osgi_all-2.0.0.html">ksoap-osgi_all-2.0.0</a></td></tr>
+</table>
+
+    </div>
+  </body>
+</html>
+

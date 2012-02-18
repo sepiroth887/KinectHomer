@@ -1,0 +1,69 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <link href="../../css/knopflerfish.css" rel="stylesheet" type="text/css">
+    <link href="../../css/kf_man.css" rel="stylesheet" type="text/css">
+    <title>Bundle User Documentation - cm_cmd, v3.0.1</title>
+    <script type="text/javascript">
+      function windowTitle() {
+        if (location.href.indexOf('is-external=true') == -1) {
+           parent.document.title=document.title;
+        }
+      }
+    </script>
+    <noscript></noscript>
+  </head>
+  <body class="mainblock" onload="windowTitle();">
+    <div class="manpage">
+      <div class="userdoc_hdr_left">
+	Bundle: cm_cmd
+      </div>
+      <div class="userdoc_hdr_right">
+	Version 3.0.1
+      </div>
+      <h1 class="man">CM Commands</h1>
+
+<div class="abstract">
+  Console command group for Configuration Management
+</div>
+
+<h2 class="man">Description</h2>
+<p>
+  The CM Commands bundle provides the <b>configuration</b> 
+  <a href="../console/index.html"> console</a> command group. 
+  The command group defines a set of console commands
+  available for interacting with the Configuration Manager.
+  The following  list gives a short description of what the commands
+  do, for complete   details on parameters, use help on each command
+  in the console.  
+
+  <pre class="code">
+Available configuration commands:
+  list [-help] [<selection>] ... - List the pids of existing configurations.
+  show [-help] [<selection>] ... - Show the saved versions of configurations.
+  create [-help] [-f] <pid> - Create a configuration and open it for editing.
+  delete [-help] <selection> - Delete an existing configuration.
+  edit [-help] <selection> - Edit an existing configuration.
+  current [-help]  - Show the currently open configuration.
+  save [-help] [-force] - Save the currently open configuration in the CM.
+  set [-help] <property> <value> [<type>] - Set a property in the currently open configuration.
+  unset [-help] <property> - Remove a property from the currently open configuration.
+  import [-help] <url> - Import configuration data from xml file at url.
+configuration> 
+</pre>
+    
+
+<h2 class="man">See Also</h2>
+<a href="../cm/index.html">CM - Configuration Management</a>
+
+
+
+      <h2 class="man">Bundle Jar docs</h2>
+      <a target="_top" href="../../jars/index.html?bundle=cm_cmd/cm_cmd-3.0.1.html">cm_cmd-3.0.1</a>
+
+      <h2 class="man">Exported Packages</h2>
+      No exported packages.
+    </div>
+  </body>
+</html>
+

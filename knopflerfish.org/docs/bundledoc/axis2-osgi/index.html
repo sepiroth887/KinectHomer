@@ -1,0 +1,178 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <link href="../../css/knopflerfish.css" rel="stylesheet" type="text/css">
+    <link href="../../css/kf_man.css" rel="stylesheet" type="text/css">
+    <title>Bundle User Documentation - axis2-osgi, v1.3.0.kf3</title>
+    <script type="text/javascript">
+      function windowTitle() {
+        if (location.href.indexOf('is-external=true') == -1) {
+           parent.document.title=document.title;
+        }
+      }
+    </script>
+    <noscript></noscript>
+  </head>
+  <body class="mainblock" onload="windowTitle();">
+    <div class="manpage">
+      <div class="userdoc_hdr_left">
+	Bundle: axis2-osgi
+      </div>
+      <div class="userdoc_hdr_right">
+	Version 1.3.0.kf3
+      </div>
+      <h1 class="man">Axis2 OSGi</h1>
+
+<div class="abstract">
+This is an OSGi bundlification of a standard Axis2 server.<br/>
+
+The version used for this bundle is identical to the version of the
+Axis2 implementation that it contains.
+</div>
+
+<p> The bundle is part of the <a href="../soap/index.html#axis1">The
+Knopflerfish Axis 2</a> package.  </p>
+
+
+<h2 class="man">Description</h2>
+
+<p>
+In order to export a service object as a
+SOAP service, the only thing needed is to set a property named
+"SOAP.service.name" on the registered service. As a convenience
+<tt>org.knopflerfish.service.axis2.Axis2Admin.SOAP_SERVICE_NAME</tt> is
+a String constant that holds this name. The property value should be
+of type java.lang.String and its value will be used as the name of the
+exposed SOAP service.</p>
+
+<p> The set of service methods exported from a service with the
+<tt>SOAP.service.name</tt> property set can be controlled via another
+service property named, <tt>SOAP.service.methods</tt>. 
+
+<ul>
+ <li>If not set, or set to the value <tt>*</tt> then <b>all</b> methods in the registered classes are exposed as web service methods. </li>
+ <li>If set to a string with space separated method names, only 
+     those methods will be exposed as web service methods.</li>
+ <li>If set to a valid LDAP filter string, only methods names matching
+     the filter will be added. For example, <tt>(name=get*)</tt> will
+     export all <tt>get*()</tt> methods.
+ </li>
+</ul>
+
+As a convenience
+<tt>org.knopflerfish.service.axis2.Axis2Admin.SOAP_SERVICE_METHODS</tt>
+is a String constant that holds this service property name.  </p>
+
+<p>Web Services exported by the axis2-osgi bundle will have URLs on the
+form:</p>
+<pre>
+   http://localhost:8080/axis2/services/<i>&lt;SOAP_SERVICE_NAME&gt;</i>
+</pre>
+
+<p> To view the WSDL for a specific Web Service visit the URL: </p>
+<pre>
+   http://localhost:8080/axis2/services/<i>&lt;SOAP_SERVICE_NAME&gt;?wsdl</i>
+</pre>
+
+<p> To explore all web services provided by the axis2-osgi bundle the
+following URL may be used. </p>
+
+<pre>
+   http://localhost:8080/axis2admin/
+</pre>
+
+<p><b>Note: </b>The standard method in the Axis 2 web application to
+   view all service, visiting the URL
+   <tt>http://localhost:8080/axis2/listServices</tt> does <b>not</b>
+   work in axis2-osgi since it requires full WAR-support with JSP
+   handling which is not supported by the Knopflerfish HTTP
+   server.</p>
+
+<p> The code to make all this work consist of just a few quite small
+classes (not counting all Axis classes) so it is quite easy to get an
+overview of the porting effort. However it took some time
+experimenting and studying the Axis code to make this work, so some of
+the code may be harder to understand.</p>
+
+
+<p><b>Note: </b>The axis-osgi bundle depends on the commons-logging
+bundle to be installed an started. Further if your JRE does not
+support an XML parser you need to provide that as well (e.g Xerces).
+</p>
+
+<p> The axis-osgi.jar file is quite large due to the contained axis2
+jar files, even though some axis2 libraries are removed. For details
+and axis2 licenses, see contents of <tt>/WEB-INF/lib/</tt> inside the
+<tt>axis2-osgi.jar</tt>-file.  </p>
+
+<h2 class="man">See Also</h2>
+<a href="../soap/index.html">SOAP - WebServices</a>
+
+
+
+      <h2 class="man">Bundle Jar docs</h2>
+      <a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a>
+
+      <h2 class="man">Exported Packages</h2>
+      <table class="man">
+ <tr><th>Package</th><th>Version</th><th>Providers</th></tr>
+ <tr><td>javax.mail</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.mail.event</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.mail.internet</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.mail.search</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.mail.util</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.wsdl</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.wsdl.extensions</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.wsdl.extensions.http</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.wsdl.extensions.mime</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.wsdl.extensions.schema</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.wsdl.extensions.soap</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.wsdl.extensions.soap12</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.wsdl.factory</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.wsdl.xml</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.xml.soap</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.xml.stream</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.xml.stream.events</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>javax.xml.stream.util</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axiom.attachments</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axiom.attachments.utils</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axiom.om</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axiom.om.impl.llom</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axiom.om.util</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axiom.om.xpath</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axiom.soap</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.addressing</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.client</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.client.async</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.context</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.databinding</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.databinding.i18n</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.databinding.typemapping</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.databinding.types</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.databinding.utils</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.databinding.utils.reader</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.databinding.utils.writer</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.description</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.engine</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.rpc.receivers</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.rpc.receivers.ejb</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.transport</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.transport.http</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.transport.local</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.transport.mail</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.transport.nhttp</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.transport.tcp</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.axis2.util</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.ws.commons.schema</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.ws.commons.schema.constants</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.ws.commons.schema.extensions</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.ws.commons.schema.resolver</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td>org.apache.ws.commons.schema.utils</td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+ <tr><td><a target="_top" href="../../javadoc/index.html?org/knopflerfish/service/axis2/package-summary.html">org.knopflerfish.service.axis2</a></td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=axis2-osgi/axis2-osgi_all-1.3.0.kf3.html">axis2-osgi_all-1.3.0.kf3</a></td></tr>
+</table>
+
+    </div>
+  </body>
+</html>
+

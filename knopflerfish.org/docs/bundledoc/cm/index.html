@@ -1,0 +1,92 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <link href="../../css/knopflerfish.css" rel="stylesheet" type="text/css">
+    <link href="../../css/kf_man.css" rel="stylesheet" type="text/css">
+    <title>Bundle User Documentation - cm, v3.0.1</title>
+    <script type="text/javascript">
+      function windowTitle() {
+        if (location.href.indexOf('is-external=true') == -1) {
+           parent.document.title=document.title;
+        }
+      }
+    </script>
+    <noscript></noscript>
+  </head>
+  <body class="mainblock" onload="windowTitle();">
+    <div class="manpage">
+      <div class="userdoc_hdr_left">
+	Bundle: cm
+      </div>
+      <div class="userdoc_hdr_right">
+	Version 3.0.1
+      </div>
+      <h1 class="man">Configuration Management</h1>
+
+<div class="abstract">
+  The Configuration Management bundle implements the OSGi defined 
+  <a  target="_top" href="../../javadoc/index.html?org/osgi/service/cm/package-summary.html">
+    org.orgi.service.cm
+  </a>
+  package, a uniform way to manage
+  bundle configurations.
+</div>
+
+<h2 class="man">Description</h2>
+<p>
+  The Configuration Management bundle is designed to be a uniform way
+  to handle bundle configuration. It contains the 
+  <a  target="_top" href="../../javadoc/index.html?org/osgi/service/cm/ManagedService.html">
+    ManagedService
+  </a>
+  interfaces to be   implemented by bundles that need configuration
+  data, and the
+  <a  target="_top" href="../../javadoc/index.html?org/osgi/service/cm/ConfigurationAdmin.html">
+    ConfigurationAdmin
+  </a>
+   service to be used by management bundles that modify configuration data.
+<p>
+  The ConfigurationAdmin interface is the main interface to the
+  Configuration Management component. It is the interface that is
+  registered as a service in the Service Registry and it has methods
+  for creating, retrieving, and listing configurations. The
+  implementation of this interface is responsible for the persistent
+  storage of configurations, and listens for registrations of
+  ManagedServices and ManagedServiceFactories in the Service Registry
+  and passes out configuration data, if available, when they appear.  
+</p>
+<p>
+  The 
+  <a href="../cm_cmd/index.html">cm_commands</a>, 
+  bundle provides a console command group to Configuration Management.
+</p>
+<p>
+  The 
+  <a href="../prefs/index.html">Preference Service</a>, 
+  is an alternative method for storing configuration data but it lacks
+  the administrative functions the Configuration Management bundle
+  provides. 
+</p>
+
+<h2 class="man">See Also</h2>
+<a href="../cm_cmd/index.html">cm_commands</a>, 
+<a href="../prefs/index.html">prefs</a>, 
+
+
+
+      <h2 class="man">Bundle Jar docs</h2>
+      <a target="_top" href="../../jars/index.html?bundle=cm/cm_all-3.0.1.html">cm_all-3.0.1</a><br>
+<a target="_top" href="../../jars/index.html?bundle=cm/cm_api-3.0.1.html">cm_api-3.0.1</a><br>
+<a target="_top" href="../../jars/index.html?bundle=cm/cm-3.0.1.html">cm-3.0.1</a>
+
+      <h2 class="man">Exported Packages</h2>
+      <table class="man">
+ <tr><th>Package</th><th>Version</th><th>Providers</th></tr>
+ <tr><td><a target="_top" href="../../javadoc/index.html?org/knopflerfish/shared/cm/package-summary.html">org.knopflerfish.shared.cm</a></td><td align="center">1.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=cm/cm_all-3.0.1.html">cm_all-3.0.1</a>, <a target="_top" href="../../jars/index.html?bundle=cm/cm-3.0.1.html">cm-3.0.1</a></td></tr>
+ <tr><td><a target="_top" href="../../javadoc/index.html?org/osgi/service/cm/package-summary.html">org.osgi.service.cm</a></td><td align="center">1.3.0</td><td><a target="_top" href="../../jars/index.html?bundle=cm/cm_all-3.0.1.html">cm_all-3.0.1</a>, <a target="_top" href="../../jars/index.html?bundle=cm/cm_api-3.0.1.html">cm_api-3.0.1</a></td></tr>
+</table>
+
+    </div>
+  </body>
+</html>
+

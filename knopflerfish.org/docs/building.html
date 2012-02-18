@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+
+<!-- This is a generated file. Do not edit. Built by cl on Fri July 15 2011, 12:41:55 -->
+
+<html>
+
+  <head>
+    <meta http-equiv = "Content-Type"
+	  content    = "text/html; charset=ISO-8859-1"/>
+    
+    <meta http-equiv = "CACHE-CONTROL"
+	  content    = "NO-CACHE"/>
+
+    <meta name       = "description"
+	  content    = "Building Knopflerfish OSGi"/>
+    
+    <meta name       = "title"
+	  content    = "Building"/>
+
+    <title>Building</title>
+
+    <LINK href="./css/knopflerfish.css" rel="stylesheet" type="text/css">
+
+  </head>
+
+
+  <body>
+    <div id="main">
+      <a name="top"></a>
+      <div id="header">
+	<div id="header_logo">
+	  <a href="index.html"><img src="images/kf300_black.png" border="0" alt="knopflerfish logo"/></a>
+	</div>
+	<div id="header_fade">
+	</div>
+      </div>
+      <div id="leftmenu">
+	<dl class="leftmenu2">
+	  <dt class="leftmenu2"><a class="navigation_enabled" href="index.html">Knopflerfish 3.2.0</a></dt>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="components.html">Contents</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="release_notes.html">Release Notes</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="license.html">License</a></dd>
+	</dl>
+	<dl class="leftmenu2">
+	  <dt class="leftmenu2">Getting Started</dt>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="installing.html">Installing</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="running.html">Running</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_disabled" href="building.html">Building</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="programming.html">Programming</a></dd> 
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="testing.html">Testing</a></dd>
+	</dl>
+	<dl class="leftmenu2">
+	  <dt class="leftmenu2">Developer's Doc</dt>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="tutorials.html">Tutorials</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="javadoc/index.html">Java API docs</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="bundledoc/index.html">Framework and Bundle docs</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="jars/index.html">Bundle jar docs</a></dd>
+	</dl>
+
+	<dl class="leftmenu2">
+	  <dt class="leftmenu2"><a class="navigation_enabled" href="http://www.knopflerfish.org/">www.knopflerfish.org</a></dt>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="https://sourceforge.net/forum/forum.php?forum_id=328005">KF Forum</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="http://sourceforge.net/tracker/?atid=567241&group_id=82798&func=browse">Bug tracker</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="http://www.knopflerfish.org/repo/index.html">Bundle repository</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="https://www.knopflerfish.org/svn/knopflerfish.org/tags/3.2.0">Source (subversion)</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="eclipse_plugin.html">Eclipse plugin</a></dd>
+	</dl>
+
+	<dl class="leftmenu2_last">
+	  <dt class="leftmenu2"><a class="navigation_enabled" href="http://www.makewave.com/">Maintained by Makewave</a></dt>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="http://www.makewave.com/site.en/products/knopflerfish_pro_osgi.shtml">Knopflerfish Pro</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="http://www.makewave.com/site.en/products/osgi_expert.shtml">Professional Services</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="http://www.makewave.com/site.en/products/osgi_training.shtml">Training</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="http://www.makewave.com"><img src="./images/makewave_logo_126x16.gif" border="0"></a><br>
+	  <dd><em><b>Services for the OSGi Business User</b></em></dd>
+      </div>
+      <div id="mainblock">
+	<h1 class="kf">Building Knopflerfish</h1>
+
+Knopflerfish includes an ant based build system for building a complete Knopflerfish distribution as well as building 
+<a href="/releases/current/docs/programming.html">individual bundles</a>. Ant 1.7 or later is required, available from <a href="http://ant.apache.org/">ant.apache.org</a>
+
+<p>
+Knopflerfish can be built either by 
+ <a href="svn_info.html">
+   checking out the entire source code
+</a>,
+or by (re)building an installed distribution.
+</p>
+<p>
+ The top level build file is located in the <tt>osgi</tt>
+ directory. The default target is to build the framework and all
+ bundles in the bundles directory.
+</p>
+<p>
+Invoking ant with the -p option will display the possible targets.
+</p>
+
+<pre class="shell">
+bash-3.2$ ant -p
+Buildfile: build.xml
+
+Main targets:
+
+ all                       Builds the framework and all bundles including optional and test bundles
+ bundle_doc                Builds bundle specific docs
+ bundle_tasks              Defines the custom Knopflerfish bundle tasks
+ bundletasks.bundle_tasks  Defines the custom Knopflerfish bundle tasks
+ clean                     Removes all generated files and directories.
+ clean_local               Remove all bundles built by this build-file but keep all other bundles 
+                           in the jars sub-directory.
+ default                   Builds the framework and bundles in bundles-directory
+ javadoc                   Create javadoc for all exported packages
+ rebuild                   Cleans then build build all
+ run                       (Re)start the framework.
+ run-init                  Initial start with default set of bundles.
+ run-kf-tests              Builds then executes the KF testsuite.
+ run-kf-tests-secure       Builds then executes the KF testsuite with security enabled.
+ run-secure                (Re)start framework with security enabled.
+ run-secure-init           Initial start with security enabled and default set of bundles.
+Default target: default
+bash-3.2$ 
+</pre>
+<p>
+To add and build additional bundles see the
+<a href="programming.html">
+  programming
+</a>
+section.
+</p>
+
+      </div>
+      <div id="footer">
+	<div id="copyright">
+	  Copyright &copy; 2008-2011 The Knopflerfish Project. All rights reserved.
+	</div>
+      </div>
+    </div>
+  </body>
+</html>

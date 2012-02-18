@@ -1,0 +1,273 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+
+<!-- This is a generated file. Do not edit. Built by cl on Fri July 15 2011, 12:41:55 -->
+
+<html>
+
+  <head>
+    <meta http-equiv = "Content-Type"
+	  content    = "text/html; charset=ISO-8859-1"/>
+    
+    <meta http-equiv = "CACHE-CONTROL"
+	  content    = "NO-CACHE"/>
+
+    <meta name       = "description"
+	  content    = "Running Knopflerfish OSGi"/>
+    
+    <meta name       = "title"
+	  content    = "Running"/>
+
+    <title>Running</title>
+
+    <LINK href="./css/knopflerfish.css" rel="stylesheet" type="text/css">
+
+  </head>
+
+
+  <body>
+    <div id="main">
+      <a name="top"></a>
+      <div id="header">
+	<div id="header_logo">
+	  <a href="index.html"><img src="images/kf300_black.png" border="0" alt="knopflerfish logo"/></a>
+	</div>
+	<div id="header_fade">
+	</div>
+      </div>
+      <div id="leftmenu">
+	<dl class="leftmenu2">
+	  <dt class="leftmenu2"><a class="navigation_enabled" href="index.html">Knopflerfish 3.2.0</a></dt>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="components.html">Contents</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="release_notes.html">Release Notes</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="license.html">License</a></dd>
+	</dl>
+	<dl class="leftmenu2">
+	  <dt class="leftmenu2">Getting Started</dt>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="installing.html">Installing</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_disabled" href="running.html">Running</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="building.html">Building</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="programming.html">Programming</a></dd> 
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="testing.html">Testing</a></dd>
+	</dl>
+	<dl class="leftmenu2">
+	  <dt class="leftmenu2">Developer's Doc</dt>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="tutorials.html">Tutorials</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="javadoc/index.html">Java API docs</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="bundledoc/index.html">Framework and Bundle docs</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="jars/index.html">Bundle jar docs</a></dd>
+	</dl>
+
+	<dl class="leftmenu2">
+	  <dt class="leftmenu2"><a class="navigation_enabled" href="http://www.knopflerfish.org/">www.knopflerfish.org</a></dt>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="https://sourceforge.net/forum/forum.php?forum_id=328005">KF Forum</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="http://sourceforge.net/tracker/?atid=567241&group_id=82798&func=browse">Bug tracker</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="http://www.knopflerfish.org/repo/index.html">Bundle repository</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="https://www.knopflerfish.org/svn/knopflerfish.org/tags/3.2.0">Source (subversion)</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="eclipse_plugin.html">Eclipse plugin</a></dd>
+	</dl>
+
+	<dl class="leftmenu2_last">
+	  <dt class="leftmenu2"><a class="navigation_enabled" href="http://www.makewave.com/">Maintained by Makewave</a></dt>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="http://www.makewave.com/site.en/products/knopflerfish_pro_osgi.shtml">Knopflerfish Pro</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="http://www.makewave.com/site.en/products/osgi_expert.shtml">Professional Services</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="http://www.makewave.com/site.en/products/osgi_training.shtml">Training</a></dd>
+	  <dd class="leftmenu2"><a class="navigation_enabled" href="http://www.makewave.com"><img src="./images/makewave_logo_126x16.gif" border="0"></a><br>
+	  <dd><em><b>Services for the OSGi Business User</b></em></dd>
+      </div>
+      <div id="mainblock">
+	
+<h1 class="kf">Running Knopflerfish</h1>
+
+<h2 class="kf">Starting Knopflerfish</h2>
+The Knopflerfish OSGi framework is distributed as an executable jar
+file and is started by running java on the
+framework.jar file in the osgi directory. 
+<pre class="shell">
+    &gt; cd osgi
+    &gt; java -jar framework.jar
+</pre>
+<p>
+  The framework can also be started by double-clicking on the
+  framework.jar file from Finder/Explorer or similar tools, depending on
+  operating system used.
+</p>
+<p>
+  It is also possible to start Knopflerfish from the 
+  <a href="building.html">
+    ant build environment.
+  </a>
+  This is typically done when running the 
+  <a href="testing.html">
+    Knopflerfish test suite.
+  </a>
+</p>
+<p>
+  The SDK installation starts a default set of bundles, including the 
+  <a href="http://www.knopflerfish.org/releases/current/docs/bundledoc/index.html?docpage=desktop/index.html">
+    Knopflerfish OSGi Desktop bundle
+  </a> and other utilities. 
+</p>
+The Knopflerfish framework can be further controlled by:
+<ul>
+  <li><a href="#options">Supplying command line options</a></li>
+  <li><a href="#xargs">Creating xargs file</a></li>
+  <li><a href="#props">Setting framework and system properties</a></li>
+</ul>
+
+For a complete description of all framework feature please refer to
+the 
+<a href="http://www.knopflerfish.org/releases/current/docs/bundledoc/index.html?docpage=framework/index.html">
+  framework bundle documentation
+</a>.
+
+<a name="options"></a>
+<h2 class="kf">Knopflerfish command line options</h2>
+To control the behavior of Knopflerfish OSGi command line options can
+be supplied. To get help on the framework options, run the framework with the help option.
+<pre class="shell">
+    java -jar framework.jar -help
+</pre>
+This prints a help screen (exact contents is version dependent).
+
+<pre class="shell">
+ java -jar framework.jar -help
+Knopflerfish OSGi framework, version 5.0.0
+Copyright 2003-2010 Knopflerfish. All Rights Reserved.
+
+See http://www.knopflerfish.org for more information.
+ Usage:  java [properties] org.knopflerfish.framework.Main [options]
+      or java [properties] -jar framework.jar [options]
+      or ./kf2 [options] [-- [properties]]  [--- [extra]] (*)
+
+ Options:
+   -exit          Exit the JVM process
+   -help          Print this text and exit
+   -version       Print version and exit
+   -jvminfo       Print system and framework properties and exit
+   -sleep SEC     Sleep a while before next command.
+   -xargs file    Load more command line arguments from file, exit if file
+                  cannot be loaded.
+   --xargs file   Load more command line arguments from file, continue 
+                  if file cannot be loaded (but print error)
+
+   -create        Create and initialize a new framework instance
+                  after a shutdown. The default is to reuse the old
+                  framework instance.
+   -ff FF         Specify the name of the FrameworkFactory to use when
+                  creating the framework instance.
+   -init          Start an empty platform (i.e., clear old persistent data).
+   -launch        Launch framework (i.e., start it).
+   -shutdown mSEC Shutdown framework, timeout in milliseconds.
+
+   -install URL   Install a bundle
+   -istart URL    Install and start bundle according to activation policy.
+   -start ID      Start bundle (according to its activation policy)
+   -start_e ID    Start bundle eagerly (i.e., ignore its activation policy)
+   -start_et ID   Start bundle eagerly and transiently
+   -start_pt ID   Start bundle transiently according to policy
+   -stop ID       Stop bundle
+   -stop_t ID     Stop bundle transiently (i.e, non-persistent stop)
+   -uninstall ID  Uninstall a bundle
+   -update ID     Update a bundle
+
+   -initlevel N   Set initial start level for installed bundles
+   -startlevel N  Set the beginning start level of the Start Level service
+
+ Extra: (Only applicable when using ./kf2)
+   -java PATH     Use this JVM (Default=java)
+
+
+ The default directory used for storing bundle data is  "fwdir".
+
+ (*) Fully R4 compatible, enables support for bootclasspath extension bundles.
+
+ For extended help and list of all available system properties, see online
+ documentation or visit:
+
+ http://www.knopflerfish.org/releases/current/docs/bundledoc/framework/index.html
+</pre>
+
+<a name="xargs"></a>
+<h2 class="kf">xargs files</h2>
+<p>
+The xargs file are Knopflerfish command line options specified in a
+text file, typically ending in .xargs. This is a convenient method for
+specifying which bundles to start as well as setting framework
+properties.
+</p>
+<p>
+The Knopflerfish SDK includes the following .xargs files by default
+<div class="kf">
+  <dl>
+    <dt>init.xargs</dt>
+    <dd>
+      Initial or bootstrap start. Also used as default if no other
+      xargs argument is given. See also 
+      <a href="http://www.knopflerfish.org/releases/current/docs/bundledoc/index.html?docpage=framework/index.html#init_restart">
+	Initial start vs restart
+      </a>.
+      <p>
+	Generated from template.xargs.in (only present in a full source file installation).
+      </p>
+    </dd>
+    <dt>minimal.xargs</dt>
+    <dd>
+      Starts the framework and a minimal set of bundles.
+    </dd>
+    <dt>props.xargs</dt>
+    <dd>
+      One common xargs file that only set properties. Is used, or sourced, by
+      other xargs files.
+    </dd>
+    <dt>remote-init.xargs</dt>
+    <dd>
+      Initial and bootstrap start with bundles loaded from an HTTP
+      URL from a release specific bundle repository, located on www.knopflerfish.org,
+      instead of loading from a file URL from the installation.
+    </dd>
+    <dt>init-tests.xargs</dt>
+    <dd>
+      xargs file for the Knopflerfish test suite. Normally invoked
+      via an ant target.
+    </dd>
+    <dt>test-restart1.xargs</dt>
+    <dd>
+      xargs file for the Knopflerfish test suite. Normally invoked
+      via an ant target.
+    </dd>
+    <dt>test-restart2.xargs</dt>
+    <dd>
+      xargs file for the Knopflerfish test suite. Normally invoked
+      via an ant target.
+    </dd>
+    <dt>soapcline_adb_test.xargs</dt>
+    <dd>
+      xargs file for the Knopflerfish test suite. Normally invoked
+      via an ant target.
+    </dd>
+  </dl>    
+</div>
+
+<a name="props"></a>
+<h2 class="kf">Framework and System Properties</h2>
+<p>
+  The behavior of Knopflerfish can be further controlled by specifying
+  framework and system properties that are either specified by OSGi or Knopflerfish
+  specific. The framework and system properties are described in detail in the 
+  <a href="http://www.knopflerfish.org/releases/current/docs/bundledoc/index.html?docpage=framework/index.html">
+    framework bundle documentation
+  </a>.
+</p>
+<p>
+  There is a default properties setting in the <tt>props.xargs</tt> file.
+</p>
+
+      </div>
+      <div id="footer">
+	<div id="copyright">
+	  Copyright &copy; 2008-2011 The Knopflerfish Project. All rights reserved.
+	</div>
+      </div>
+    </div>
+  </body>
+</html>

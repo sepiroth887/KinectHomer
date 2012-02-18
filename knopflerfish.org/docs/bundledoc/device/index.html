@@ -1,0 +1,90 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <link href="../../css/knopflerfish.css" rel="stylesheet" type="text/css">
+    <link href="../../css/kf_man.css" rel="stylesheet" type="text/css">
+    <title>Bundle User Documentation - device, v3.0.0</title>
+    <script type="text/javascript">
+      function windowTitle() {
+        if (location.href.indexOf('is-external=true') == -1) {
+           parent.document.title=document.title;
+        }
+      }
+    </script>
+    <noscript></noscript>
+  </head>
+  <body class="mainblock" onload="windowTitle();">
+    <div class="manpage">
+      <div class="userdoc_hdr_left">
+	Bundle: device
+      </div>
+      <div class="userdoc_hdr_right">
+	Version 3.0.0
+      </div>
+      
+
+<h1 class="man">Device Manager</h1>
+
+<div class="abstract">
+  The Device Manager bundle implements the 
+  <a  target="_top" href="../../javadoc/index.html?org/osgi/service/device/package-summary.html">
+    OSGi Device Access Model. 
+  </a>
+</div>
+
+<h2 class="man">Description</h2>
+<p>
+  The Device Manager matches and attaches drivers to devices. With the
+  help of one or more DriverLocator services it can dynamically
+  install and start drivers on demand. 
+</p>
+<p>
+  These concepts are used in the Device Manager documentation.
+  <dl class="kf">
+    <dt>Device</dt>
+    <dd>A service that mirrors a physical device. </dd>
+    <dt>Idle Device</dt>
+    <dd>A Device that no Driver service is attached to. </dd>
+    <dt>Device Manager</dt>
+    <dd>A framework component that looks for registration and
+      unregistration of devices and finds a driver for a device.  
+    </dd>
+    <dt>Driver</dt>
+    <dd>Is called by the Device Manager to check for matches and carry
+      out attachment. 
+      </dd>
+    <dt>Driver Locator</dt>
+    <dd>A service that downloads suitable drivers. </dd>
+    <dt>Driver Selector</dt>
+    <dd>A service to break ties in case multiple drivers return the same (best) match value. </dd>
+  </dl>
+</p>
+<h2 class="man">Device Access Model</h2>
+<p>
+  The device access model is a part of the OSGi service platform
+  specification. It splits responsibilities for device
+  management into several parts. The device manager is the motor in
+  this process and it is supplied with the framework. There must never
+  be more than one device manager installed. 
+</p>
+<p>
+  Knopflerfish includes a basic driver locator bundle,
+  basicdriverlocator. 
+</p>
+
+
+      <h2 class="man">Bundle Jar docs</h2>
+      <a target="_top" href="../../jars/index.html?bundle=device/device_all-3.0.0.html">device_all-3.0.0</a><br>
+<a target="_top" href="../../jars/index.html?bundle=device/device_api-3.0.0.html">device_api-3.0.0</a><br>
+<a target="_top" href="../../jars/index.html?bundle=device/device-3.0.0.html">device-3.0.0</a>
+
+      <h2 class="man">Exported Packages</h2>
+      <table class="man">
+ <tr><th>Package</th><th>Version</th><th>Providers</th></tr>
+ <tr><td><a target="_top" href="../../javadoc/index.html?org/osgi/service/device/package-summary.html">org.osgi.service.device</a></td><td align="center">1.1.0</td><td><a target="_top" href="../../jars/index.html?bundle=device/device_all-3.0.0.html">device_all-3.0.0</a>, <a target="_top" href="../../jars/index.html?bundle=device/device_api-3.0.0.html">device_api-3.0.0</a></td></tr>
+</table>
+
+    </div>
+  </body>
+</html>
+

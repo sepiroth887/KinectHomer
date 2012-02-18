@@ -1,0 +1,69 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <link href="../../css/knopflerfish.css" rel="stylesheet" type="text/css">
+    <link href="../../css/kf_man.css" rel="stylesheet" type="text/css">
+    <title>Bundle User Documentation - Serial Communication</title>
+    <script type="text/javascript">
+      function windowTitle() {
+        if (location.href.indexOf('is-external=true') == -1) {
+           parent.document.title=document.title;
+        }
+      }
+    </script>
+    <noscript></noscript>
+  </head>
+  <body class="mainblock" onload="windowTitle();">
+    <h1 class="man">Serial port communicaton using javax.comm</h1>
+
+This section covers bundles for handling serial ports using the
+javax.comm API
+
+<h2 class="man">Bundles</h2>
+
+<dl>
+<dt> serialport
+<dd>
+  Bundle that wraps serial ports in the OSGi Device API.
+ 
+<dt> comm-win32
+<dd>
+  Implementation for windows platforms using Sun's COMM 2.0 release.
+  Note that this bundles contains code with license from Sun, for 
+  details, see
+  
+   comm-win32/resources/COMM2.0_license.txt
+
+<dt> comm-linux
+<dd>
+  Implementation for x86 linux platforms using the RXTX library.
+  Note that this bundles contains code with license from Sun AND
+  is licensed under GPL. For details, see
+  
+   comm-linux/resources/COMM2.0_license.txt
+   comm-linux/resources/rxtx-license.txt
+
+  The RXTX source is available at
+
+   http://users.frii.com/jarvi/rxtx/
+
+</dl>
+
+<h2 class="man">Bundle Jar docs</h2>
+<a target="_top" href="../../jars/index.html?bundle=comm-linux/comm-linux_all-2.0.0.html">comm-linux_all-2.0.0</a><br>
+<a target="_top" href="../../jars/index.html?bundle=comm-win32/comm-win32_all-2.0.1.html">comm-win32_all-2.0.1</a><br>
+<a target="_top" href="../../jars/index.html?bundle=serialportdevice/serialportdevice_all-2.0.0.html">serialportdevice_all-2.0.0</a><br>
+<a target="_top" href="../../jars/index.html?bundle=serialportdevice/serialportdevice_api-2.0.0.html">serialportdevice_api-2.0.0</a>
+
+<h2 class="man">Exported Packages</h2>
+<table class="man">
+ <tr><th>Package</th><th>Version</th><th>Providers</th></tr>
+ <tr><td><a target="_top" href="../../javadoc/index.html?gnu/io/package-summary.html">gnu.io</a></td><td align="center">2.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=comm-linux/comm-linux_all-2.0.0.html">comm-linux_all-2.0.0</a></td></tr>
+ <tr><td>javax.comm</td><td align="center">2.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=comm-linux/comm-linux_all-2.0.0.html">comm-linux_all-2.0.0</a>, <a target="_top" href="../../jars/index.html?bundle=comm-win32/comm-win32_all-2.0.1.html">comm-win32_all-2.0.1</a></td></tr>
+ <tr><td><a target="_top" href="../../javadoc/index.html?org/knopflerfish/service/serial/package-summary.html">org.knopflerfish.service.serial</a></td><td align="center">0.0.0</td><td><a target="_top" href="../../jars/index.html?bundle=serialportdevice/serialportdevice_all-2.0.0.html">serialportdevice_all-2.0.0</a>, <a target="_top" href="../../jars/index.html?bundle=serialportdevice/serialportdevice_api-2.0.0.html">serialportdevice_api-2.0.0</a></td></tr>
+</table>
+
+
+  </body>
+</html>
+    
