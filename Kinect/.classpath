@@ -20,6 +20,7 @@
 	<classpathentry kind="lib" path="libs/KinectCOM/kinect.jar"/>
 	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/HomerFramework">
 		<accessrules>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/systemUtils/"/>
 			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/tcas/"/>
 			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/homerObjects/"/>
 			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/componentUtils/encoding/"/>

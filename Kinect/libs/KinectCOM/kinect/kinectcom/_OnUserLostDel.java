@@ -18,5 +18,5 @@ import kinect.kinectcom.impl.*;
  */
 public interface _OnUserLostDel extends IDispatch
 {
-    public static final String INTERFACE_IDENTIFIER = "{6E929067-E946-386B-BF4D-A57DBDF843C4}";
+    public static final String INTERFACE_IDENTIFIER = "{71027BB0-4684-31E8-9D47-9B769E8DD083}";
 }

@@ -131,7 +131,7 @@ public class X10Component implements HomerComponent, WhichHasTriggers, WhichHasC
 	
 	@Override
 	public void performAction(String deviceTypeID, String deviceID, String actionID, String[] parameters) {
-	
+		
 		if (LM_TURN_OFF_ID.equals(actionID) )
 		{
 			x10commander.turnOff(deviceID);

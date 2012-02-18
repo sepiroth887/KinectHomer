@@ -21,6 +21,7 @@ Bundle-Activator: Kinect.Activator
 Import-Package: org.osgi.framework, uk.ac.stir.cs.homer.homerFramework
  API.componentUtils, uk.ac.stir.cs.homer.homerFrameworkAPI.componentUt
  ils.encoding, uk.ac.stir.cs.homer.homerFrameworkAPI.homerObjects, uk.
- ac.stir.cs.homer.homerFrameworkAPI.tcas, javax.swing
+ ac.stir.cs.homer.homerFrameworkAPI.tcas, javax.swing, uk.ac.stir.cs.h
+ omer.homerFrameworkAPI.systemUtils
 Bundle-SymbolicName: Kinect
 

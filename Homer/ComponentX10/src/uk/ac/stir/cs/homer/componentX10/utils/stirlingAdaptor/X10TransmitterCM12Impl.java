@@ -55,6 +55,7 @@ public class X10TransmitterCM12Impl implements
  * @see uk.ac.stir.cs.x10.test#noDriverFound()
  */
   public void noDriverFound() {
+	  System.out.println("No driver found");
   }
 
   /* (non-Javadoc)

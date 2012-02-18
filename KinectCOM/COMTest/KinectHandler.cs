@@ -29,7 +29,7 @@ namespace KinectCOM
             this.kinect = kinect;
 
             commands = DataStore.loadVoiceCommands();
-
+            Console.Out.WriteLine("VC loaded: " + commands.Length);
             vocCom = new VoiceCommander(commands);
             vocCom.OrderDetected += new Action<string>(voiceCommandDetected);
            

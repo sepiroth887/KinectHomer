@@ -124,7 +124,7 @@ namespace DTWGestureRecognition
 
             for (int i = 0; i < _labels.Count; i++)
             {
-                if ((string)_labels[i] == lab)
+                if ((string)_labels[i] == lab && _ctxt[i] == ctxt)
                 {
                     existingIndex = i;
                 }

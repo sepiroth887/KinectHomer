@@ -17,7 +17,7 @@ import kinect.kinectcom.*;
 public class IUserEventsImpl extends IDispatchImpl
     implements IUserEvents
 {
-    public static final String INTERFACE_IDENTIFIER = "{C5B4B484-6695-3790-88E7-35BD924FA505}";
+    public static final String INTERFACE_IDENTIFIER = "{767ECEB1-66D9-3B62-B9B9-473C6E5D112F}";
     private static final IID _iid = IID.create(INTERFACE_IDENTIFIER);
 
     public IUserEventsImpl()
@@ -62,11 +62,13 @@ public class IUserEventsImpl extends IDispatchImpl
      * 
      */
     public void onUserFound(
-        BStr /*[in]*/ user)
+        BStr /*[in]*/ user,
+        SingleFloat /*[in]*/ confidence)
     {
 
         Parameter[] parameters = new Parameter[] {
-                user == null ? (Parameter)PTR_NULL : user
+                user == null ? (Parameter)PTR_NULL : user,
+                confidence
             };
 
          Automation.invokeDispatch(this, "OnUserFound", parameters, void.class);

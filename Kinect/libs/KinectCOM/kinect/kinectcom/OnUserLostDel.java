@@ -13,7 +13,7 @@ import kinect.mscorlib.impl.*;
  */
 public class OnUserLostDel extends CoClass
 {
-    public static final CLSID CLASS_ID = CLSID.create("{9072671F-201F-3BEA-A04C-585174C51D8E}");
+    public static final CLSID CLASS_ID = CLSID.create("{4E482EE3-A29B-3C34-A8E9-04CA19870DEA}");
 
     public OnUserLostDel()
     {
