@@ -55,6 +55,7 @@ public class X10TransmitterCM12Impl implements
  * @see uk.ac.stir.cs.x10.test#noDriverFound()
  */
   public void noDriverFound() {
+	  System.out.println("No driver found");
   }
 
   /* (non-Javadoc)
@@ -107,6 +108,8 @@ public class X10TransmitterCM12Impl implements
     // to the X10Transmitter
     for (int j = 0; j < events.length; j++)
       transmitter.transmit(events[j]);
+    
+    System.out.println("Event transmitted");
     
     //closeTransmitterGateway();
   }

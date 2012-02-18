@@ -146,7 +146,7 @@ public class CommAccess  {
 	{
 		for (SerialService ss: serialServices)
 		{
-			if (ss.getPort().toString().equals(port))
+			if (ss.getPort().getName().toString().equals(port))
 				return ss;
 		}
 		return null;

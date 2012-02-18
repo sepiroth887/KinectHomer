@@ -22,12 +22,12 @@ namespace KinectCOM
         /// <summary>
         /// How many skeleton frames to store in the _video buffer
         /// </summary>
-        private const int BufferSize = 24;
+        private const int BufferSize = 32;
 
         /// <summary>
         /// The minumum number of frames in the _video buffer before we attempt to start matching gestures
         /// </summary>
-        private const int MinimumFrames = 12;
+        private const int MinimumFrames = 6;
 
         /// <summary>
         /// The minumum number of frames in the _video buffer before we attempt to start matching gestures
@@ -76,7 +76,7 @@ namespace KinectCOM
 
             kinect.attachSkeletonHandler(SkeletonDataReadyHandler);
 
-            dtw = new DtwGestureRecognizer(12, 0.6, 2, 2, 12);
+            dtw = new DtwGestureRecognizer(12, 0.6, 2, 2, 10);
             Skeleton2DDataExtract.Skeleton2DdataCoordReady += NuiSkeleton2DdataCoordReady;
             pointer.ContextSelected+=new ObjectPointer.ContextSelectedEventHandler(pointer_ContextSelected);
         }
@@ -276,8 +276,9 @@ namespace KinectCOM
         }
 
         private void NuiSkeleton2DdataCoordReady(object sender, Skeleton2DdataCoordEventArgs a){
+            
             if (seqCoords.Count > MinimumFrames && !isRecording && isRecognizing) {
-
+                //Console.Out.WriteLine("No of frames: " + seqCoords.Count);
                 String gesture = dtw.Recognize(seqCoords,ctxt);
 
 

@@ -22,14 +22,6 @@ Import-Package: org.osgi.framework, uk.ac.stir.cs.homer.homerFramework
  API.componentUtils, uk.ac.stir.cs.homer.homerFrameworkAPI.componentUt
  ils.encoding, uk.ac.stir.cs.homer.homerFrameworkAPI.homerObjects, uk.
  ac.stir.cs.homer.homerFrameworkAPI.tcas, javax.swing, uk.ac.stir.cs.h
- omer.homerFrameworkAPI.configData, uk.ac.stir.cs.homer.homerFramework
- API.events, uk.ac.stir.cs.homer.homerFrameworkAPI.osgi, uk.ac.stir.cs
- .homer.homerFrameworkAPI.parameterData, uk.ac.stir.cs.homer.homerFram
- eworkAPI.systemUtils, uk.ac.stir.cs.homer.serviceDatabase, uk.ac.stir
- .cs.homer.homerPolicyServer, uk.ac.stir.cs.homer.homerPolicyServer.co
- nflicts, uk.ac.stir.cs.homer.homerPolicyServer.overlap, uk.ac.stir.cs
- .homer.serviceCOMMs, uk.ac.stir.cs.homer.serviceDatabase.objects, uk.
- ac.stir.cs.homer.serviceDatabase.queryBuilder, uk.ac.stir.cs.homer.se
- rviceJSON
+ omer.homerFrameworkAPI.systemUtils
 Bundle-SymbolicName: Kinect
 

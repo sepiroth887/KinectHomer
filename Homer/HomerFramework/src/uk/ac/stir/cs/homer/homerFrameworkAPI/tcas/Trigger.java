@@ -19,6 +19,10 @@ public class Trigger {
 	public static final String DEFAULT_HOT_IMAGE = System.getProperty("uk.ac.stir.cs.homer.user.icons.hot");
 	public static final String DEFAULT_EMAIL_RECEIVED_IMAGE = System.getProperty("uk.ac.stir.cs.homer.user.icons.email.received");
 	public static final String DEFAULT_SMS_RECEIVED_IMAGE = System.getProperty("uk.ac.stir.cs.homer.user.icons.sms.received");
+	public static final String DEFAULT_PRESENCE_DETECTED_IMAGE = System.getProperty("uk.ac.stir.cs.homer.user.icons.presenceDetected");
+	public static final String DEFAULT_PRESENCE_LOST_IMAGE = System.getProperty("uk.ac.stir.cs.homer.user.icons.presenceLost");
+	public static final String DEFAULT_USER_DETECTED_IMAGE = System.getProperty("uk.ac.stir.cs.homer.user.icons.userDetected");
+	public static final String DEFAULT_USER_LOST_IMAGE = System.getProperty("uk.ac.stir.cs.homer.user.icons.userLost");
 	
 	private String id;
 	private String description;

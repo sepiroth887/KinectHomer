@@ -49,7 +49,7 @@ namespace Kinect
 
         }
 
-        private static readonly String DEFAULT_PATH = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\KinectHomer\\";
+        public static readonly String DEFAULT_PATH = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\KinectHomer\\";
         /// <summary>
         /// static method to load all images of users from the hard disk.
         /// </summary>

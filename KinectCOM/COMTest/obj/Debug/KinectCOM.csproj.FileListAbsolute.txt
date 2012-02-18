@@ -18,3 +18,9 @@ C:\Users\Admin\documents\visual studio 2010\Projects\COMTest\COMTest\obj\Debug\K
 C:\Users\Admin\Documents\Visual Studio 2010\Projects\KinectCOM\COMTest\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Admin\Documents\Visual Studio 2010\Projects\KinectCOM\COMTest\obj\Debug\KinectCOM.dll
 C:\Users\Admin\Documents\Visual Studio 2010\Projects\KinectCOM\COMTest\obj\Debug\KinectCOM.pdb
+D:\DevEnv\Honours\KinectCOM\COMTest\obj\Debug\ResolveAssemblyReference.cache
+D:\DevEnv\Honours\KinectCOM\COMTest\obj\Debug\KinectCOM.dll
+D:\DevEnv\Honours\KinectCOM\COMTest\obj\Debug\KinectCOM.pdb
+D:\DevEnv\Honours\Kinect\libs\KinectCOM\KinectCOM.dll
+D:\DevEnv\Honours\Kinect\libs\KinectCOM\KinectCOM.pdb
+D:\DevEnv\Honours\Kinect\libs\KinectCOM\KinectCOM.tlb
