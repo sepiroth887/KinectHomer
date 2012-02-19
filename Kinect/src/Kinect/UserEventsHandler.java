@@ -37,11 +37,16 @@ public class UserEventsHandler extends IUserEventsServer {
 		kinectListener.setTracking(skelID);
 	}
 	
+	public void onUserFound(BStr user, Variant confidence, Int32 skelID){
+		
+	}
+	
 	public void onPresenceLost(Int32 skelID){
 		logger.info("User presence lost with userID: "+skelID);
 	}
 	
 	public void onGestureRecognitionCompleted(BStr gestureName){
+		// TODO refactor for Gesture model.
 		if(!gestureName.toString().contains(("__UNKNOWN"))){
 			logger.info("Gesture recognition result: "+gestureName);
 			if(gestureName.toString().contains("LampOn")){
@@ -70,8 +75,9 @@ public class UserEventsHandler extends IUserEventsServer {
 		}	
 	}
 	
-	public void onGestureRecordCompleted(BStr gestureName, Int32 ctxt){
+	public void onGestureRecordCompleted(BStr gestureName, BStr ctxt){
 		logger.info("Gesture recording result: "+gestureName+", context: "+ctxt);
+		kinectListener.updateGestureModel();
 	}
 	
 	public void onRecordingCountDownEvent(Int32 time){

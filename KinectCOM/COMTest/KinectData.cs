@@ -36,7 +36,7 @@ namespace KinectCOM
             }
             catch (Exception e)
             {
-                Console.Out.WriteLine("[KinectData]Constructor : " + e.Message);
+                //Console.Out.WriteLine("[KinectData]Constructor : " + e.Message);
             }
         }
 
@@ -102,7 +102,7 @@ namespace KinectCOM
             }
             catch (Exception ex)
             {
-                Console.Out.WriteLine("[KinectData]incAngle : " + ex.Message);
+                //Console.Out.WriteLine("[KinectData]incAngle : " + ex.Message);
             }
 
         }
@@ -114,7 +114,7 @@ namespace KinectCOM
                 kinect.ElevationAngle -= 5;
             }
             catch (Exception ex) {
-                Console.Out.WriteLine("[KinectData]decAngle : " + ex.Message);
+                //Console.Out.WriteLine("[KinectData]decAngle : " + ex.Message);
             }
         }
 

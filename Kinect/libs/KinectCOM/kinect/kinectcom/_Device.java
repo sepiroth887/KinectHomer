@@ -18,7 +18,7 @@ import kinect.kinectcom.impl.*;
  */
 public interface _Device extends IDispatch
 {
-    public static final String INTERFACE_IDENTIFIER = "{946AD531-061A-3493-87A2-28F0B5F7FDD9}";
+    public static final String INTERFACE_IDENTIFIER = "{A0974408-9EBC-39A9-8591-D7BE80B1FFD7}";
 
     public static final int DISPID_userRecognition = 8;
     public static final int DISPID_setContext = 9;
@@ -32,6 +32,8 @@ public interface _Device extends IDispatch
     public static final int DISPID_recordGesture = 17;
     public static final int DISPID_recognizeGesture = 18;
     public static final int DISPID_stopGestureRecognition = 19;
+    public static final int DISPID_storeGestures = 20;
+    public static final int DISPID_loadGestures = 21;
     public static final int DISPID_init = 42;
     public static final int DISPID_uninit = 43;
 
@@ -108,6 +110,16 @@ public interface _Device extends IDispatch
      * 
      */
     void stopGestureRecognition();
+
+    /**
+     * 
+     */
+    void storeGestures();
+
+    /**
+     * 
+     */
+    BStr loadGestures();
 
     /**
      * 

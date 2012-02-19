@@ -18,7 +18,7 @@ import kinect.kinectcom.impl.*;
  */
 public interface IUserEvents extends IDispatch
 {
-    public static final String INTERFACE_IDENTIFIER = "{767ECEB1-66D9-3B62-B9B9-473C6E5D112F}";
+    public static final String INTERFACE_IDENTIFIER = "{A4EF185E-AD46-3E6F-BD8F-D5B2486970D5}";
 
     public static final int DISPID_onPresenceDetected = 1;
     public static final int DISPID_onUserFound = 2;
@@ -43,7 +43,8 @@ public interface IUserEvents extends IDispatch
      */
     void onUserFound(
         BStr /*[in]*/ user,
-        SingleFloat /*[in]*/ confidence);
+        SingleFloat /*[in]*/ confidence,
+        Int32 /*[in]*/ skeletonID);
 
     /**
      * 

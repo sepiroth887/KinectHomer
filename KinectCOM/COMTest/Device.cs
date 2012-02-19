@@ -11,33 +11,33 @@ namespace KinectCOM
 
     public delegate void OnPresenceDetectedDel(int skeletonID);
     public delegate void OnPresenceLostDel(int skeletonID);
-    public delegate void OnGestureRecordCompletedDel(string gestureName,String ctxt);
+    public delegate void OnGestureRecordCompletedDel(string gestureName,string ctxt);
     public delegate void OnGestureRecognitionCompletedDel(string gestureName);
     public delegate void OnRecordingCountDownEventDel(int time); 
-    public delegate void OnContextSelectedDel(String ctxt);
+    public delegate void OnContextSelectedDel(string ctxt);
     public delegate void OnVoiceCommandDetectedDel(string command);
     public delegate void OnAddonGestureValueChangeDel(float value);
-    public delegate void OnUserFoundDel(String user,float confidence);
-    public delegate void OnUserLostDel(String user);
+    public delegate void OnUserFoundDel(string user,float confidence,int skeletonID);
+    public delegate void OnUserLostDel(string user);
     // Declare COM Event interfaces for the Processors (Recognition, Speech, Gesture)
     [InterfaceTypeAttribute(ComInterfaceType.InterfaceIsIDispatch)]
     public interface IUserEvents {
         [DispId(1)]
         void OnPresenceDetected(int skeletonID);
         [DispId(2)]
-        void OnUserFound(String user,float confidence);
+        void OnUserFound(string user,float confidence,int skeletonID);
         [DispId(3)]
-        void OnUserLost(String user);
+        void OnUserLost(string user);
         [DispId(4)]
         void OnPresenceLost(int skeletonID);
         [DispId(6)]
         void OnGestureRecognitionCompleted(string gestureName);
         [DispId(7)]
-        void OnGestureRecordCompleted(string gestureName, String ctxt);
+        void OnGestureRecordCompleted(string gestureName, string ctxt);
         [DispId(8)]
         void OnRecordingCountDownEvent(int time);
         [DispId(9)]
-        void OnContextSelected(String ctxt);
+        void OnContextSelected(string ctxt);
         [DispId(10)]
         void OnVoiceCommandDetected(string command);
         [DispId(11)]
@@ -50,7 +50,7 @@ namespace KinectCOM
         [DispId(8)]
         void userRecognition(bool on);
         [DispId(9)]
-        void setContext(String contextID);
+        void setContext(string contextID);
         [DispId(10)]
         void speechRecognition(bool on);
         [DispId(11)]
@@ -66,11 +66,15 @@ namespace KinectCOM
         [DispId(16)]
         bool startTracking(int skeletonID);
         [DispId(17)]
-        void recordGesture(string gestureName, String ctxt);
+        void recordGesture(string gestureName, string ctxt);
         [DispId(18)]
-        void recognizeGesture(String ctxt);
+        void recognizeGesture(string ctxt);
         [DispId(19)]
         void stopGestureRecognition();
+        [DispId(20)]
+        void storeGestures();
+        [DispId(21)]
+        string loadGestures();
         [DispId(42)]
         Boolean init();
         [DispId(43)]
@@ -121,7 +125,7 @@ namespace KinectCOM
 
         public void speechRecognition(bool on) { }
 
-        public void setContext(String ctxt) { 
+        public void setContext(string ctxt) { 
         
         }
 
@@ -152,7 +156,7 @@ namespace KinectCOM
             OnPresenceLost(skeletonID);
         }
 
-        public void gestureRecordCompleted(string gestureName, String ctxt)
+        public void gestureRecordCompleted(string gestureName, string ctxt)
         {
             OnGestureRecordCompleted(gestureName, ctxt);
         }
@@ -168,12 +172,12 @@ namespace KinectCOM
         }
 
 
-        public void recordGesture(string gestureName, String ctxt)
+        public void recordGesture(string gestureName, string ctxt)
         {
             kHandler.recordGesture(gestureName, ctxt);
         }
 
-        public void recognizeGesture(String ctxt)
+        public void recognizeGesture(string ctxt)
         {
             kHandler.recognizeGesture(ctxt);
         }
@@ -184,7 +188,7 @@ namespace KinectCOM
             kHandler.stopRecGesture();
         }
 
-        public void onContextSelected(String p)
+        public void onContextSelected(string p)
         {
             OnContextSelected(p);
         }
@@ -197,12 +201,33 @@ namespace KinectCOM
             OnAddonGestureValueChange(value);
         }
 
-        public void userFound(String name, float confidence) {
-            OnUserFound(name, confidence);
+        public void userFound(string name, float confidence,int skeletonID) {
+            OnUserFound(name, confidence,skeletonID);
         }
 
-        public void userLost(String name) {
+        public void userLost(string name) {
             OnUserLost(name);
+        }
+
+
+        public void storeGestures()
+        {
+            kHandler.storeGestures();
+        }
+
+        public string loadGestures()
+        {
+            string outStr = string.Empty;
+
+            string[] arr = kHandler.loadGestures();
+
+            if (arr == null) return "";
+
+            foreach (string gesture in arr) {
+                outStr += gesture+"\n";
+            }
+
+            return outStr;
         }
     }
 }

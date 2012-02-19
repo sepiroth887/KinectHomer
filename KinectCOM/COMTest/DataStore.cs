@@ -19,7 +19,7 @@ namespace KinectCOM
         /**
             Stores userdata passed to it via a Dictionary containing the user features
          */
-        public void storeUserData(System.Collections.Generic.Dictionary<FeatureType,String> values){
+        public void storeUserData(System.Collections.Generic.Dictionary<FeatureType,string> values){
         
             // create a new XMLDocument and try to load the content of the users.xml file
             XmlDocument xml = new XmlDocument();
@@ -58,7 +58,7 @@ namespace KinectCOM
                 XmlElement newUser = xml.CreateElement("user");
 
                 // go through each entry in the Feature dictionary and create new tags for the users.xml file
-                foreach (KeyValuePair<FeatureType, String> entry in values) {
+                foreach (KeyValuePair<FeatureType, string> entry in values) {
                     XmlElement newFeature = xml.CreateElement(entry.Key.ToString());
                     newFeature.InnerText = ""+entry.Value;
                     newUser.AppendChild(newFeature);
@@ -76,9 +76,9 @@ namespace KinectCOM
          * loads all users from the users.xml file into a Dictionary of Dictionaries.
          * 
          **/
-        public static Dictionary<String,Dictionary<FeatureType,String>> loadAllUsers(){
+        public static Dictionary<string,Dictionary<FeatureType,string>> loadAllUsers(){
             // this dictionary contains the user name as a key to the dictionary with the individual features of that user.
-            Dictionary<String, Dictionary<FeatureType, String>> users = new Dictionary<String, Dictionary<FeatureType, String>>();
+            Dictionary<string, Dictionary<FeatureType, string>> users = new Dictionary<string, Dictionary<FeatureType, string>>();
 
             // create and load an XmlDocument containing all the user info
             XmlDocument xml = new XmlDocument();
@@ -89,26 +89,26 @@ namespace KinectCOM
 
             // loop through all nodes and retrieve info stored.
             for (int i = 0; i < userNodes.Count; i++) {
-                Dictionary<FeatureType, String> userFeatures = new Dictionary<FeatureType, String>();
+                Dictionary<FeatureType, string> userFeatures = new Dictionary<FeatureType, string>();
 
                 XmlNode s = userNodes[i].FirstChild;
-                String ShoulderWidth = s.InnerText;
+                string ShoulderWidth = s.InnerText;
 
                 XmlNode a = s.NextSibling;
-                String ArmLength = a.InnerText;
+                string ArmLength = a.InnerText;
 
                 XmlNode h = a.NextSibling;
-                String HipHeight = h.InnerText;
+                string HipHeight = h.InnerText;
 
                 XmlNode f = h.NextSibling;
-                String Face = f.InnerText;
+                string Face = f.InnerText;
 
                 userFeatures.Add(FeatureType.ShoulderWidth, ShoulderWidth);
                 userFeatures.Add(FeatureType.ArmLength, ArmLength);
                 userFeatures.Add(FeatureType.HipHeadHeight, HipHeight);
                 userFeatures.Add(FeatureType.Face, Face);
 
-                Console.Out.WriteLine("User in DB:"+Face);
+                //Console.Out.WriteLine("User in DB:"+Face);
 
                 users.Add(Face, userFeatures);
                 
@@ -128,19 +128,19 @@ namespace KinectCOM
             string[] commands = null;
 
             if (!File.Exists(DataStore.voice_commands_path)) {
-                Console.Out.WriteLine("Voice command config file does not exists");
+                //Console.Out.WriteLine("Voice command config file does not exists");
                 return null;
             }
 
             StreamReader reader = new StreamReader(DataStore.voice_commands_path);
 
-            String line;
+            string line;
             int index = 0;
 
             while ((line = reader.ReadLine()) != null) {
                 if (line.StartsWith("//"))
                 {
-                    String[] split = line.Split('=');
+                    string[] split = line.Split('=');
                     int numCommands = 0;
                     try
                     {
@@ -148,7 +148,7 @@ namespace KinectCOM
                     }
                     catch (Exception ex)
                     {
-                        Console.Out.WriteLine(ex.Message);
+                        //Console.Out.WriteLine(ex.Message);
                         return null;
                     }
 
@@ -162,7 +162,7 @@ namespace KinectCOM
             return commands;
         }
 
-        public void storeVoiceCommand(String command)
+        public void storeVoiceCommand(string command)
         {
             StreamWriter writer = File.AppendText(DataStore.voice_commands_path);
 

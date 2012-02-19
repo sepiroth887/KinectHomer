@@ -51,7 +51,7 @@ namespace Kinect
         private bool isRecognizerLoaded = false;
 
         Image<Gray, byte>[] faceDatabase; // array of all images in the face recognition database
-        String[] labelDatabase; // array of all names in the face recognition database, aligned with the faceDatabase array
+        string[] labelDatabase; // array of all names in the face recognition database, aligned with the faceDatabase array
 
 
         private long rgbFrameTime = 0; // timestamp of the last rgbFrame
@@ -88,7 +88,7 @@ namespace Kinect
                 }
             }
             catch (Exception ex) {
-                Console.Out.WriteLine(ex.StackTrace);
+                //Console.Out.WriteLine(ex.StackTrace);
             }
         }
 
@@ -117,7 +117,7 @@ namespace Kinect
                 recognizerInitWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(recognizerInitWorker_RunWorkerCompleted);
             }
             catch (Exception ex) {
-                Console.Out.WriteLine(ex.StackTrace);
+                //Console.Out.WriteLine(ex.StackTrace);
             }
 
         }
@@ -296,7 +296,7 @@ namespace Kinect
             }
             catch (Exception ex)
             {
-                Console.Out.WriteLine("[FaceProcessor] detectFaceGPU: " + ex.Message);
+                //Console.Out.WriteLine("[FaceProcessor] detectFaceGPU: " + ex.Message);
             }
 
 
@@ -338,7 +338,7 @@ namespace Kinect
             }
             catch (Exception ex)
             {
-                Console.Out.WriteLine("[FaceProcessor] detectFaceCPU: " + ex.Message);
+                //Console.Out.WriteLine("[FaceProcessor] detectFaceCPU: " + ex.Message);
             }
             faceList.Clear();
 
@@ -377,7 +377,7 @@ namespace Kinect
         /// </summary>
         /// <param name="images"></param>
         /// <param name="labels"></param>
-        public void shuffle(Image<Gray, byte>[] images, String[] labels)
+        public void shuffle(Image<Gray, byte>[] images, string[] labels)
         {
             Random rand = new Random();
             int size = images.Length;
@@ -389,7 +389,7 @@ namespace Kinect
                 images[i] = images[a];
                 images[a] = tempI;
 
-                String tempS = labels[i];
+                string tempS = labels[i];
                 labels[i] = labels[a];
                 labels[a] = tempS;
 
@@ -402,13 +402,13 @@ namespace Kinect
         /// </summary>
         /// <param name="faces"></param>
         /// <param name="label"></param>
-        public void learnFace(ArrayList faces, String label)
+        public void learnFace(ArrayList faces, string label)
         {
 
             // create a new image array to hold the faces
             Image<Gray, byte>[] images = new Image<Gray, byte>[faces.Count];
             // and an array to hold the name of the users aligned to the face array.
-            String[] labels = new String[faces.Count];
+            string[] labels = new string[faces.Count];
 
             // loop though the faces and convert, store and equalize the contrast of each image.
             int counter = 0;
@@ -444,7 +444,7 @@ namespace Kinect
             initRecognizer();
 
             // create a dictionary to hold both arrays and pass store it on the HDD.
-            Dictionary<Image<Gray, byte>[], String[]> database = new Dictionary<Image<Gray, byte>[], String[]>();
+            Dictionary<Image<Gray, byte>[], string[]> database = new Dictionary<Image<Gray, byte>[], string[]>();
 
             database.Add(images, labels);
 
@@ -483,28 +483,28 @@ namespace Kinect
                 if (!dbLoaded)
                 {
                     // db needs to be loaded so retrieve the faces and labels from HDD
-                    Dictionary<Image<Gray, byte>[], String[]> database = new Dictionary<Image<Gray, byte>[], String[]>();
+                    Dictionary<Image<Gray, byte>[], string[]> database = new Dictionary<Image<Gray, byte>[], string[]>();
 
                     database = FileLoader.loadFaceDB("FaceDB");
 
                     // empty database??? cant be right... no need to load the recognizer then.
                     if (database == null)
                     {
-                        Console.Out.WriteLine("Database could not be loaded");
+                        //Console.Out.WriteLine("Database could not be loaded");
                         return;
 
                     } 
                     
                     // for each entry in the database retrieve the faces and labels and append them to the local
                     // faceDatabase and labelDatabase arrays.
-                    foreach (KeyValuePair<Image<Gray, byte>[], String[]> entry in database)
+                    foreach (KeyValuePair<Image<Gray, byte>[], string[]> entry in database)
                     {
                         Image<Gray, byte>[] images = entry.Key;
-                        String[] label = entry.Value;
+                        string[] label = entry.Value;
 
                         if (faceDatabase != null && labelDatabase != null)
                         {
-                            Console.Out.WriteLine(label[0]);
+                            //Console.Out.WriteLine(label[0]);
                             faceDatabase = faceDatabase.Concat(images).ToArray();
                             labelDatabase = labelDatabase.Concat(label).ToArray();
                         }
@@ -562,10 +562,10 @@ namespace Kinect
             faces.CopyTo(facesCopy);
 
             Image<Gray, byte> bestMatch = null; // stores the face that was the closest match.
-            String bestLabel = ""; // and the closest matching label as well.
+            string bestLabel = ""; // and the closest matching label as well.
             float bestDistance = float.MaxValue; // keeps track of the best match distance
             float eigenDistance = 0;
-            String tempLabel = "";
+            string tempLabel = "";
             Image<Gray, byte> optiImage = null;
 
             // loop though the faces and find the most similar object in the EigenRecognizer.
@@ -601,7 +601,7 @@ namespace Kinect
                 user.curImage = optiImage;
 
             }
-            Console.Out.WriteLine("User label: " + user.Name);
+            //Console.Out.WriteLine("User label: " + user.Name);
             e.Result = user;
         }
 
@@ -663,7 +663,7 @@ namespace Kinect
             }
             catch (Exception ex)
             {
-                Console.Out.WriteLine("[FaceProcessor] detectFaceGPU: " + ex.Message);
+                //Console.Out.WriteLine("[FaceProcessor] detectFaceGPU: " + ex.Message);
             }
 
             // if a face has been detected store each in the facelist and indicate there are new values in the list.

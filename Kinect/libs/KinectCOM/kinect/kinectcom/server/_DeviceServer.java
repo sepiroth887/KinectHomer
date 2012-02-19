@@ -130,6 +130,21 @@ public class _DeviceServer extends IDispatchServer
     /**
      * 
      */
+    public void storeGestures()
+    {
+    }
+
+    /**
+     * 
+     */
+    public BStr loadGestures()
+    {
+        throw new ComException(HResult.E_NOTIMPL);
+    }
+
+    /**
+     * 
+     */
     public VariantBool init()
     {
         throw new ComException(HResult.E_NOTIMPL);

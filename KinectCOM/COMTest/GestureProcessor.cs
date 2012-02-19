@@ -27,7 +27,7 @@ namespace KinectCOM
         /// <summary>
         /// The minumum number of frames in the _video buffer before we attempt to start matching gestures
         /// </summary>
-        private const int MinimumFrames = 6;
+        private const int MinimumFrames = 10;
 
         /// <summary>
         /// The minumum number of frames in the _video buffer before we attempt to start matching gestures
@@ -39,7 +39,7 @@ namespace KinectCOM
         private DtwGestureRecognizer dtw;
 
         private int activeUser = -1;
-        private String ctxt = "__NOCONTEXT";
+        private string ctxt = "__NOCONTEXT";
         private bool isRecording = false;
         private bool isRecognizing = false;
         private DateTime _lastFrameTime=DateTime.MaxValue;
@@ -49,16 +49,16 @@ namespace KinectCOM
 
         private DateTime captureCountDown = DateTime.Now;
 
-        private String gestureName;
+        private string gestureName;
 
         private ObjectPointer pointer;
 
         private bool addOnGesture = false;
-        private String addOnGestureType;
+        private string addOnGestureType;
 
-        public static readonly String Z_ADDON = "z";
-        public static readonly String X_ADDON = "x";
-        public static readonly String Y_ADDON = "y";
+        public static readonly string Z_ADDON = "z";
+        public static readonly string X_ADDON = "x";
+        public static readonly string Y_ADDON = "y";
  
 
         public GestureProcessor(IKinect kinectHandler, KinectData kinect) {
@@ -81,7 +81,7 @@ namespace KinectCOM
             pointer.ContextSelected+=new ObjectPointer.ContextSelectedEventHandler(pointer_ContextSelected);
         }
 
-        private void pointer_ContextSelected(String ctxt) {
+        private void pointer_ContextSelected(string ctxt) {
             kinectHandler.contextSelected(ctxt);
         }
 
@@ -95,6 +95,7 @@ namespace KinectCOM
             sFrame.CopySkeletonDataTo(skeletons);
             foreach (Skeleton skeleton in skeletons) {
                 if (skeleton.TrackingId == activeUser) {
+                    
                     Skeleton2DDataExtract.ProcessData(skeleton);
                     if(!isRecording)
                         pointer.findContext(skeleton);
@@ -116,9 +117,10 @@ namespace KinectCOM
 
         private Stopwatch recTimer = new Stopwatch(); 
 
-        public void recognizeGesture(String ctxt) {
+        public void recognizeGesture(string ctxt) {
             isRecording = false;
             this.ctxt = ctxt;
+            seqCoords.Clear();
             isRecognizing = true;
             recTimer.Reset();
             recTimer.Start();
@@ -128,17 +130,21 @@ namespace KinectCOM
             this.isRecognizing = false;
         }
 
-        public void storeGesture() { 
-            
+        public void storeGestures() {
+            FileLoader.saveGestures(dtw.RetrieveText());
         }
 
-        public void enableAddOnGesture(String type) {
+        public string[] loadGestures() {
+            return FileLoader.loadGestures(dtw);
+        }
+
+        public void enableAddOnGesture(string type) {
             addOnGesture = true;
             addOnGestureType = type;
         }
 
         
-        private void AddOnGesture(String type,Skeleton skel) {
+        private void AddOnGesture(string type,Skeleton skel) {
             if (skel.Joints[JointType.HandLeft].TrackingState == JointTrackingState.NotTracked) { return; }
 
             if (type.Equals(GestureProcessor.X_ADDON)) {
@@ -163,14 +169,14 @@ namespace KinectCOM
         private float rateOfChange;
         private bool activityRunning = false;
 
-        private void startAddonGesture(Skeleton skeleton,String axis) {
+        private void startAddonGesture(Skeleton skeleton,string axis) {
             if (!hasStartPoint)
             {
                 startPoint = skeleton.Joints[JointType.HandLeft].Position;
                 lastPoint = skeleton.Joints[JointType.HandLeft].Position;
                 timer.Start();
                 startoffset.Start();
-                Console.Out.WriteLine("Timer started");
+                //Console.Out.WriteLine("Timer started");
                 hasStartPoint = true;
             }
             if (timer.ElapsedMilliseconds > 200)
@@ -197,7 +203,7 @@ namespace KinectCOM
                 // calculate the change in cm / mssec
                 rateOfChange = delta / time;
 
-                //Console.Out.WriteLine(rateOfChange);
+                ////Console.Out.WriteLine(rateOfChange);
                 timer.Restart();
             }
 
@@ -211,7 +217,7 @@ namespace KinectCOM
                     {
                         startPoint = skeleton.Joints[JointType.HandLeft].Position;
                         activityRunning = true;
-                        Console.Out.WriteLine("Activity started");
+                        //Console.Out.WriteLine("Activity started");
                     }
 
                     stopTimer.Reset();
@@ -222,7 +228,7 @@ namespace KinectCOM
                     {
                         if (activityRunning)
                         {
-                            Console.Out.WriteLine("Activity stopped");
+                            //Console.Out.WriteLine("Activity stopped");
                             activityRunning = false;
                             hasStartPoint = false;
                             addOnGesture = false;
@@ -250,13 +256,13 @@ namespace KinectCOM
                     float minVal = -20;
                     float value = Math.Min(Math.Max(cmChange, minVal), maxVal) / maxVal;
                     kinectHandler.onAddOnGestureValueChange(value);
-                    //Console.Out.WriteLine("Active change: " + value);
+                    ////Console.Out.WriteLine("Active change: " + value);
                 }
             }
         }
 
-        public void recordGesture(String gestureName, String ctxt) {
-            //Console.Out.WriteLine("Recording gesture, starting timer");
+        public void recordGesture(string gestureName, string ctxt) {
+            ////Console.Out.WriteLine("Recording gesture, starting timer");
             this.gestureName = gestureName;
             this.ctxt = ctxt;
             this.isRecognizing = false;
@@ -270,7 +276,7 @@ namespace KinectCOM
             System.Threading.Thread.Sleep(1000);
             kinectHandler.recordingCountdownEvent(0);
             System.Threading.Thread.Sleep(1000);
-            seqCoords = new ArrayList();
+            seqCoords.Clear();
             isRecording = true;
             
         }
@@ -278,12 +284,12 @@ namespace KinectCOM
         private void NuiSkeleton2DdataCoordReady(object sender, Skeleton2DdataCoordEventArgs a){
             
             if (seqCoords.Count > MinimumFrames && !isRecording && isRecognizing) {
-                //Console.Out.WriteLine("No of frames: " + seqCoords.Count);
-                String gesture = dtw.Recognize(seqCoords,ctxt);
+                ////Console.Out.WriteLine("No of frames: " + seqCoords.Count);
+                string gesture = dtw.Recognize(seqCoords,ctxt);
 
 
                 if(!gesture.Contains("__UNKNOWN") || recTimer.ElapsedMilliseconds > 3000){
-                    seqCoords = new ArrayList();
+                    seqCoords.Clear();
 
                     kinectHandler.gestureRecognitionCompleted(gesture);
 
@@ -297,11 +303,10 @@ namespace KinectCOM
 
             if(seqCoords.Count > BufferSize){
                 if(isRecording){
-                   
-                    dtw.AddOrUpdate(seqCoords,gestureName,ctxt);
-                    seqCoords = new ArrayList();
-                    kinectHandler.gestureRecordCompleted(gestureName,ctxt);
                     isRecording = false;
+                    dtw.AddOrUpdate(seqCoords,gestureName,ctxt);
+                    seqCoords.Clear();
+                    kinectHandler.gestureRecordCompleted(gestureName,ctxt);
                 }else{
                     seqCoords.RemoveAt(0);
                 }

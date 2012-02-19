@@ -23,22 +23,24 @@ namespace KinectCOM
         void userLost(UserFeature user);
         void presenceLost(int skeletonID);
 
-        void gestureRecordCompleted(string gestureName, String ctxt);
+        void gestureRecordCompleted(string gestureName, string ctxt);
 
         void recordingCountdownEvent(int p);
 
         void gestureRecognitionCompleted(string gesture);
 
-        void recordGesture(string gestureName, String ctxt);
+        void recordGesture(string gestureName, string ctxt);
 
-        void recognizeGesture(String ctxt);
+        void recognizeGesture(string ctxt);
 
         void stopRecGesture();
 
         void onAddOnGestureValueChange(float value);
 
+        void contextSelected(string ctxt);
 
+        void storeGestures();
 
-        void contextSelected(String ctxt);
+        string[] loadGestures();
     }
 }

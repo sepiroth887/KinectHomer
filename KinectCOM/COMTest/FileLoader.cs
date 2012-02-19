@@ -7,6 +7,7 @@ using Emgu.CV.Structure;
 using System.IO;
 using Microsoft.Xna.Framework;
 using System.Collections;
+using DTWGestureRecognition;
 
 namespace Kinect
 {
@@ -18,17 +19,17 @@ namespace Kinect
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static Dictionary<Image<Gray, byte>[],String[]> loadFaceDB(string path) { 
+        public static Dictionary<Image<Gray, byte>[],string[]> loadFaceDB(string path) { 
             // get the directory info of the passed path
             DirectoryInfo dir = new DirectoryInfo(path);
 
            
-            Dictionary<Image<Gray, byte>[], String[]> database = new Dictionary<Image<Gray, byte>[], string[]>();
+            Dictionary<Image<Gray, byte>[], string[]> database = new Dictionary<Image<Gray, byte>[], string[]>();
            
             // go through each sub directory and retrieve all PNG files.
             foreach (DirectoryInfo dirs in dir.GetDirectories()) {
                 Image<Gray,byte>[] images = new Image<Gray,byte>[dirs.GetFiles("*.png").Count()];
-                String[] label = new String[images.Length];
+                string[] label = new string[images.Length];
 
                 //loop though all files in the subfolder 
                 int counter = 0;
@@ -49,7 +50,7 @@ namespace Kinect
 
         }
 
-        public static readonly String DEFAULT_PATH = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\KinectHomer\\";
+        public static readonly string DEFAULT_PATH = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\KinectHomer\\";
         /// <summary>
         /// static method to load all images of users from the hard disk.
         /// </summary>
@@ -58,7 +59,7 @@ namespace Kinect
         /// 
         public enum Units { mm = 1000, cm = 100, m = 1 };
 
-        public static Dictionary<String, Vector3[]> loadObj(String file, Units unit)
+        public static Dictionary<string, Vector3[]> loadObj(string file, Units unit)
         {
 
             DirectoryInfo dir = new DirectoryInfo(FileLoader.DEFAULT_PATH);
@@ -70,11 +71,11 @@ namespace Kinect
 
             StreamReader reader = new StreamReader(FileLoader.DEFAULT_PATH + "" + file);
 
-            String line;
+            string line;
             bool objectFound = false;
-            String objectName = "";
+            string objectName = "";
             ArrayList points = new ArrayList();
-            Dictionary<String, Vector3[]> objects = new Dictionary<String, Vector3[]>();
+            Dictionary<string, Vector3[]> objects = new Dictionary<string, Vector3[]>();
 
             while ((line = reader.ReadLine()) != null)
             {
@@ -82,7 +83,7 @@ namespace Kinect
 
                 if (line.StartsWith("#"))
                 {
-                    Console.Out.WriteLine(line);
+                    //Console.Out.WriteLine(line);
                     if (line.Contains("object"))
                     {
                         objectFound = true;
@@ -105,7 +106,7 @@ namespace Kinect
                 }
                 else if (objectFound && line.StartsWith("v"))
                 {
-                    String[] parts = line.Split(' ');
+                    string[] parts = line.Split(' ');
 
                     Vector3 point = new Vector3();
 
@@ -122,7 +123,7 @@ namespace Kinect
             return objects;
         }
 
-        public static void saveObject(String path,int context, Vector3[] points) {
+        public static void saveObject(string path,int context, Vector3[] points) {
             DirectoryInfo dir = new DirectoryInfo(path);
 
             if (!dir.Exists)
@@ -148,7 +149,7 @@ namespace Kinect
             file.Close();
         }
 
-        public static Dictionary<int, Vector3[]> loadObjects(String path)
+        public static Dictionary<int, Vector3[]> loadObjects(string path)
         {
             
             DirectoryInfo dir = new DirectoryInfo(path);
@@ -161,26 +162,26 @@ namespace Kinect
             Vector3[] vectors;
 
             System.IO.StreamReader file = new StreamReader(dir.FullName+"\\objects.hos");
-            String line;
+            string line;
             while ((line = file.ReadLine()) != null) {
                 if (line.StartsWith("//"))
                 {
-                    Console.Out.WriteLine(line);
+                    //Console.Out.WriteLine(line);
 
                 }
                 else {
                         
-                    String[] split1 = line.Split(':');
+                    string[] split1 = line.Split(':');
 
                     int context = Int32.Parse(split1[0]);
 
-                    String[] vStrings = split1[1].Split(',');
+                    string[] vstrings = split1[1].Split(',');
 
-                    vectors = new Vector3[vStrings.Length];
+                    vectors = new Vector3[vstrings.Length];
 
-                    for (int i = 0; i < vStrings.Length; i++) {
+                    for (int i = 0; i < vstrings.Length; i++) {
 
-                        String[] components = vStrings[i].Split(';');
+                        string[] components = vstrings[i].Split(';');
 
                         float x = float.Parse(components[0]);
                         float y = float.Parse(components[1]);
@@ -202,19 +203,19 @@ namespace Kinect
             return objects;
         }
 
-        public static Dictionary<Image<Rgb, byte>[], String[]> loadFaceDBC(string path)
+        public static Dictionary<Image<Rgb, byte>[], string[]> loadFaceDBC(string path)
         {
             // get the directory info of the passed path
             DirectoryInfo dir = new DirectoryInfo(path);
 
 
-            Dictionary<Image<Rgb, byte>[], String[]> database = new Dictionary<Image<Rgb, byte>[], string[]>();
+            Dictionary<Image<Rgb, byte>[], string[]> database = new Dictionary<Image<Rgb, byte>[], string[]>();
 
             // go through each sub directory and retrieve all PNG files.
             foreach (DirectoryInfo dirs in dir.GetDirectories())
             {
                 Image<Rgb, byte>[] images = new Image<Rgb, byte>[dirs.GetFiles("*.pgm").Count()];
-                String[] label = new String[images.Length];
+                string[] label = new string[images.Length];
 
                 //loop though all files in the subfolder 
                 int counter = 0;
@@ -241,14 +242,14 @@ namespace Kinect
         /// </summary>
         /// <param name="database"></param>
         /// <param name="path">file path to store the images</param>
-        public static void saveFaceDB(Dictionary<Image<Gray, byte>[], String[]> database, string path)
+        public static void saveFaceDB(Dictionary<Image<Gray, byte>[], string[]> database, string path)
         {
             
             // loop though each entry in the dictionary 
-            foreach (KeyValuePair<Image<Gray, byte>[], String[]> entry in database) {
+            foreach (KeyValuePair<Image<Gray, byte>[], string[]> entry in database) {
               
                 // and get the name of the user as the folder name
-                String folderName = entry.Value[0];
+                string folderName = entry.Value[0];
 
                 DirectoryInfo dir = new DirectoryInfo(path+"/"+folderName);
 
@@ -281,8 +282,8 @@ namespace Kinect
         /// <param name="label"></param>
         /// <param name="image"></param>
         /// <param name="path"></param>
-        public static void saveImage(String label, Image<Gray, byte> image, String path) {
-            String folderName = label;
+        public static void saveImage(string label, Image<Gray, byte> image, string path) {
+            string folderName = label;
             int numFiles = 0;
             DirectoryInfo dir = new DirectoryInfo(path + "/" + folderName);
 
@@ -299,6 +300,91 @@ namespace Kinect
             image.Save(dir.FullName + "/" + (numFiles++)%200 + ".png");
           
             
+        }
+
+        public static string[] loadGestures(DtwGestureRecognizer dtw) {
+
+            string[] result = null;
+            int itemCount = 0;
+            string line;
+            string gestureName = string.Empty;
+            string contextName = string.Empty;
+            // TODO I'm defaulting this to 12 here for now as it meets my current need but I need to cater for variable lengths in the future
+            ArrayList frames = new ArrayList();
+            double[] items = new double[12];
+
+            // Read the file and display it line by line.
+            if(!File.Exists(DEFAULT_PATH+"gestures.sav")){
+                //Console.Out.WriteLine("Gesture file not found");
+                return null;
+            }
+            StreamReader file = new System.IO.StreamReader(DEFAULT_PATH+"gestures.sav");
+
+            int counter = 0;
+
+            while ((line = file.ReadLine()) != null)
+            {
+                if (line.StartsWith("//")) {
+
+                    int numGestures = int.Parse(line.Split('=')[1]);
+                    if (numGestures != 0)
+                    {
+                        result = new string[numGestures];
+                    }
+                    else {
+                        return null;
+                    }
+                    continue;
+                }
+                if (line.StartsWith("@"))
+                {
+                    gestureName = line.Substring(1);
+                    result[counter] = gestureName;
+                    continue;
+                }
+
+                if (line.StartsWith("$")){
+                    contextName = line.Substring(1);
+                    result[counter] += ";" + contextName;
+                    continue;
+                }
+                    
+                if (line.StartsWith("~"))
+                {
+                    frames.Add(items);
+                    itemCount = 0;
+                    items = new double[12];
+                    continue;
+                }
+
+                if (!line.StartsWith("----"))
+                {
+                    items[itemCount] = Double.Parse(line);
+                }
+
+                itemCount++;
+
+                if (line.StartsWith("----"))
+                {
+                    if (frames.Count == 0) continue;
+                    dtw.AddOrUpdate(frames, gestureName,contextName);
+                    frames = new ArrayList();
+                    gestureName = string.Empty;
+                    contextName = string.Empty;
+                    counter++;
+                    itemCount = 0;
+                }
+            }
+
+            //Console.Out.WriteLine(counter + " Gestures loaded");
+            file.Close();
+            return result;
+        }
+
+        public static void saveGestures(string gestureData)
+        {   
+            File.WriteAllText(DEFAULT_PATH+"gestures.sav",gestureData);
+            //Console.Out.WriteLine("Gestures saved");
         }
     }
 }

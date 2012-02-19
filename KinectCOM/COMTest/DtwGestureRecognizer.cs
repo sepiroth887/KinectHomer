@@ -117,14 +117,19 @@ namespace DTWGestureRecognition
         /// </summary>
         /// <param name="seq">The sequence</param>
         /// <param name="lab">Sequence name</param>
-        public void AddOrUpdate(ArrayList seq, string lab,String ctxt)
+        /// 
+        private bool canSave = true;
+        public void AddOrUpdate(ArrayList seq, string lab,string ctxt)
         {
+            if (!canSave) { return; }
+            canSave = false;
+            if (seq.Count == 0) return;
             // First we check whether there is already a recording for this label. If so overwrite it, otherwise add a new entry
             int existingIndex = -1;
-
+            
             for (int i = 0; i < _labels.Count; i++)
             {
-                if ((string)_labels[i] == lab && _ctxt[i] == ctxt)
+                if ((string)_labels[i] == lab && (string)_ctxt[i] == ctxt)
                 {
                     existingIndex = i;
                 }
@@ -142,6 +147,7 @@ namespace DTWGestureRecognition
             _sequences.Add(seq);
             _labels.Add(lab);
             _ctxt.Add(ctxt);
+            canSave = true;
         }
 
         /// <summary>
@@ -151,7 +157,7 @@ namespace DTWGestureRecognition
         /// </summary>
         /// <param name="seq">The sequence to recognise</param>
         /// <returns>The recognised gesture name</returns>
-        public string Recognize(ArrayList seq,String ctxt)
+        public string Recognize(ArrayList seq,string ctxt)
         {
             double minDist = double.PositiveInfinity;
             string classification = "__UNKNOWN";
@@ -165,7 +171,7 @@ namespace DTWGestureRecognition
                     if (d < minDist)
                     {
                         minDist = d;
-                        if ((String)_ctxt[i] == ctxt)
+                        if ((string)_ctxt[i] == ctxt)
                         {
                             classification = (string)_labels[i];
                         }
@@ -183,7 +189,14 @@ namespace DTWGestureRecognition
         /// <returns>A string containing all recorded gestures and their names</returns>
         public string RetrieveText()
         {
-            string retStr = String.Empty;
+            while (!canSave) {
+                System.Threading.Thread.Sleep(5);
+            }
+            string retStr = string.Empty;
+
+            int numGestures = _labels.Count;
+
+            retStr += "//numGestures=" + numGestures+"\r\n";
 
             if (_sequences != null)
             {
@@ -191,8 +204,8 @@ namespace DTWGestureRecognition
                 for (int gestureNum = 0; gestureNum < _sequences.Count; gestureNum++)
                 {
                     // Echo the label
-                    retStr += _labels[gestureNum] + "\r\n";
-
+                    retStr += "@"+ _labels[gestureNum] + "\r\n";
+                    retStr += "$" + _ctxt[gestureNum] + "\r\n";
                     int frameNum = 0;
 
                     //Iterate through each frame of this gesture
@@ -201,6 +214,7 @@ namespace DTWGestureRecognition
                         // Extract each double
                         foreach (double dub in (double[])frame)
                         {
+                            //Console.Out.WriteLine(dub);
                             retStr += dub + "\r\n";
                         }
 
@@ -218,7 +232,7 @@ namespace DTWGestureRecognition
                     }
                 }
             }
-
+            
             return retStr;
         }
 

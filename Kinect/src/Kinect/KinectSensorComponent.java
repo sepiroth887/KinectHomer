@@ -25,6 +25,8 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 	static final String USER_DETECTED = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "USER_DETECTED");
 	static final String USER_LOST = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "USER_LOST");
 	
+	private KinectUI ui;
+	
 	public KinectSensorComponent(){
 		
 		try {
@@ -33,10 +35,15 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 			logger.error("Could not create Kinect sensor listener : "+ex.getMessage());
 		}
 		
+		
 	}
 	
 	public void disconnect(){
 		kinectSensorListener.disconnect();
+	}
+	
+	public void setUI(KinectUI ui){
+		this.ui = ui;
 	}
 
 	@Override
@@ -100,6 +107,16 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 	public void setTracking(int skelID) {
 		kinectSensorListener.setTracking(new Int32(skelID));
 	}
+
+	public void storeGestures() {
+		kinectSensorListener.storeGestures();
+	}
 	
-	
+	public String[] loadGestures(){
+		return kinectSensorListener.loadGestures();
+	}
+
+	public void updateGestureModel() {
+		ui.updateGestureModel();
+	}
 }

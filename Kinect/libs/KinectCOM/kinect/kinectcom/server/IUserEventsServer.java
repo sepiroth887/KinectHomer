@@ -39,7 +39,8 @@ public class IUserEventsServer extends IDispatchServer
      */
     public void onUserFound(
         BStr /*[in]*/ user,
-        SingleFloat /*[in]*/ confidence)
+        SingleFloat /*[in]*/ confidence,
+        Int32 /*[in]*/ skeletonID)
     {
     }
 

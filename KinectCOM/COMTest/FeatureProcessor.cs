@@ -121,7 +121,7 @@ namespace KinectCOM
                 
                 if(!skeleton.TrackingState.Equals(SkeletonTrackingState.NotTracked)){
                      users.Add(skeleton.TrackingId);
-                     //Console.Out.WriteLine("Tracked user found: " + skeleton.TrackingID);
+                     ////Console.Out.WriteLine("Tracked user found: " + skeleton.TrackingID);
                 }
 
                 // if no active user has been selected, skip the remainder.
@@ -164,7 +164,7 @@ namespace KinectCOM
         /// </summary>
         /// <param name="skelID"></param>
         /// <returns>Dictionary of the body features</returns>
-        public Dictionary<FeatureType, String> getFeatures(int skelID)
+        public Dictionary<FeatureType, string> getFeatures(int skelID)
         {
             // the passed userID does not match the currently tracked user so stop working.
             if (activeUser != skelID) {
@@ -211,7 +211,7 @@ namespace KinectCOM
             }
 
             // store all average values in a dictionary of featureTypes.
-            Dictionary<FeatureType, String> vals = new Dictionary<FeatureType, String>();
+            Dictionary<FeatureType, string> vals = new Dictionary<FeatureType, string>();
 
             vals.Add(FeatureType.ShoulderWidth, avgShoulder.ToString(CultureInfo.CreateSpecificCulture("en-GB")));
             vals.Add(FeatureType.ArmLength, avgArm.ToString(CultureInfo.CreateSpecificCulture("en-GB")));

@@ -17,7 +17,7 @@ import kinect.kinectcom.*;
 public class _DeviceImpl extends IDispatchImpl
     implements _Device
 {
-    public static final String INTERFACE_IDENTIFIER = "{946AD531-061A-3493-87A2-28F0B5F7FDD9}";
+    public static final String INTERFACE_IDENTIFIER = "{A0974408-9EBC-39A9-8591-D7BE80B1FFD7}";
     private static final IID _iid = IID.create(INTERFACE_IDENTIFIER);
 
     public _DeviceImpl()
@@ -213,6 +213,29 @@ public class _DeviceImpl extends IDispatchImpl
         Parameter[] parameters = new Parameter[0];
 
          Automation.invokeDispatch(this, "stopGestureRecognition", parameters, void.class);
+    }
+
+    /**
+     * 
+     */
+    public void storeGestures()
+    {
+
+        Parameter[] parameters = new Parameter[0];
+
+         Automation.invokeDispatch(this, "storeGestures", parameters, void.class);
+    }
+
+    /**
+     * 
+     */
+    public BStr loadGestures()
+    {
+
+        Parameter[] parameters = new Parameter[0];
+
+         Object result = Automation.invokeDispatch(this, "loadGestures", parameters, BStr.class);
+        return (BStr) result;
     }
 
     /**

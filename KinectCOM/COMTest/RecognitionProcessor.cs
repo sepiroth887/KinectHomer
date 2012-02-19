@@ -31,11 +31,11 @@ namespace Kinect
             this.faceProcessor = face;
         }
 
-        public void learnUser(String name, int skeletonID) {
+        public void learnUser(string name, int skeletonID) {
 
             faceProcessor.learnFace(faces,name);
 
-            Dictionary<FeatureType, String> features = featureProcessor.getFeatures(skeletonID);
+            Dictionary<FeatureType, string> features = featureProcessor.getFeatures(skeletonID);
             features.Add(FeatureType.Face,name);
             new DataStore().storeUserData(features);
 
@@ -69,23 +69,23 @@ namespace Kinect
         private int trackedUser;
         public void userRecognized(UserFeature user) { 
            
-            Dictionary<String, Dictionary<FeatureType,String>> users = DataStore.loadAllUsers();
+            Dictionary<string, Dictionary<FeatureType,string>> users = DataStore.loadAllUsers();
 
             if (user != null && users != null) {
                 
-                Dictionary<FeatureType,String> actualFeatures = featureProcessor.getFeatures(trackedUser);
+                Dictionary<FeatureType,string> actualFeatures = featureProcessor.getFeatures(trackedUser);
                 if (actualFeatures == null) { kinectHandler.userDetected(null); return; }                
                 
-                String userLabel = "";
-                String bestMatch = "";
+                string userLabel = "";
+                string bestMatch = "";
                 float sumConfidence = 0;
                 float bestConfidence = 0;
 
-                foreach (KeyValuePair<String, Dictionary<FeatureType, String>> storedFeatures in users)
+                foreach (KeyValuePair<string, Dictionary<FeatureType, string>> storedFeatures in users)
                 {
                     Dictionary<FeatureType, float> featureConfidence = new Dictionary<FeatureType, float>(); 
 
-                    foreach (KeyValuePair<FeatureType, String> feature in storedFeatures.Value)
+                    foreach (KeyValuePair<FeatureType, string> feature in storedFeatures.Value)
                     {
 
                         

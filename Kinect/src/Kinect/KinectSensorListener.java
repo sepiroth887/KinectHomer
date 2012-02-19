@@ -8,12 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.jniwrapper.Int32;
+import com.jniwrapper.Parameter;
+import com.jniwrapper.StringArray;
 import com.jniwrapper.win32.automation.AutomationException;
 import com.jniwrapper.win32.automation.IDispatch;
 import com.jniwrapper.win32.automation.impl.IDispatchImpl;
 import com.jniwrapper.win32.automation.server.IDispatchVTBL;
 import com.jniwrapper.win32.automation.types.BStr;
 import com.jniwrapper.win32.automation.types.ExcepInfo;
+import com.jniwrapper.win32.automation.types.SafeArray;
 import com.jniwrapper.win32.com.ComException;
 import com.jniwrapper.win32.com.ComFunctions;
 import com.jniwrapper.win32.com.IClassFactory;
@@ -118,6 +121,22 @@ public class KinectSensorListener {
 
 	public void setContext(BStr ctxt) {
 		comDevice.setContext(ctxt);
+	}
+
+	public void storeGestures() {
+		comDevice.storeGestures();
+	}
+	
+	public String[] loadGestures(){
+		String gestures = comDevice.loadGestures().toString();
+		
+		String[] gestureArray = gestures.split("\n");
+		
+		return gestureArray;
+	}
+
+	public void updateGestureModel() {
+		kinectComponent.updateGestureModel();
 	}
 	
 }
