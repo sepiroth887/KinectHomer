@@ -305,7 +305,6 @@ namespace Kinect
         public static string[] loadGestures(DtwGestureRecognizer dtw) {
 
             string[] result = null;
-            int itemCount = 0;
             string line;
             string gestureName = string.Empty;
             string contextName = string.Empty;
@@ -348,31 +347,31 @@ namespace Kinect
                     result[counter] += ";" + contextName;
                     continue;
                 }
-                    
-                if (line.StartsWith("~"))
-                {
-                    frames.Add(items);
-                    itemCount = 0;
-                    items = new double[12];
-                    continue;
-                }
 
                 if (!line.StartsWith("----"))
                 {
-                    items[itemCount] = Double.Parse(line);
+                    
+                    items = new double[12];
+                    line = line.Substring(0, line.Length - 1);
+                    String[] doubles = line.Split(';');
+                    for (int i = 0; i < doubles.Length; i++) {
+                        items[i] = Double.Parse(doubles[i]);
+                    }
+                    Console.Out.WriteLine("Found a Frame of size : "+doubles.Length);
+                    frames.Add(items);
                 }
 
-                itemCount++;
+                
 
                 if (line.StartsWith("----"))
                 {
-                    if (frames.Count == 0) continue;
-                    dtw.AddOrUpdate(frames, gestureName,contextName);
+                    Console.Out.WriteLine("Gesture data gathered: " + frames.Count + " frames | " + gestureName + " | " + contextName);
+                    dtw.AddOrUpdate(frames, gestureName,contextName,true);
+                    Console.Out.WriteLine("Added gesture to DTW");
                     frames = new ArrayList();
                     gestureName = string.Empty;
                     contextName = string.Empty;
                     counter++;
-                    itemCount = 0;
                 }
             }
 
@@ -382,8 +381,15 @@ namespace Kinect
         }
 
         public static void saveGestures(string gestureData)
-        {   
-            File.WriteAllText(DEFAULT_PATH+"gestures.sav",gestureData);
+        {
+
+            StreamWriter file = new System.IO.StreamWriter(DEFAULT_PATH + "gestures.sav");
+
+            file.Write(gestureData);
+
+            file.Flush();
+            file.Close();
+
             //Console.Out.WriteLine("Gestures saved");
         }
     }

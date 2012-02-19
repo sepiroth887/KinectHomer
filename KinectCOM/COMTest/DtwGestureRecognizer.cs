@@ -21,6 +21,7 @@ namespace DTWGestureRecognition
 {
     using System;
     using System.Collections;
+    using Kinect;
 
     /// <summary>
     /// Dynamic Time Warping nearest neighbour sequence comparison class.
@@ -84,6 +85,7 @@ namespace DTWGestureRecognition
             _dimension = dim;
             _sequences = new ArrayList();
             _labels = new ArrayList();
+            _ctxt = new ArrayList();
             _globalThreshold = threshold;
             _firstThreshold = firstThreshold;
             _maxSlope = int.MaxValue;
@@ -117,16 +119,21 @@ namespace DTWGestureRecognition
         /// </summary>
         /// <param name="seq">The sequence</param>
         /// <param name="lab">Sequence name</param>
-        /// 
-        private bool canSave = true;
-        public void AddOrUpdate(ArrayList seq, string lab,string ctxt)
+        public void AddOrUpdate(ArrayList seq, string lab, string ctxt)
         {
-            if (!canSave) { return; }
-            canSave = false;
-            if (seq.Count == 0) return;
+            AddOrUpdate(seq, lab, ctxt, false);
+        }
+
+        public void AddOrUpdate(ArrayList seq, string lab, string ctxt, Boolean firstLoad) {
             // First we check whether there is already a recording for this label. If so overwrite it, otherwise add a new entry
             int existingIndex = -1;
-            
+
+            if (_sequences == null || _labels == null || _ctxt == null)
+            {
+                Console.Out.WriteLine("DTW not done with init");
+                return;
+            }
+
             for (int i = 0; i < _labels.Count; i++)
             {
                 if ((string)_labels[i] == lab && (string)_ctxt[i] == ctxt)
@@ -147,7 +154,12 @@ namespace DTWGestureRecognition
             _sequences.Add(seq);
             _labels.Add(lab);
             _ctxt.Add(ctxt);
-            canSave = true;
+
+            if (!firstLoad)
+            {
+                FileLoader.saveGestures(this.RetrieveText());
+                FileLoader.loadGestures(this);
+            }
         }
 
         /// <summary>
@@ -159,26 +171,25 @@ namespace DTWGestureRecognition
         /// <returns>The recognised gesture name</returns>
         public string Recognize(ArrayList seq,string ctxt)
         {
+
             double minDist = double.PositiveInfinity;
             string classification = "__UNKNOWN";
             for (int i = 0; i < _sequences.Count; i++)
             {
-                var example = (ArrayList) _sequences[i];
-                ////Debug.WriteLine(Dist2((double[]) seq[seq.Count - 1], (double[]) example[example.Count - 1]));
-                if (Dist2((double[]) seq[seq.Count - 1], (double[]) example[example.Count - 1]) < _firstThreshold)
+                
+                var example = (ArrayList)_sequences[i];
+                Console.Out.WriteLine(Dist2((double[]) seq[seq.Count - 1], (double[]) example[example.Count - 1]));
+                if (Dist2((double[])seq[seq.Count - 1], (double[])example[example.Count - 1]) < _firstThreshold)
                 {
                     double d = Dtw(seq, example) / example.Count;
-                    if (d < minDist)
+                    if (d < minDist && (string) _ctxt[i] == ctxt)
                     {
                         minDist = d;
-                        if ((string)_ctxt[i] == ctxt)
-                        {
-                            classification = (string)_labels[i];
-                        }
+                        classification = (string)_labels[i];
                     }
                 }
             }
-           
+
             return (minDist < _globalThreshold ? classification : "__UNKNOWN") + " " /*+minDist.ToString()*/;
         }
 
@@ -189,14 +200,9 @@ namespace DTWGestureRecognition
         /// <returns>A string containing all recorded gestures and their names</returns>
         public string RetrieveText()
         {
-            while (!canSave) {
-                System.Threading.Thread.Sleep(5);
-            }
-            string retStr = string.Empty;
+            string retStr = String.Empty;
 
-            int numGestures = _labels.Count;
-
-            retStr += "//numGestures=" + numGestures+"\r\n";
+            retStr += "//numGestures=" + _ctxt.Count+"\r\n";
 
             if (_sequences != null)
             {
@@ -204,22 +210,24 @@ namespace DTWGestureRecognition
                 for (int gestureNum = 0; gestureNum < _sequences.Count; gestureNum++)
                 {
                     // Echo the label
-                    retStr += "@"+ _labels[gestureNum] + "\r\n";
+                    retStr += "@"+_labels[gestureNum] + "\r\n";
                     retStr += "$" + _ctxt[gestureNum] + "\r\n";
                     int frameNum = 0;
 
                     //Iterate through each frame of this gesture
                     foreach (double[] frame in ((ArrayList)_sequences[gestureNum]))
                     {
+                        if (frame.Length > 12) {
+                            Console.Out.WriteLine("Frame too long: " + frame.Length);
+                        }
                         // Extract each double
                         foreach (double dub in (double[])frame)
                         {
-                            //Console.Out.WriteLine(dub);
-                            retStr += dub + "\r\n";
+                            retStr += dub + ";";
                         }
 
                         // Signifies end of this double
-                        retStr += "~\r\n";
+                        retStr += "\r\n";
 
                         frameNum++;
                     }
@@ -232,7 +240,7 @@ namespace DTWGestureRecognition
                     }
                 }
             }
-            
+
             return retStr;
         }
 
@@ -244,6 +252,7 @@ namespace DTWGestureRecognition
         /// <returns>The best match</returns>
         public double Dtw(ArrayList seq1, ArrayList seq2)
         {
+            
             // Init
             var seq1R = new ArrayList(seq1);
             seq1R.Reverse();
@@ -273,20 +282,20 @@ namespace DTWGestureRecognition
                     if (tab[i, j - 1] < tab[i - 1, j - 1] && tab[i, j - 1] < tab[i - 1, j] &&
                         slopeI[i, j - 1] < _maxSlope)
                     {
-                        tab[i, j] = Dist2((double[]) seq1R[i - 1], (double[]) seq2R[j - 1]) + tab[i, j - 1];
+                        tab[i, j] = Dist2((double[])seq1R[i - 1], (double[])seq2R[j - 1]) + tab[i, j - 1];
                         slopeI[i, j] = slopeJ[i, j - 1] + 1;
                         slopeJ[i, j] = 0;
                     }
                     else if (tab[i - 1, j] < tab[i - 1, j - 1] && tab[i - 1, j] < tab[i, j - 1] &&
                              slopeJ[i - 1, j] < _maxSlope)
                     {
-                        tab[i, j] = Dist2((double[]) seq1R[i - 1], (double[]) seq2R[j - 1]) + tab[i - 1, j];
+                        tab[i, j] = Dist2((double[])seq1R[i - 1], (double[])seq2R[j - 1]) + tab[i - 1, j];
                         slopeI[i, j] = 0;
                         slopeJ[i, j] = slopeJ[i - 1, j] + 1;
                     }
                     else
                     {
-                        tab[i, j] = Dist2((double[]) seq1R[i - 1], (double[]) seq2R[j - 1]) + tab[i - 1, j - 1];
+                        tab[i, j] = Dist2((double[])seq1R[i - 1], (double[])seq2R[j - 1]) + tab[i - 1, j - 1];
                         slopeI[i, j] = 0;
                         slopeJ[i, j] = 0;
                     }
@@ -314,6 +323,8 @@ namespace DTWGestureRecognition
         /// <returns>Manhattan distance between the two points</returns>
         private double Dist1(double[] a, double[] b)
         {
+
+            
             double d = 0;
             for (int i = 0; i < _dimension; i++)
             {
@@ -331,9 +342,11 @@ namespace DTWGestureRecognition
         /// <returns>Euclidian distance between the two points</returns>
         private double Dist2(double[] a, double[] b)
         {
+            
             double d = 0;
             for (int i = 0; i < _dimension; i++)
             {
+               // Console.Out.WriteLine(a[i]+ " " + b[i]);
                 d += Math.Pow(a[i] - b[i], 2);
             }
 

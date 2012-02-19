@@ -63,9 +63,6 @@ namespace KinectCOM
 
         public GestureProcessor(IKinect kinectHandler, KinectData kinect) {
 
-            Dictionary<int, Object> contextBoxes = new Dictionary<int, Object>();
-            Dictionary<int, Object> contextSpheres = new Dictionary<int, Object>();
-
             pointer = new ObjectPointer();
 
             pointer.setObjects(FileLoader.loadObj("livingRoom.obj",FileLoader.Units.cm));
@@ -76,7 +73,7 @@ namespace KinectCOM
 
             kinect.attachSkeletonHandler(SkeletonDataReadyHandler);
 
-            dtw = new DtwGestureRecognizer(12, 0.6, 2, 2, 10);
+            dtw = new DtwGestureRecognizer(12, 0.8, 2,2,10);
             Skeleton2DDataExtract.Skeleton2DdataCoordReady += NuiSkeleton2DdataCoordReady;
             pointer.ContextSelected+=new ObjectPointer.ContextSelectedEventHandler(pointer_ContextSelected);
         }
@@ -95,8 +92,10 @@ namespace KinectCOM
             sFrame.CopySkeletonDataTo(skeletons);
             foreach (Skeleton skeleton in skeletons) {
                 if (skeleton.TrackingId == activeUser) {
-                    
-                    Skeleton2DDataExtract.ProcessData(skeleton);
+                    if(isRecognizing || isRecording){
+                        //Console.Out.WriteLine("Recording or Recognizing");
+                        Skeleton2DDataExtract.ProcessData(skeleton);
+                    }
                     if(!isRecording)
                         pointer.findContext(skeleton);
                     if (addOnGesture) {
@@ -292,7 +291,6 @@ namespace KinectCOM
                     seqCoords.Clear();
 
                     kinectHandler.gestureRecognitionCompleted(gesture);
-
                     isRecognizing = false;
                 }
             }
@@ -305,7 +303,7 @@ namespace KinectCOM
                 if(isRecording){
                     isRecording = false;
                     dtw.AddOrUpdate(seqCoords,gestureName,ctxt);
-                    seqCoords.Clear();
+                    //seqCoords.Clear();
                     kinectHandler.gestureRecordCompleted(gestureName,ctxt);
                 }else{
                     seqCoords.RemoveAt(0);

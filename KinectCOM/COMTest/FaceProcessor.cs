@@ -172,6 +172,7 @@ namespace Kinect
             DepthImageFrame dFrame = e.OpenDepthImageFrame();
             depthFrameTime = dFrame.Timestamp;
             depth2D = dFrame;
+            dFrame.Dispose();
         }
 
         /// <summary>
@@ -208,6 +209,7 @@ namespace Kinect
                     // pass all required arguments to the background worker.
                     bw.RunWorkerAsync(args);
                 }
+               
 
             }
         }
@@ -236,25 +238,31 @@ namespace Kinect
                 byte[] pixelData = new byte[kinect.getSensor().ColorStream.FramePixelDataLength];
                 frame.CopyPixelDataTo(pixelData);
 
-                MemoryStream mystream = new MemoryStream(pixelData);
-                System.Drawing.Image p = System.Drawing.Image.FromStream(mystream);
-                Bitmap Img = new Bitmap(p);    
+                if (pixelData != null) {
+                    MemoryStream mystream = new MemoryStream(pixelData);
+                    System.Drawing.Image p = System.Drawing.Image.FromStream(mystream);
+                    Bitmap Img = new Bitmap(p);
+                    mystream.Dispose();
 
-                Image<Bgr, byte> camImage = new Image<Bgr, byte>(Img);
+                    Image<Bgr, byte> camImage = new Image<Bgr, byte>(Img);
+
+                    // resize the 640x480 rgb image to match the depth image size of 320x240
+                    Image<Bgr, byte> reImg = camImage.Resize(1280, 240, INTER.CV_INTER_CUBIC);
+
+                    // set the region of interest which currently is a 40x40 pixel region where
+                    // the face is supposed to be. ( being to close might raise some issues )
+                    int roi = 120;
+
+                    reImg.ROI = new Rectangle((headDepth.X) - (roi / 2), (headDepth.Y), roi, roi);
+
+                    // pass the image and the timestamp on to the faceDetection methods
+                    passImage(reImg, (long)args[3]);
+                    frame.Dispose();
+
+
+                }
+
                 
-                // resize the 640x480 rgb image to match the depth image size of 320x240
-                Image<Bgr, byte> reImg = camImage.Resize(1280, 240, INTER.CV_INTER_CUBIC);
-
-                // set the region of interest which currently is a 40x40 pixel region where
-                // the face is supposed to be. ( being to close might raise some issues )
-                int roi = 120;
-
-                reImg.ROI = new Rectangle((headDepth.X) - (roi / 2), (headDepth.Y), roi, roi);
-
-                // pass the image and the timestamp on to the faceDetection methods
-                passImage(reImg, (long)args[3]);
-
-
             }
 
 
