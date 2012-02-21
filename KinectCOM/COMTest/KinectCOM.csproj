@@ -73,6 +73,7 @@
     <Compile Include="FeatureProcessor.cs" />
     <Compile Include="FeatureType.cs" />
     <Compile Include="FileLoader.cs" />
+    <Compile Include="Gesture.cs" />
     <Compile Include="GestureProcessor.cs" />
     <Compile Include="IKinect.cs" />
     <Compile Include="KinectData.cs" />

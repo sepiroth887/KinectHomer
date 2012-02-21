@@ -21,6 +21,7 @@ namespace DTWGestureRecognition
 {
     using System;
     using System.Collections;
+    using KinectCOM;
 
     /// <summary>
     /// Dynamic Time Warping nearest neighbour sequence comparison class.
@@ -65,12 +66,8 @@ namespace DTWGestureRecognition
         /// </summary>
         private readonly int _maxSlope;
 
-        /// <summary>
-        /// The recorded gesture sequences
-        /// </summary>
-        private readonly ArrayList _sequences;
 
-        private readonly ArrayList _ctxt;
+        private readonly ArrayList gestures;
 
         /// <summary>
         /// Initializes a new instance of the DtwGestureRecognizer class
@@ -82,8 +79,7 @@ namespace DTWGestureRecognition
         public DtwGestureRecognizer(int dim, double threshold, double firstThreshold, double minLen)
         {
             _dimension = dim;
-            _sequences = new ArrayList();
-            _labels = new ArrayList();
+            gestures = new ArrayList();
             _globalThreshold = threshold;
             _firstThreshold = firstThreshold;
             _maxSlope = int.MaxValue;
@@ -101,9 +97,7 @@ namespace DTWGestureRecognition
         public DtwGestureRecognizer(int dim, double threshold, double firstThreshold, int ms, double minLen)
         {
             _dimension = dim;
-            _sequences = new ArrayList();
-            _labels = new ArrayList();
-            _ctxt = new ArrayList();
+            gestures = new ArrayList();
             _globalThreshold = threshold;
             _firstThreshold = firstThreshold;
             _maxSlope = ms;
@@ -118,18 +112,17 @@ namespace DTWGestureRecognition
         /// <param name="seq">The sequence</param>
         /// <param name="lab">Sequence name</param>
         /// 
-        private bool canSave = true;
         public void AddOrUpdate(ArrayList seq, string lab,string ctxt)
         {
-            if (!canSave) { return; }
-            canSave = false;
             if (seq.Count == 0) return;
             // First we check whether there is already a recording for this label. If so overwrite it, otherwise add a new entry
             int existingIndex = -1;
             
-            for (int i = 0; i < _labels.Count; i++)
+            for (int i = 0; i < gestures.Count; i++)
             {
-                if ((string)_labels[i] == lab && (string)_ctxt[i] == ctxt)
+                Gesture gesture = (Gesture)gestures[i];
+
+                if (gesture.Name == lab && gesture.Context == ctxt)
                 {
                     existingIndex = i;
                 }
@@ -138,16 +131,17 @@ namespace DTWGestureRecognition
             // If we have a match then remove the entries at the existing index to avoid duplicates. We will add the new entries later anyway
             if (existingIndex >= 0)
             {
-                _sequences.RemoveAt(existingIndex);
-                _labels.RemoveAt(existingIndex);
-                _ctxt.RemoveAt(existingIndex);
+                ((Gesture)gestures[existingIndex]).Sequence = seq;
             }
 
             // Add the new entries
-            _sequences.Add(seq);
-            _labels.Add(lab);
-            _ctxt.Add(ctxt);
-            canSave = true;
+            Gesture g = new Gesture(lab, ctxt, seq);
+            gestures.Add(g);
+
+        }
+
+        public void AddOrUpdate(ArrayList seq, Gesture g) {
+            AddOrUpdate(seq, g.Name, g.Context);
         }
 
         /// <summary>
@@ -157,13 +151,13 @@ namespace DTWGestureRecognition
         /// </summary>
         /// <param name="seq">The sequence to recognise</param>
         /// <returns>The recognised gesture name</returns>
-        public string Recognize(ArrayList seq,string ctxt)
+        public Gesture Recognize(ArrayList seq,string ctxt)
         {
             double minDist = double.PositiveInfinity;
-            string classification = "__UNKNOWN";
-            for (int i = 0; i < _sequences.Count; i++)
+            for (int i = 0; i < gestures.Count; i++)
             {
-                var example = (ArrayList) _sequences[i];
+                Gesture gesture = (Gesture)gestures[i];
+                var example = (ArrayList)gesture.Sequence;
                 ////Debug.WriteLine(Dist2((double[]) seq[seq.Count - 1], (double[]) example[example.Count - 1]));
                 if (Dist2((double[]) seq[seq.Count - 1], (double[]) example[example.Count - 1]) < _firstThreshold)
                 {
@@ -171,15 +165,15 @@ namespace DTWGestureRecognition
                     if (d < minDist)
                     {
                         minDist = d;
-                        if ((string)_ctxt[i] == ctxt)
+                        if (gesture.Context == ctxt)
                         {
-                            classification = (string)_labels[i];
+                            return gesture;
                         }
                     }
                 }
             }
-           
-            return (minDist < _globalThreshold ? classification : "__UNKNOWN") + " " /*+minDist.ToString()*/;
+
+            return null;
         }
 
         /// <summary>
@@ -189,27 +183,27 @@ namespace DTWGestureRecognition
         /// <returns>A string containing all recorded gestures and their names</returns>
         public string RetrieveText()
         {
-            while (!canSave) {
-                System.Threading.Thread.Sleep(5);
-            }
+
             string retStr = string.Empty;
 
-            int numGestures = _labels.Count;
+            int numGestures = gestures.Count;
 
             retStr += "//numGestures=" + numGestures+"\r\n";
 
-            if (_sequences != null)
+            if (gestures != null)
             {
                 // Iterate through each gesture
-                for (int gestureNum = 0; gestureNum < _sequences.Count; gestureNum++)
+                for (int gestureNum = 0; gestureNum < numGestures; gestureNum++)
                 {
                     // Echo the label
-                    retStr += "@"+ _labels[gestureNum] + "\r\n";
-                    retStr += "$" + _ctxt[gestureNum] + "\r\n";
+                    Gesture gesture = (Gesture)gestures[gestureNum];
+
+                    retStr += "@"+ gesture.Name + "\r\n";
+                    retStr += "$" + gesture.Context + "\r\n";
                     int frameNum = 0;
 
                     //Iterate through each frame of this gesture
-                    foreach (double[] frame in ((ArrayList)_sequences[gestureNum]))
+                    foreach (double[] frame in ((ArrayList)gesture.Sequence))
                     {
                         // Extract each double
                         foreach (double dub in (double[])frame)
@@ -226,7 +220,7 @@ namespace DTWGestureRecognition
 
                     // Signifies end of this gesture
                     retStr += "----";
-                    if (gestureNum < _sequences.Count - 1)
+                    if (gestureNum < numGestures - 1)
                     {
                         retStr += "\r\n";
                     }
