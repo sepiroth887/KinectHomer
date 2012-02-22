@@ -1,69 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Emgu.CV;
+﻿using Emgu.CV;
 using Emgu.CV.Structure;
 
 namespace Kinect
 {
     public class UserFeature
     {
-        private double hipHeight;
-        private double shoulderWidth;
-        private double armLength;
-        private string name;
-        private float faceConfidence;
-        private float overallConfidence;
-        private Image<Gray, byte> currentImage;
-
-        public UserFeature() {
-            hipHeight = 0;
-            shoulderWidth = 0;
-            armLength = 0;
-        }
-
-        public Image<Gray, byte> curImage {
-            get { return currentImage; }
-            set { currentImage = value; }
-        }
-
-        public UserFeature(double hHeight,double sWidth,double aLength) {
-            this.hipHeight = hHeight;
-            this.shoulderWidth = sWidth;
-            this.armLength = aLength;
-        }
-
-        public double HipHeight {
-            get { return hipHeight; }
-            set { hipHeight = value; }
-        }
-
-        public double ShoulderWidth
+        public UserFeature()
         {
-            get { return shoulderWidth; }
-            set { shoulderWidth = value; }
+            HipHeight = 0;
+            ShoulderWidth = 0;
+            ArmLength = 0;
         }
 
-        public double ArmLength
+        public UserFeature(double hHeight, double sWidth, double aLength)
         {
-            get { return armLength; }
-            set { armLength = value; }
+            HipHeight = hHeight;
+            ShoulderWidth = sWidth;
+            ArmLength = aLength;
         }
 
-        public string Name {
-            get { return name; }
-            set { name = value; }
-        }
+        public Image<Gray, byte> curImage { get; set; }
 
-        public float Confidence {
-            get { return overallConfidence; }
-            set { overallConfidence = value; }
-        }
+        public double HipHeight { get; set; }
 
-        public float FaceConfidence {
-            get { return faceConfidence; }
-            set { faceConfidence = value; }
-        }
+        public double ShoulderWidth { get; set; }
+
+        public double ArmLength { get; set; }
+
+        public string Name { get; set; }
+
+        public float Confidence { get; set; }
+
+        public float FaceConfidence { get; set; }
     }
 }

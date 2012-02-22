@@ -15,23 +15,27 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System;
+using System.Windows;
+using Microsoft.Kinect;
+
 namespace DTWGestureRecognition
 {
-    using System;
-    using System.Windows;
-    using Microsoft.Kinect;
-
     /// <summary>
     /// This class is used to transform the data of the skeleton
     /// </summary>
     internal class Skeleton2DDataExtract
     {
+        #region Delegates
+
         /// <summary>
         /// Skeleton2DdataCoordEventHandler delegate
         /// </summary>
         /// <param name="sender">The sender object</param>
         /// <param name="a">Skeleton 2Ddata Coord Event Args</param>
         public delegate void Skeleton2DdataCoordEventHandler(object sender, Skeleton2DdataCoordEventArgs a);
+
+        #endregion
 
         /// <summary>
         /// The Skeleton 2Ddata Coord Ready event
@@ -70,7 +74,7 @@ namespace DTWGestureRecognition
             }
 
             // Centre the data
-            var center = new Point((shoulderLeft.X + shoulderRight.X) / 2, (shoulderLeft.Y + shoulderRight.Y) / 2);
+            var center = new Point((shoulderLeft.X + shoulderRight.X)/2, (shoulderLeft.Y + shoulderRight.Y)/2);
             for (int i = 0; i < 6; i++)
             {
                 p[i].X -= center.X;

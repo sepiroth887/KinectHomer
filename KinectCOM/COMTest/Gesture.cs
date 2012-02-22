@@ -1,43 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Collections;
 
 namespace KinectCOM
 {
     public class Gesture
     {
-        private String name;
-        private String context;
         private ArrayList sequence;
-        
-        public Gesture(String name, String context) {
-            this.name = name;
-            this.context = context;
-        }
 
-        public Gesture(String name, String context,ArrayList seq)
+        public Gesture(String name, String context)
         {
-            this.name = name;
-            this.context = context;
-            this.sequence = (ArrayList) seq.Clone();
+            Name = name;
+            Context = context;
         }
 
-        public String Name {
-            get { return name; }
-            set { name = value; }
-        }
-
-        public String Context
+        public Gesture(String name, String context, ArrayList seq)
         {
-            get { return context; }
-            set { context = value; }
+            Name = name;
+            Context = context;
+            sequence = (ArrayList) seq.Clone();
         }
 
-        public ArrayList Sequence {
+        public String Name { get; set; }
+
+        public String Context { get; set; }
+
+        public ArrayList Sequence
+        {
             get { return sequence; }
-            set { sequence = (ArrayList)value.Clone(); }
+            set { sequence = (ArrayList) value.Clone(); }
         }
     }
 }

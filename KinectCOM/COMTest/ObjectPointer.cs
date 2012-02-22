@@ -1,48 +1,73 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Kinect;
 using System.Diagnostics;
 using System.Media;
+using Microsoft.Kinect;
+using Microsoft.Xna.Framework;
 
 namespace KinectCOM
 {
-
-    class ObjectPointer
+    internal class ObjectPointer
     {
-        private SoundPlayer selectSound;
-        private SoundPlayer unselectSound;
-        private SoundPlayer activeSound;
-    
-        public delegate void ContextSelectedEventHandler(string ctxt);
-        public event ContextSelectedEventHandler ContextSelected;
+        #region Delegates
 
-        private Dictionary<string, BoundingBox> bounds;
+        public delegate void ContextSelectedEventHandler(string ctxt);
+
+        #endregion
+
+        private readonly SoundPlayer activeSound;
+
+        private readonly Dictionary<string, BoundingBox> bounds;
+        private readonly SoundPlayer selectSound;
+
+        private readonly Stopwatch selectionCooldown = new Stopwatch();
+        private readonly Stopwatch selectionTimer = new Stopwatch();
+        private readonly SoundPlayer unselectSound;
+        private bool contextConfirmed;
+        private string currentContext = "__NOCONTEXT";
+        private Vector3 handPos;
+        private long lastPickEvent;
+
+
+        private bool playSound = true;
+        private bool pointedLastEvent;
+        private Boolean pointing;
+        private bool selectionCoolingDown;
+
         public ObjectPointer()
         {
             bounds = new Dictionary<string, BoundingBox>();
-            selectSound = new SoundPlayer("C:\\Users\\Admin\\Documents\\Visual Studio 2010\\Projects\\KinectCOM\\COMTest\\Whit.wav");
-            unselectSound = new SoundPlayer("C:\\Users\\Admin\\Documents\\Visual Studio 2010\\Projects\\KinectCOM\\COMTest\\WhitR.wav");
-            activeSound = new SoundPlayer("C:\\Users\\Admin\\Documents\\Visual Studio 2010\\Projects\\KinectCOM\\COMTest\\Voltage.wav");
+            selectSound =
+                new SoundPlayer(
+                    "C:\\Users\\Admin\\Documents\\Visual Studio 2010\\Projects\\KinectCOM\\COMTest\\Whit.wav");
+            unselectSound =
+                new SoundPlayer(
+                    "C:\\Users\\Admin\\Documents\\Visual Studio 2010\\Projects\\KinectCOM\\COMTest\\WhitR.wav");
+            activeSound =
+                new SoundPlayer(
+                    "C:\\Users\\Admin\\Documents\\Visual Studio 2010\\Projects\\KinectCOM\\COMTest\\Voltage.wav");
         }
 
-        public int returnLastContext() {
+        public event ContextSelectedEventHandler ContextSelected;
+
+        public int returnLastContext()
+        {
             return -1;
         }
 
         public void setObjects(Dictionary<string, Vector3[]> objects)
         {
             bounds.Clear();
-            
-            foreach (KeyValuePair<string, Vector3[]> obj in objects)
+
+            foreach (var obj in objects)
             {
-                if(obj.Key.Contains("Room")){continue;}
+                if (obj.Key.Contains("Room"))
+                {
+                    continue;
+                }
                 BoundingBox box = BoundingBox.CreateFromPoints(obj.Value);
                 bounds.Add(obj.Key, box);
                 //Console.Out.WriteLine(obj.Key+": "+box.ToString());
-
             }
         }
 
@@ -50,43 +75,28 @@ namespace KinectCOM
         // or -1 if no intersection is found.
         public string intersects(Ray ray)
         {
-            
             string context = "__NOCONTEXT";
-            foreach (KeyValuePair<string, BoundingBox> box in bounds) {
-                
-                if (ray.Intersects(box.Value) != null) {
+            foreach (var box in bounds)
+            {
+                if (ray.Intersects(box.Value) != null)
+                {
                     context = box.Key;
                     ////Console.Out.WriteLine("Context picked " + context);
                     return context;
-                    
                 }
             }
             return context;
         }
-
-        private Stopwatch selectionTimer = new Stopwatch();
-        private Stopwatch selectionCooldown = new Stopwatch();
-        private bool contextConfirmed = false;
-        private bool selectionCoolingDown = false;
-        private long lastPickEvent = 0;
-        private Boolean pointing = false;
-        private string currentContext = "__NOCONTEXT";
-        private Vector3 handPos;
 
         public Vector3 getHandPos()
         {
             return handPos;
         }
 
-
-        private bool playSound = true;
-        private bool pointedLastEvent = false;
-
         public void findContext(Skeleton skeleton)
         {
-
-
-            if (selectionCoolingDown && selectionCooldown.IsRunning && selectionCooldown.ElapsedMilliseconds < 4000) return;
+            if (selectionCoolingDown && selectionCooldown.IsRunning && selectionCooldown.ElapsedMilliseconds < 4000)
+                return;
 
             if (selectionCooldown.ElapsedMilliseconds > 4000 && selectionCoolingDown)
             {
@@ -111,26 +121,29 @@ namespace KinectCOM
             SkeletonPoint elbowV = skeleton.Joints[JointType.ElbowRight].Position;
             SkeletonPoint hipL = skeleton.Joints[JointType.HipLeft].Position;
             SkeletonPoint handL = skeleton.Joints[JointType.HandLeft].Position;
-            
-            float distanceHandHip = (hipL.X - handL.X) * ( hipL.X - handL.X ) + (hipL.Y - handL.Y) *(hipL.Y - handL.Y) + (hipL.Z - handL.Z) * (hipL.Z - handL.Z)  ;
+
+            float distanceHandHip = (hipL.X - handL.X)*(hipL.X - handL.X) + (hipL.Y - handL.Y)*(hipL.Y - handL.Y) +
+                                    (hipL.Z - handL.Z)*(hipL.Z - handL.Z);
 
             ////Console.Out.WriteLine(Math.Sqrt(distanceHandHip));
             handPos = new Vector3(handV.X, handV.Y, handV.Z);
 
-            if (distanceHandHip > 0.22) { return; }
+            if (distanceHandHip > 0.22)
+            {
+                return;
+            }
 
             ////Console.Out.WriteLine("Hand pos: " + handV.X+ ","+handV.Y + "," +handV.Z);
 
-            Vector3 rayOrig = new Vector3(elbowV.X, elbowV.Y, elbowV.Z);
-            Vector3 rayDir = new Vector3(handV.X - rayOrig.X, handV.Y - rayOrig.Y, handV.Z - rayOrig.Z);
+            var rayOrig = new Vector3(elbowV.X, elbowV.Y, elbowV.Z);
+            var rayDir = new Vector3(handV.X - rayOrig.X, handV.Y - rayOrig.Y, handV.Z - rayOrig.Z);
 
-            
 
             rayDir.Normalize();
 
-            Ray pick = new Ray(rayOrig, rayDir);
+            var pick = new Ray(rayOrig, rayDir);
 
-            currentContext = this.intersects(pick);
+            currentContext = intersects(pick);
 
             if (!currentContext.Equals("__NOCONTEXT"))
             {
@@ -140,12 +153,13 @@ namespace KinectCOM
             if (pointing)
             {
                 ////Console.Out.WriteLine("Pointing at : " + currentContext);
-                if (playSound) {
+                if (playSound)
+                {
                     selectSound.Play();
                     ////Console.Out.WriteLine("Sound should have played");
                     playSound = false;
                 }
-                
+
                 selectionTimer.Start();
 
                 if (!pointedLastEvent)
@@ -162,7 +176,6 @@ namespace KinectCOM
                         contextConfirmed = true;
                         playSound = true;
                     }
-
                 }
 
                 if (contextConfirmed)
@@ -178,22 +191,17 @@ namespace KinectCOM
 
                 pointing = false;
                 pointedLastEvent = true;
-                
             }
-            else {
-                if (pointedLastEvent) {
+            else
+            {
+                if (pointedLastEvent)
+                {
                     unselectSound.Play();
                     pointedLastEvent = false;
                 }
                 lastPickEvent++;
                 selectionTimer.Stop();
             }
-
-
-           
-
-
-
         }
     }
 }

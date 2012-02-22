@@ -1,15 +1,11 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Drawing;
-using System.Collections;
 using Kinect;
 using Microsoft.Kinect;
 
 namespace KinectCOM
 {
-    interface IKinect
+    internal interface IKinect
     {
         void init();
         void uninit();

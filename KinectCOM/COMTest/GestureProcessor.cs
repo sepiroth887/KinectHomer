@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using DTWGestureRecognition;
 using System.Collections;
-using System.Windows.Forms;
+using System.Collections.Generic;
 using System.Diagnostics;
-using Microsoft.Xna.Framework;
-using Microsoft.Kinect;
+using System.Threading;
+using DTWGestureRecognition;
 using Kinect;
+using Microsoft.Kinect;
+using Microsoft.Xna.Framework;
+
 namespace KinectCOM
 {
-    class GestureProcessor
+    internal class GestureProcessor
     {
-
         /// <summary>
         /// How many skeleton frames to ignore (_flipFlop)
         /// 1 = capture every frame, 2 = capture every second frame etc.
@@ -34,81 +33,86 @@ namespace KinectCOM
         /// </summary>
         private const int CaptureCountdownSeconds = 3;
 
-        private IKinect kinectHandler;
-        private KinectData kinect;
-        private DtwGestureRecognizer dtw;
-
-        private int activeUser = -1;
-        private string ctxt = "__NOCONTEXT";
-        private bool isRecording = false;
-        private bool isRecognizing = false;
-        private DateTime _lastFrameTime=DateTime.MaxValue;
-        private int flipFlop;
-
-        private ArrayList seqCoords;
-
-        private DateTime captureCountDown = DateTime.Now;
-
-        private Gesture currentGesture; 
-
-        private ObjectPointer pointer;
-
-        private bool addOnGesture = false;
-        private string addOnGestureType;
-
         public static readonly string Z_ADDON = "z";
         public static readonly string X_ADDON = "x";
         public static readonly string Y_ADDON = "y";
- 
 
-        public GestureProcessor(IKinect kinectHandler, KinectData kinect) {
+        private readonly DtwGestureRecognizer dtw;
+        private readonly KinectData kinect;
+        private readonly IKinect kinectHandler;
 
-            Dictionary<int, Object> contextBoxes = new Dictionary<int, Object>();
-            Dictionary<int, Object> contextSpheres = new Dictionary<int, Object>();
+        private readonly ObjectPointer pointer;
+        private readonly Stopwatch recTimer = new Stopwatch();
+        private readonly ArrayList seqCoords;
+        private readonly Stopwatch startoffset = new Stopwatch();
+        private readonly Stopwatch stopTimer = new Stopwatch();
+        private readonly Stopwatch timer = new Stopwatch();
+        private DateTime _lastFrameTime = DateTime.MaxValue;
+        private int activeUser = -1;
+        private bool activityRunning;
+
+        private bool addOnGesture;
+        private string addOnGestureType;
+        private DateTime captureCountDown = DateTime.Now;
+        private string ctxt = "__NOCONTEXT";
+        private Gesture currentGesture;
+        private int flipFlop;
+        private bool hasStartPoint;
+        private bool isRecognizing;
+        private bool isRecording;
+        private SkeletonPoint lastPoint;
+        private float rateOfChange;
+        private SkeletonPoint startPoint;
+
+
+        public GestureProcessor(IKinect kinectHandler, KinectData kinect)
+        {
+            var contextBoxes = new Dictionary<int, Object>();
+            var contextSpheres = new Dictionary<int, Object>();
 
             pointer = new ObjectPointer();
 
-            pointer.setObjects(FileLoader.loadObj("livingRoom.obj",FileLoader.Units.cm));
+            pointer.setObjects(FileLoader.loadObj("livingRoom.obj", FileLoader.Units.cm));
 
             this.kinectHandler = kinectHandler;
             this.kinect = kinect;
-            this.seqCoords = new ArrayList();
+            seqCoords = new ArrayList();
 
             kinect.attachSkeletonHandler(SkeletonDataReadyHandler);
 
             dtw = new DtwGestureRecognizer(12, 0.6, 2, 2, 10);
             Skeleton2DDataExtract.Skeleton2DdataCoordReady += NuiSkeleton2DdataCoordReady;
-            pointer.ContextSelected+=new ObjectPointer.ContextSelectedEventHandler(pointer_ContextSelected);
+            pointer.ContextSelected += pointer_ContextSelected;
         }
 
-        private void pointer_ContextSelected(string ctxt) {
+        private void pointer_ContextSelected(string ctxt)
+        {
             kinectHandler.contextSelected(ctxt);
         }
 
-        private void SkeletonDataReadyHandler(object sender, SkeletonFrameReadyEventArgs e){
-
+        private void SkeletonDataReadyHandler(object sender, SkeletonFrameReadyEventArgs e)
+        {
             // no active user, ignore events
             if (activeUser == -1) return;
             // not recording and no context, ignore events.
             SkeletonFrame sFrame = e.OpenSkeletonFrame();
             if (sFrame == null) return;
-            Skeleton[] skeletons = new Skeleton[kinect.getSensor().SkeletonStream.FrameSkeletonArrayLength];
+            var skeletons = new Skeleton[kinect.GetSensor().SkeletonStream.FrameSkeletonArrayLength];
             sFrame.CopySkeletonDataTo(skeletons);
             sFrame.Dispose();
-            foreach (Skeleton skeleton in skeletons) {
-                if (skeleton.TrackingId == activeUser) {
-                    
+            foreach (Skeleton skeleton in skeletons)
+            {
+                if (skeleton.TrackingId == activeUser)
+                {
                     Skeleton2DDataExtract.ProcessData(skeleton);
-                    if(!isRecording)
+                    if (!isRecording)
                         pointer.findContext(skeleton);
-                    if (addOnGesture) {
+                    if (addOnGesture)
+                    {
                         AddOnGesture(addOnGestureType, skeleton);
                     }
                 }
             }
-
-           
-
         }
 
 
@@ -117,11 +121,9 @@ namespace KinectCOM
             return pointer.getHandPos();
         }
 
-       
 
-        private Stopwatch recTimer = new Stopwatch(); 
-
-        public void recognizeGesture(string ctxt) {
+        public void recognizeGesture(string ctxt)
+        {
             isRecording = false;
             this.ctxt = ctxt;
             seqCoords.Clear();
@@ -130,50 +132,52 @@ namespace KinectCOM
             recTimer.Start();
         }
 
-        public void stopRecognition() {
-            this.isRecognizing = false;
+        public void stopRecognition()
+        {
+            isRecognizing = false;
         }
 
-        public void storeGestures() {
+        public void storeGestures()
+        {
             FileLoader.saveGestures(dtw.RetrieveText());
         }
 
-        public string[] loadGestures() {
+        public string[] loadGestures()
+        {
             return FileLoader.loadGestures(dtw);
         }
 
-        public void enableAddOnGesture(string type) {
+        public void enableAddOnGesture(string type)
+        {
             addOnGesture = true;
             addOnGestureType = type;
         }
 
-        
-        private void AddOnGesture(string type,Skeleton skel) {
-            if (skel.Joints[JointType.HandLeft].TrackingState == JointTrackingState.NotTracked) { return; }
 
-            if (type.Equals(GestureProcessor.X_ADDON)) {
-                this.startAddonGesture(skel,"X");
-            }
-            else if (type.Equals(GestureProcessor.Y_ADDON))
+        private void AddOnGesture(string type, Skeleton skel)
+        {
+            if (skel.Joints[JointType.HandLeft].TrackingState == JointTrackingState.NotTracked)
             {
-                this.startAddonGesture(skel, "Y");
+                return;
             }
-            else if(type.Equals(GestureProcessor.Z_ADDON)){
-                this.startAddonGesture(skel, "Z");
+
+            if (type.Equals(X_ADDON))
+            {
+                startAddonGesture(skel, "X");
+            }
+            else if (type.Equals(Y_ADDON))
+            {
+                startAddonGesture(skel, "Y");
+            }
+            else if (type.Equals(Z_ADDON))
+            {
+                startAddonGesture(skel, "Z");
             }
         }
 
 
-        private bool hasStartPoint = false;
-        private SkeletonPoint startPoint = new SkeletonPoint();
-        private SkeletonPoint lastPoint = new SkeletonPoint();
-        private Stopwatch startoffset = new Stopwatch();
-        private Stopwatch stopTimer = new Stopwatch();
-        private Stopwatch timer = new Stopwatch();
-        private float rateOfChange;
-        private bool activityRunning = false;
-
-        private void startAddonGesture(Skeleton skeleton,string axis) {
+        private void startAddonGesture(Skeleton skeleton, string axis)
+        {
             if (!hasStartPoint)
             {
                 startPoint = skeleton.Joints[JointType.HandLeft].Position;
@@ -188,16 +192,17 @@ namespace KinectCOM
                 // get the amount of change between the previous point and the current one in cm.
 
                 float delta = 0;
-                if(axis.Contains("X")){
-                    delta = (skeleton.Joints[JointType.HandLeft].Position.X - lastPoint.X) * 1000;
+                if (axis.Contains("X"))
+                {
+                    delta = (skeleton.Joints[JointType.HandLeft].Position.X - lastPoint.X)*1000;
                 }
                 else if (axis.Contains("Y"))
                 {
-                    delta = (skeleton.Joints[JointType.HandLeft].Position.Y - lastPoint.Y) * 1000;
+                    delta = (skeleton.Joints[JointType.HandLeft].Position.Y - lastPoint.Y)*1000;
                 }
                 else if (axis.Contains("Z"))
                 {
-                    delta = (skeleton.Joints[JointType.HandLeft].Position.Z - lastPoint.Z) * 1000;
+                    delta = (skeleton.Joints[JointType.HandLeft].Position.Z - lastPoint.Z)*1000;
                 }
 
                 lastPoint = skeleton.Joints[JointType.HandLeft].Position;
@@ -205,7 +210,7 @@ namespace KinectCOM
                 long time = (timer.ElapsedMilliseconds);
 
                 // calculate the change in cm / mssec
-                rateOfChange = delta / time;
+                rateOfChange = delta/time;
 
                 ////Console.Out.WriteLine(rateOfChange);
                 timer.Restart();
@@ -242,55 +247,58 @@ namespace KinectCOM
 
                 if (activityRunning)
                 {
-
                     float cmChange = 0;
                     if (axis.Contains("X"))
                     {
-                        cmChange = (lastPoint.X - startPoint.X) * 100;
-                    }else if (axis.Contains("Y"))
-                    {
-                        cmChange = (lastPoint.Y - startPoint.Y) * 100;
-                    }else if (axis.Contains("Z"))
-                    {
-                        cmChange = (lastPoint.Z - startPoint.Z) * 100;
+                        cmChange = (lastPoint.X - startPoint.X)*100;
                     }
-                    
-                   
+                    else if (axis.Contains("Y"))
+                    {
+                        cmChange = (lastPoint.Y - startPoint.Y)*100;
+                    }
+                    else if (axis.Contains("Z"))
+                    {
+                        cmChange = (lastPoint.Z - startPoint.Z)*100;
+                    }
+
+
                     float maxVal = 20;
                     float minVal = -20;
-                    float value = Math.Min(Math.Max(cmChange, minVal), maxVal) / maxVal;
+                    float value = Math.Min(Math.Max(cmChange, minVal), maxVal)/maxVal;
                     kinectHandler.onAddOnGestureValueChange(value);
                     ////Console.Out.WriteLine("Active change: " + value);
                 }
             }
         }
 
-        public void recordGesture(string gestureName, string ctxt) {
+        public void recordGesture(string gestureName, string ctxt)
+        {
             ////Console.Out.WriteLine("Recording gesture, starting timer");
-            this.isRecognizing = false;
-            this.currentGesture = new Gesture(gestureName, ctxt);
+            isRecognizing = false;
+            currentGesture = new Gesture(gestureName, ctxt);
             kinectHandler.recordingCountdownEvent(3);
-            System.Threading.Thread.Sleep(1000);
+            Thread.Sleep(1000);
             kinectHandler.recordingCountdownEvent(2);
-            System.Threading.Thread.Sleep(1000);
+            Thread.Sleep(1000);
             kinectHandler.recordingCountdownEvent(1);
-            System.Threading.Thread.Sleep(1000);
+            Thread.Sleep(1000);
             kinectHandler.recordingCountdownEvent(0);
-            System.Threading.Thread.Sleep(1000);
+            Thread.Sleep(1000);
             seqCoords.Clear();
             isRecording = true;
-            
         }
 
 
-        private void NuiSkeleton2DdataCoordReady(object sender, Skeleton2DdataCoordEventArgs a){
-            
-            if (seqCoords.Count > MinimumFrames && !isRecording && isRecognizing) {
+        private void NuiSkeleton2DdataCoordReady(object sender, Skeleton2DdataCoordEventArgs a)
+        {
+            if (seqCoords.Count > MinimumFrames && !isRecording && isRecognizing)
+            {
                 ////Console.Out.WriteLine("No of frames: " + seqCoords.Count);
-                Gesture g = dtw.Recognize(seqCoords,ctxt);
+                Gesture g = dtw.Recognize(seqCoords, ctxt);
 
 
-                if(g != null || recTimer.ElapsedMilliseconds > 3000){
+                if (g != null || recTimer.ElapsedMilliseconds > 3000)
+                {
                     seqCoords.Clear();
 
                     kinectHandler.gestureRecognitionCompleted(g.Name);
@@ -299,46 +307,50 @@ namespace KinectCOM
                 }
             }
 
-            if (isRecording) {
+            if (isRecording)
+            {
                 kinectHandler.recordingCountdownEvent(seqCoords.Count);
             }
 
-            if(seqCoords.Count > BufferSize){
-                if(isRecording && currentGesture != null){
+            if (seqCoords.Count > BufferSize)
+            {
+                if (isRecording && currentGesture != null)
+                {
                     isRecording = false;
-                    dtw.AddOrUpdate(seqCoords,currentGesture);
+                    dtw.AddOrUpdate(seqCoords, currentGesture);
                     seqCoords.Clear();
-                    kinectHandler.gestureRecordCompleted(currentGesture.Name,currentGesture.Context);
+                    kinectHandler.gestureRecordCompleted(currentGesture.Name, currentGesture.Context);
                     currentGesture = null;
-                }else{
+                }
+                else
+                {
                     seqCoords.RemoveAt(0);
                 }
             }
 
-            if(!double.IsNaN(a.GetPoint(0).X)){
+            if (!double.IsNaN(a.GetPoint(0).X))
+            {
                 // Optionally register only 1 frame out of every n
-                flipFlop = (flipFlop + 1) % Ignore;
+                flipFlop = (flipFlop + 1)%Ignore;
                 if (flipFlop == 0)
                 {
                     seqCoords.Add(a.GetCoords());
-                } 
+                }
             }
-
-
         }
 
         internal void setActiveUser(int skeletonID)
         {
-            this.activeUser = skeletonID;
+            activeUser = skeletonID;
         }
 
         internal void updateContextObjects()
         {
-            pointer.setObjects(FileLoader.loadObj("livingRoom.obj",FileLoader.Units.cm));
-
+            pointer.setObjects(FileLoader.loadObj("livingRoom.obj", FileLoader.Units.cm));
         }
 
-        public int returnLastContext() {
+        public int returnLastContext()
+        {
             return pointer.returnLastContext();
         }
     }

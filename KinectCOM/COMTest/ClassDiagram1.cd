@@ -1,0 +1,209 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" GroupingSetting="Access" MembersFormat="FullSignature">
+  <Class Name="KinectCOM.DataStore" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAQAAAAgAAAEAAAABAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>DataStore.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectCOM.Device" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="2.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CBCAAAgBQQUAEABjCEEMAjAEBQIAAAKAAAMAgkAAhAA=</HashCode>
+      <FileName>Device.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.342" Collapsed="true" />
+  </Class>
+  <Class Name="KinectCOM.FeatureProcessor" Collapsed="true">
+    <Position X="0.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IEAAAggQQAAQAAAAIAIhQQCEgAIAAEIAAIAAwEAAAQA=</HashCode>
+      <FileName>FeatureProcessor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectCOM.Gesture" Collapsed="true">
+    <Position X="4" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAgAAAAAAAAAAAAQAAAAAAAAAAQAAAAEAAAA=</HashCode>
+      <FileName>Gesture.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectCOM.GestureProcessor" Collapsed="true">
+    <Position X="5.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQICKABCCAGAAABCAuAAAgELYICAAkAxhUZABhAAAU=</HashCode>
+      <FileName>GestureProcessor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectCOM.KinectData">
+    <Position X="11.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAgAAAAAAAAAAAAAAAAAAgQAAgAAgCAAAAAgAAAAAA=</HashCode>
+      <FileName>KinectData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectCOM.KinectHandler" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="2.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAECRAAcAAAxhAAEABiAEBQggAIIAAAUAmAFAgBA=</HashCode>
+      <FileName>KinectHandler.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.243" Collapsed="true" />
+  </Class>
+  <Class Name="KinectCOM.ObjectPointer" Collapsed="true">
+    <Position X="4" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAASCBAAAAAAAAAAAEBQAAAAIEACABAACiBBEAAg=</HashCode>
+      <FileName>ObjectPointer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DTWGestureRecognition.DtwGestureRecognizer" Collapsed="true">
+    <Position X="4" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAIAAAAAAAAgJAAAAAAAAAAAIEDAAAUAAgAEAAAAA=</HashCode>
+      <FileName>DtwGestureRecognizer.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DTWGestureRecognition.Skeleton2DdataCoordEventArgs" Collapsed="true">
+    <Position X="0.5" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAEAAgAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Skeleton2DdataCoordEventArgs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DTWGestureRecognition.Skeleton2DDataExtract" Collapsed="true">
+    <Position X="2.25" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Skeleton2DDataExtract.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectCOM.FaceProcessor" Collapsed="true">
+    <Position X="5.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAACQAAAABAIDAAIA4JYEEQggBggASrAKCAAfCAAA=</HashCode>
+      <FileName>FaceProcessor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Kinect.FileLoader" Collapsed="true">
+    <Position X="2.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAEIAAAAAAAAAEAAAAACAAAAEEgAAAQAAI=</HashCode>
+      <FileName>FileLoader.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="KinectCOM.RecognitionProcessor" Collapsed="true">
+    <Position X="5.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAIAABAAAAABEACAAAAAAAABEAgAAAAAAAAAgAgAgIA=</HashCode>
+      <FileName>RecognitionProcessor.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Kinect.UserFeature" Collapsed="true">
+    <Position X="4" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAAAEAAAAAAAAAAAAAAAQgAIAAAAAAAAAAAAAQAAI=</HashCode>
+      <FileName>UserFeature.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="KinectCOM.IUserEvents" Collapsed="true">
+    <Position X="4" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAQAAAEAAACAAAAAAABAIAAAAAAAIAAkAABAA=</HashCode>
+      <FileName>Device.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="KinectCOM._Device" Collapsed="true">
+    <Position X="0.5" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAgBAQEAAAADAAAEADAAAQAAAAKAAAEAggAABAA=</HashCode>
+      <FileName>Device.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Interface Name="KinectCOM.IKinect" Collapsed="true">
+    <Position X="2.25" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABAAUAAAxhAAEABiAEBQAAAAIAAAUAkAAAgAA=</HashCode>
+      <FileName>IKinect.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="KinectCOM.FeatureType" Collapsed="true">
+    <Position X="0.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QABAAAAAAAAAAAAAAAAABAAgAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>FeatureType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Delegate Name="KinectCOM.OnPresenceDetectedDel" Collapsed="true">
+    <Position X="0.5" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Device.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="KinectCOM.OnPresenceLostDel" Collapsed="true">
+    <Position X="2.25" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Device.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="KinectCOM.OnGestureRecordCompletedDel" Collapsed="true">
+    <Position X="5.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Device.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="KinectCOM.OnGestureRecognitionCompletedDel" Collapsed="true">
+    <Position X="4" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Device.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="KinectCOM.OnRecordingCountDownEventDel" Collapsed="true">
+    <Position X="4" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Device.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="KinectCOM.OnContextSelectedDel" Collapsed="true">
+    <Position X="2.25" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Device.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="KinectCOM.OnVoiceCommandDetectedDel" Collapsed="true">
+    <Position X="2.25" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Device.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="KinectCOM.OnAddonGestureValueChangeDel" Collapsed="true">
+    <Position X="0.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Device.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="KinectCOM.OnUserFoundDel" Collapsed="true">
+    <Position X="5.75" Y="7.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAABAACAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Device.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Delegate Name="KinectCOM.OnUserLostDel" Collapsed="true">
+    <Position X="0.5" Y="8.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Device.cs</FileName>
+    </TypeIdentifier>
+  </Delegate>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>

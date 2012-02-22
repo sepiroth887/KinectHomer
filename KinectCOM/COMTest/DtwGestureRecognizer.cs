@@ -15,14 +15,12 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System.Diagnostics;
+using System;
+using System.Collections;
+using KinectCOM;
 
 namespace DTWGestureRecognition
 {
-    using System;
-    using System.Collections;
-    using KinectCOM;
-
     /// <summary>
     /// Dynamic Time Warping nearest neighbour sequence comparison class.
     /// Called 'Gesture Recognizer' but really it can work with any vectors
@@ -47,11 +45,6 @@ namespace DTWGestureRecognition
         private readonly double _firstThreshold;
 
         /// <summary>
-        /// Minimum length of a gesture before it can be recognised
-        /// </summary>
-        private readonly double _minimumLength;
-
-        /// <summary>
         /// Maximum DTW distance between an example and a sequence being classified.
         /// </summary>
         private readonly double _globalThreshold;
@@ -65,6 +58,11 @@ namespace DTWGestureRecognition
         /// Maximum vertical or horizontal steps in a row.
         /// </summary>
         private readonly int _maxSlope;
+
+        /// <summary>
+        /// Minimum length of a gesture before it can be recognised
+        /// </summary>
+        private readonly double _minimumLength;
 
 
         private readonly ArrayList gestures;
@@ -112,15 +110,15 @@ namespace DTWGestureRecognition
         /// <param name="seq">The sequence</param>
         /// <param name="lab">Sequence name</param>
         /// 
-        public void AddOrUpdate(ArrayList seq, string lab,string ctxt)
+        public void AddOrUpdate(ArrayList seq, string lab, string ctxt)
         {
             if (seq.Count == 0) return;
             // First we check whether there is already a recording for this label. If so overwrite it, otherwise add a new entry
             int existingIndex = -1;
-            
+
             for (int i = 0; i < gestures.Count; i++)
             {
-                Gesture gesture = (Gesture)gestures[i];
+                var gesture = (Gesture) gestures[i];
 
                 if (gesture.Name == lab && gesture.Context == ctxt)
                 {
@@ -131,16 +129,16 @@ namespace DTWGestureRecognition
             // If we have a match then remove the entries at the existing index to avoid duplicates. We will add the new entries later anyway
             if (existingIndex >= 0)
             {
-                ((Gesture)gestures[existingIndex]).Sequence = seq;
+                ((Gesture) gestures[existingIndex]).Sequence = seq;
             }
 
             // Add the new entries
-            Gesture g = new Gesture(lab, ctxt, seq);
+            var g = new Gesture(lab, ctxt, seq);
             gestures.Add(g);
-
         }
 
-        public void AddOrUpdate(ArrayList seq, Gesture g) {
+        public void AddOrUpdate(ArrayList seq, Gesture g)
+        {
             AddOrUpdate(seq, g.Name, g.Context);
         }
 
@@ -151,17 +149,17 @@ namespace DTWGestureRecognition
         /// </summary>
         /// <param name="seq">The sequence to recognise</param>
         /// <returns>The recognised gesture name</returns>
-        public Gesture Recognize(ArrayList seq,string ctxt)
+        public Gesture Recognize(ArrayList seq, string ctxt)
         {
             double minDist = double.PositiveInfinity;
             for (int i = 0; i < gestures.Count; i++)
             {
-                Gesture gesture = (Gesture)gestures[i];
-                var example = (ArrayList)gesture.Sequence;
+                var gesture = (Gesture) gestures[i];
+                ArrayList example = gesture.Sequence;
                 ////Debug.WriteLine(Dist2((double[]) seq[seq.Count - 1], (double[]) example[example.Count - 1]));
                 if (Dist2((double[]) seq[seq.Count - 1], (double[]) example[example.Count - 1]) < _firstThreshold)
                 {
-                    double d = Dtw(seq, example) / example.Count;
+                    double d = Dtw(seq, example)/example.Count;
                     if (d < minDist)
                     {
                         minDist = d;
@@ -183,12 +181,11 @@ namespace DTWGestureRecognition
         /// <returns>A string containing all recorded gestures and their names</returns>
         public string RetrieveText()
         {
-
             string retStr = string.Empty;
 
             int numGestures = gestures.Count;
 
-            retStr += "//numGestures=" + numGestures+"\r\n";
+            retStr += "//numGestures=" + numGestures + "\r\n";
 
             if (gestures != null)
             {
@@ -196,17 +193,17 @@ namespace DTWGestureRecognition
                 for (int gestureNum = 0; gestureNum < numGestures; gestureNum++)
                 {
                     // Echo the label
-                    Gesture gesture = (Gesture)gestures[gestureNum];
+                    var gesture = (Gesture) gestures[gestureNum];
 
-                    retStr += "@"+ gesture.Name + "\r\n";
+                    retStr += "@" + gesture.Name + "\r\n";
                     retStr += "$" + gesture.Context + "\r\n";
                     int frameNum = 0;
 
                     //Iterate through each frame of this gesture
-                    foreach (double[] frame in ((ArrayList)gesture.Sequence))
+                    foreach (double[] frame in (gesture.Sequence))
                     {
                         // Extract each double
-                        foreach (double dub in (double[])frame)
+                        foreach (double dub in frame)
                         {
                             //Console.Out.WriteLine(dub);
                             retStr += dub + "\r\n";
@@ -226,7 +223,7 @@ namespace DTWGestureRecognition
                     }
                 }
             }
-            
+
             return retStr;
         }
 
@@ -243,9 +240,9 @@ namespace DTWGestureRecognition
             seq1R.Reverse();
             var seq2R = new ArrayList(seq2);
             seq2R.Reverse();
-            var tab = new double[seq1R.Count + 1, seq2R.Count + 1];
-            var slopeI = new int[seq1R.Count + 1, seq2R.Count + 1];
-            var slopeJ = new int[seq1R.Count + 1, seq2R.Count + 1];
+            var tab = new double[seq1R.Count + 1,seq2R.Count + 1];
+            var slopeI = new int[seq1R.Count + 1,seq2R.Count + 1];
+            var slopeJ = new int[seq1R.Count + 1,seq2R.Count + 1];
 
             for (int i = 0; i < seq1R.Count + 1; i++)
             {

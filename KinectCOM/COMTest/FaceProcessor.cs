@@ -1,161 +1,149 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
 using System.Linq;
-using System.Text;
 using Emgu.CV;
+using Emgu.CV.CvEnum;
 using Emgu.CV.GPU;
 using Emgu.CV.Structure;
-using Coding4Fun.Kinect.WinForm;
-using Emgu.CV.CvEnum;
-using System.Drawing;
-using System.Threading;
-using System.ComponentModel;
-using System.Collections;
-using KinectCOM;
+using Kinect;
 using Microsoft.Kinect;
-using System.Windows.Media.Imaging;
-using System.Windows.Media;
-using System.IO;
+using log4net;
 
-namespace Kinect
+namespace KinectCOM
 {
-    class FaceProcessor
+    internal class FaceProcessor
     {
+        private readonly HaarCascade _haar; // haarCascade used for CPU face detection
+        private readonly GpuCascadeClassifier _haarGpu; // haarCascade used for GPU face detection
+        private readonly KinectData _kinect; // reference to Kinect
 
-        private KinectData kinect; // reference to Kinect
-        private bool isProcessing = false; // indicates state of this processor
-        private HaarCascade haar; // haarCascade used for CPU face detection
-        private GpuCascadeClassifier haarGPU; // haarCascade used for GPU face detection
-        private bool hasCuda; // indicator of GPU capabilities
-        private bool forceCPU = false; // forces CPU face detection
-        private IKinect kinectHandler; // reference to GUI
-        private List<Image<Gray, byte>> faceList = new List<Image<Gray, byte>>(); // list of faces maintained during recognition / detection
-        private volatile bool isNew = false; // indicates whether a detected face is new or known
-        private BackgroundWorker bw; // background worker to initialize this processor
-        private BackgroundWorker recognizerInitWorker; // backgroundworker to initialize the recognizer
-        private BackgroundWorker recognizerWorker; // backgroundworker to recognize a user's face
-        private Boolean isBWDone = true; // indicates whether the loading 
-        private FeatureProcessor featureProcessor; // reference to the FeatureProcessor
-        private EigenObjectRecognizer recognizer; // recognizer used for face recognition.
-        private RecognitionProcessor recProcessor; // reference to the RecognitionProcessor
+        private readonly List<Image<Gray, byte>> _faceList = new List<Image<Gray, byte>>();
+        // list of faces maintained during recognition / detection
 
-        private Boolean isDatabaseLoaded = false; // indicates whether the recognizer needs to be initialized properly.
+        private readonly FeatureProcessor _featureProcessor; // reference to the FeatureProcessor
 
-        private bool faceRecognitionActive = false; // indicates whether recognition has been requested.
+        private readonly bool _hasCuda; // indicator of GPU capabilities
+        private readonly RecognitionProcessor _recProcessor; // reference to the RecognitionProcessor
+        private bool _isProcessing; // indicates state of this processor
+        private BackgroundWorker _bw; // background worker to initialize this processor
+        private long _depthFrameTime; // timestamp of the last depthFrame
+        private Image<Gray, byte>[] _faceDatabase; // array of all images in the face recognition database
+        private bool _faceRecognitionActive; // indicates whether recognition has been requested.
+        private Boolean _isBwDone = true; // indicates whether the loading 
 
-        private ArrayList recFaces = null; // stores faces to recognize if the recognizer is not yet loaded.
+        private Boolean _isDatabaseLoaded; // indicates whether the recognizer needs to be initialized properly.
+        private volatile bool _isNew; // indicates whether a detected face is new or known
 
-        // indicated whether the recognizer is currently loading
-        private bool isRecognizerLoading = false;
         // indicates whether the recognized is cleanly loaded.
-        private bool isRecognizerLoaded = false;
+        private bool _isRecognizerLoaded;
+        private bool _isRecognizerLoading;
 
-        Image<Gray, byte>[] faceDatabase; // array of all images in the face recognition database
-        string[] labelDatabase; // array of all names in the face recognition database, aligned with the faceDatabase array
+        private string[] _labelDatabase;
+        // array of all names in the face recognition database, aligned with the faceDatabase array
+
+        private ArrayList _recFaces; // stores faces to recognize if the recognizer is not yet loaded.
+        private EigenObjectRecognizer _recognizer; // recognizer used for face recognition.
+        private BackgroundWorker _recognizerInitWorker; // backgroundworker to initialize the recognizer
+        private BackgroundWorker _recognizerWorker; // backgroundworker to recognize a user's face
+
+        private long _rgbFrameTime; // timestamp of the last rgbFrame
 
 
-        private long rgbFrameTime = 0; // timestamp of the last rgbFrame
-        private long depthFrameTime = 0; // timestamp of the last depthFrame
-        private DepthImageFrame depth2D; // array to store depth data for easier processing
-
-
+        private static readonly ILog Log = LogManager.GetLogger(typeof(FaceProcessor));
 
         /**
          *  The faceprocessor does all required processing to extract and recognize faces
          *  from a kinect image frame
          * **/
-        public FaceProcessor(KinectData kinect, FeatureProcessor featureProcessor, RecognitionProcessor recProcessor, IKinect p)
+            
+        public FaceProcessor(KinectData kinect, FeatureProcessor featureProcessor, RecognitionProcessor recProcessor)
         {
             // assign all passed variables to local fields.
-            this.kinect = kinect;
-            this.kinectHandler = p;
-            this.featureProcessor = featureProcessor;
-            this.recProcessor = recProcessor;
+            _kinect = kinect;
+            _featureProcessor = featureProcessor;
+            _recProcessor = recProcessor;
 
             try
             {
                 // check if the GPU can work with CUDA support
-                hasCuda = GpuInvoke.HasCuda;
+                _hasCuda = GpuInvoke.HasCuda;
 
                 // choose the appropriate haarCascade for face detection
-                if (hasCuda)
+                if (_hasCuda)
                 {
-                    haarGPU = new GpuCascadeClassifier(FileLoader.DEFAULT_PATH+"haarcascade_frontalface_default.xml");
+                    _haarGpu = new GpuCascadeClassifier(FileLoader.DEFAULT_PATH + "haarcascade_frontalface_default.xml");
                 }
                 else
                 {
-                    haar = new HaarCascade(FileLoader.DEFAULT_PATH + "haarcascade_frontalface_default.xml");
+                    _haar = new HaarCascade(FileLoader.DEFAULT_PATH + "haarcascade_frontalface_default.xml");
                 }
             }
-            catch (Exception ex) {
-                //Console.Out.WriteLine(ex.StackTrace);
+            catch (Exception ex)
+            {   
+                Console.Out.WriteLine(ex.StackTrace);
             }
         }
 
         // init method is called during the prototype startup.
-        public void init()
+        public void Init()
         {
             try
             {
                 // opend required data streams and attach event handlers
-                kinect.attachRGBHandler(rgbHandler);
-                kinect.attachDepthHandler(depthHandler);
+                if (_kinect != null)
+                {
+                    _kinect.attachRGBHandler(rgbHandler);
+                    _kinect.attachDepthHandler(depthHandler);
+                }
 
                 // initialize the Background workers required for face detection, face recognition, and recognition initialization.
-                bw = new BackgroundWorker();
-                bw.DoWork += new DoWorkEventHandler(bw_DoWork);
-                bw.RunWorkerCompleted += new RunWorkerCompletedEventHandler(bw_RunWorkerCompleted);
+                _bw = new BackgroundWorker();
+                _bw.DoWork += BwDoWork;
+                _bw.RunWorkerCompleted += BwRunWorkerCompleted;
 
-                recognizerWorker = new BackgroundWorker();
+                _recognizerWorker = new BackgroundWorker();
 
-                recognizerWorker.DoWork += new DoWorkEventHandler(recognizerWorker_DoWork);
-                recognizerWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(recognizerWorker_RunWorkerCompleted);
+                _recognizerWorker.DoWork += RecognizerWorkerDoWork;
+                _recognizerWorker.RunWorkerCompleted += RecognizerWorkerRunWorkerCompleted;
 
-                recognizerInitWorker = new BackgroundWorker();
+                _recognizerInitWorker = new BackgroundWorker();
 
-                recognizerInitWorker.DoWork += new DoWorkEventHandler(recognizerInitWorker_DoWork);
-                recognizerInitWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(recognizerInitWorker_RunWorkerCompleted);
+                _recognizerInitWorker.DoWork += RecognizerInitWorkerDoWork;
+                _recognizerInitWorker.RunWorkerCompleted += RecognizerInitWorkerRunWorkerCompleted;
             }
-            catch (Exception ex) {
-                //Console.Out.WriteLine(ex.StackTrace);
+            catch (Exception ex)
+            {
+                Console.Out.WriteLine(ex.StackTrace);
             }
-
         }
 
         // set/get latest detected face.
-        public Image<Gray, byte> latestFace()
-        {
-            if (isNew)
-            {
-                isNew = false;
-                return faceList[0];
-            }
-            else
-            {
-                return null;
-            }
-        }
 
         // passes the image from the camera to either the detectFaceCPU or detectFaceGPU method 
         // to detect a face in it. If one is found, that face is passed to the RecognitionProcessor instance.
-        private void passImage(Image<Bgr, byte> camImage, long time)
+        private void PassImage(Image<Bgr, byte> camImage, long time)
         {
+            _isNew = false;
 
-            isNew = false;
-
-            if (!forceCPU && hasCuda)
+            if ( _hasCuda)
             {
-                detectFaceGPU(camImage);
+                DetectFaceGPU(camImage);
             }
             else
             {
-                detectFaceCPU(camImage);
+                DetectFaceCpu(camImage);
             }
 
 
-
-            if (faceList != null & faceList.Count != 0 && isNew)
-                recProcessor.LatestFace = faceList[0];
+            if (_faceList != null && _faceList.Count != 0 && _isNew)
+            {
+                if (_recProcessor != null) _recProcessor.LatestFace = _faceList[0];
+            }
         }
 
 
@@ -165,13 +153,15 @@ namespace Kinect
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void depthHandler(object sender, DepthImageFrameReadyEventArgs e)
+        private void depthHandler(object sender, DepthImageFrameReadyEventArgs e)
         {
-            if (!isProcessing) { return; }
+            if (!_isProcessing)
+            {
+                return;
+            }
 
-            DepthImageFrame dFrame = e.OpenDepthImageFrame();
-            depthFrameTime = dFrame.Timestamp;
-            depth2D = dFrame;
+            var dFrame = e.OpenDepthImageFrame();
+            if (dFrame != null) _depthFrameTime = dFrame.Timestamp;
         }
 
         /// <summary>
@@ -182,34 +172,28 @@ namespace Kinect
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        public void rgbHandler(object sender, ColorImageFrameReadyEventArgs e)
+        private void rgbHandler(object sender, ColorImageFrameReadyEventArgs e)
         {
-
-            if (!isProcessing || !isBWDone)
+            if (!_isProcessing || !_isBwDone)
             {
                 return;
             }
-            else
-            {
-                ColorImageFrame frame = e.OpenColorImageFrame();
-                rgbFrameTime = frame.Timestamp;
+            
+            var frame = e.OpenColorImageFrame();
+            if (frame == null) return;
+            _rgbFrameTime = frame.Timestamp;
 
-                // check wether the latest frames are still fresh enough.
-                if (Math.Abs(depthFrameTime - rgbFrameTime) < 500
-                    && Math.Abs(featureProcessor.getFrameNumber() - rgbFrameTime) < 500)
-                {
-                    isBWDone = false;
-                    Dictionary<int, object> args = new Dictionary<int, object>();
+            // check wether the latest frames are still fresh enough.
+            if (_featureProcessor == null ||
+                (Math.Abs(_depthFrameTime - _rgbFrameTime) >= 500 ||
+                 Math.Abs(_featureProcessor.getFrameNumber() - _rgbFrameTime) >= 500)) return;
 
-                    args.Add(0, frame);
-                    args.Add(1, featureProcessor.getUserHeadPos());
-                    args.Add(2, rgbFrameTime);
+            _isBwDone = false;
+            var args = new Dictionary<int, object>
+                           {{0, frame}, {1, _featureProcessor.getUserHeadPos()}, {2, _rgbFrameTime}};
 
-                    // pass all required arguments to the background worker.
-                    bw.RunWorkerAsync(args);
-                }
-
-            }
+            // pass all required arguments to the background worker.
+            if (_bw != null) _bw.RunWorkerAsync(args);
         }
 
         /// <summary>
@@ -217,48 +201,52 @@ namespace Kinect
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void bw_DoWork(object sender, DoWorkEventArgs e)
+        private void BwDoWork(object sender, DoWorkEventArgs e)
         {
-            BackgroundWorker worker = sender as BackgroundWorker;
+            var worker = sender as BackgroundWorker;
 
-            if (isProcessing)
+            if (_isProcessing)
             {
                 // retrieve all passed arguments and store them locally.
-                Dictionary<int, object> args = e.Argument as Dictionary<int, object>;
+                var args = e.Argument as Dictionary<int, object>;
 
-                ColorImageFrame frame = args[0] as ColorImageFrame;
+                if (args == null) return;
+                
+                var frame = args[0] as ColorImageFrame;
 
-                SkeletonPoint activeHeadPos = (SkeletonPoint)args[1];
+                var activeHeadPos = (SkeletonPoint) args[1];
 
                 // get the depth pixel location of the head.
-                ColorImagePoint headDepth = kinect.getSensor().MapSkeletonPointToColor(activeHeadPos,ColorImageFormat.RgbResolution1280x960Fps12);
+                if (_kinect.GetSensor() == null) return;
 
-                byte[] pixelData = new byte[kinect.getSensor().ColorStream.FramePixelDataLength];
+                var headDepth = _kinect.GetSensor().MapSkeletonPointToColor(activeHeadPos,
+                                                                            ColorImageFormat.
+                                                                                RgbResolution1280x960Fps12);
+
+                var pixelData = new byte[_kinect.GetSensor().ColorStream.FramePixelDataLength];
                 frame.CopyPixelDataTo(pixelData);
 
-                MemoryStream mystream = new MemoryStream(pixelData);
-                System.Drawing.Image p = System.Drawing.Image.FromStream(mystream);
-                Bitmap Img = new Bitmap(p);    
+                var mystream = new MemoryStream(pixelData);
+                var p = Image.FromStream(mystream);
+                var img = new Bitmap(p);
 
-                Image<Bgr, byte> camImage = new Image<Bgr, byte>(Img);
-                
+                var camImage = new Image<Bgr, byte>(img);
+
                 // resize the 640x480 rgb image to match the depth image size of 320x240
-                Image<Bgr, byte> reImg = camImage.Resize(1280, 240, INTER.CV_INTER_CUBIC);
+                var reImg = camImage.Resize(1280, 240, INTER.CV_INTER_CUBIC);
 
                 // set the region of interest which currently is a 40x40 pixel region where
                 // the face is supposed to be. ( being to close might raise some issues )
-                int roi = 120;
+                const int roi = 120;
 
-                reImg.ROI = new Rectangle((headDepth.X) - (roi / 2), (headDepth.Y), roi, roi);
+                if (reImg != null)
+                {
+                    reImg.ROI = new Rectangle((headDepth.X) - (roi/2), (headDepth.Y), roi, roi);
 
-                // pass the image and the timestamp on to the faceDetection methods
-                passImage(reImg, (long)args[3]);
-
-
+                    // pass the image and the timestamp on to the faceDetection methods
+                    PassImage(reImg, (long) args[3]);
+                }
             }
-
-
-
         }
 
         /// <summary>
@@ -266,9 +254,9 @@ namespace Kinect
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void bw_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void BwRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            isBWDone = true;
+            _isBwDone = true;
         }
 
         /// <summary>
@@ -278,123 +266,97 @@ namespace Kinect
         /// And marked as new.
         /// </summary>
         /// <param name="image"></param>
-        private void detectFaceGPU(Image<Bgr, byte> image)
+        private void DetectFaceGPU(Image<Bgr, byte> image)
         {
-            Image<Gray, byte> grayImage = image.Convert<Gray, byte>();
+            if (image == null) return;
+            
+            var grayImage = image.Convert<Gray, byte>();
 
-            GpuImage<Gray, byte> grayGPUImage = new GpuImage<Gray, byte>(grayImage);
+            var grayGPUImage = new GpuImage<Gray, byte>(grayImage);
 
-            // image conversion went wrong or image passed was null
-            if (grayGPUImage == null) { return; }
 
             // do the detection and mark the startime for performance tracking.
-            DateTime time = DateTime.Now;
+            var time = DateTime.Now;
             Rectangle[] faces = null;
+            
             try
             {
-                faces = haarGPU.DetectMultiScale<Gray>(grayGPUImage, 1.2, 4, new Size(image.Width / 12, image.Height / 12));
+                if (_haarGpu != null)
+                {
+                    faces = _haarGpu.DetectMultiScale(grayGPUImage, 1.2, 4, new Size(image.Width/12, image.Height/12));
+                }
             }
             catch (Exception ex)
             {
-                //Console.Out.WriteLine("[FaceProcessor] detectFaceGPU: " + ex.Message);
+                Console.Out.WriteLine("[FaceProcessor] detectFaceGPU: " + ex.Message);
             }
 
-
-            faceList.Clear();
+            
+            _faceList.Clear();
             // if a face has been detected store each in the facelist and indicate there are new values in the list.
+            
             if (faces != null && faces.Count() != 0)
             {
-                foreach (Rectangle face in faces)
+                foreach (var face in faces)
                 {
-                    GpuImage<Gray, byte> faceImg = grayGPUImage.GetSubRect(face);
-                    faceList.Add(faceImg.ToImage());
-
+                    var faceImg = grayGPUImage.GetSubRect(face);
+                    if (faceImg != null) _faceList.Add(faceImg.ToImage());
                 }
-                isNew = true;
+                _isNew = true;
             }
             // mark the end time of the operation.
-            TimeSpan endTime = DateTime.Now - time;
+            //var endTime = DateTime.Now - time;
 
             //Console.WriteLine("Time to find face: " + endTime.Milliseconds + "ms");
-
         }
 
         /// <summary>
         /// Same as detectFaceGPU only with CPU processing.
         /// </summary>
         /// <param name="image"></param>
-        private void detectFaceCPU(Image<Bgr, byte> image)
+        private void DetectFaceCpu(Image<Bgr, byte> image)
         {
-
-            Image<Gray, byte> grayImage = image.Convert<Gray, byte>();
-
-            if (grayImage == null) { return; }
+            if (image == null) return;
+            var grayImage = image.Convert<Gray, byte>();
 
             MCvAvgComp[] faces = null;
 
             try
             {
-                faces = haar.Detect(grayImage, 1.2, 4, HAAR_DETECTION_TYPE.DO_CANNY_PRUNING, new Size(image.Width / 12, image.Height / 12));
+                if (_haar != null)
+                    faces = _haar.Detect(grayImage, 1.2, 4, HAAR_DETECTION_TYPE.DO_CANNY_PRUNING,
+                                         new Size(image.Width/12, image.Height/12));
             }
             catch (Exception ex)
             {
-                //Console.Out.WriteLine("[FaceProcessor] detectFaceCPU: " + ex.Message);
+                Console.Out.WriteLine("[FaceProcessor] detectFaceCPU: " + ex.Message);
             }
-            faceList.Clear();
 
-            if (faces.Count() != 0)
+            _faceList.Clear();
+
+            if (faces == null || !faces.Any()) return;
+
+            foreach (var face in faces)
             {
-                foreach (var face in faces)
-                {
-                    grayImage.ROI = face.rect;
-                    faceList.Add(grayImage.Copy());
-                }
+                grayImage.ROI = face.rect;
+                _faceList.Add(grayImage.Copy());
             }
-
-
         }
 
         /// <summary>
         /// Starts face detection.
         /// </summary>
-        public void doProcess()
+        public void DoProcess()
         {
-            isProcessing = true;
+            _isProcessing = true;
         }
 
         /// <summary>
         /// Stops face detection
         /// </summary>
-        public void stopProcess()
+        public void StopProcess()
         {
-            isProcessing = false;
-        }
-
-
-        /// <summary>
-        /// Shuffles both database arrays so that the recognizer is not trained with each user in sequence which reduces
-        /// Neural network performance.
-        /// </summary>
-        /// <param name="images"></param>
-        /// <param name="labels"></param>
-        public void shuffle(Image<Gray, byte>[] images, string[] labels)
-        {
-            Random rand = new Random();
-            int size = images.Length;
-
-            for (int i = 0; i < size; i++)
-            {
-                int a = rand.Next(size);
-                Image<Gray, byte> tempI = images[i];
-                images[i] = images[a];
-                images[a] = tempI;
-
-                string tempS = labels[i];
-                labels[i] = labels[a];
-                labels[a] = tempS;
-
-            }
-
+            _isProcessing = false;
         }
 
         /// <summary>
@@ -402,68 +364,64 @@ namespace Kinect
         /// </summary>
         /// <param name="faces"></param>
         /// <param name="label"></param>
-        public void learnFace(ArrayList faces, string label)
+        public void LearnFace(ArrayList faces, string label)
         {
-
             // create a new image array to hold the faces
-            Image<Gray, byte>[] images = new Image<Gray, byte>[faces.Count];
+            if (faces == null) return;
+
+            var images = new Image<Gray, byte>[faces.Count];
             // and an array to hold the name of the users aligned to the face array.
-            string[] labels = new string[faces.Count];
+            var labels = new string[faces.Count];
 
             // loop though the faces and convert, store and equalize the contrast of each image.
-            int counter = 0;
-            for (int i = 0; i < faces.Count; i++)
+            var counter = 0;
+            foreach (var image in faces)
             {
+                var img = image as Image<Gray, byte>;
 
-                Image<Gray, byte> Img = faces[i] as Image<Gray, byte>;
+                if (img != null)
+                {
+                    var resizedImg = img.Resize(100, 100, INTER.CV_INTER_CUBIC, true);
 
-                Image<Gray, byte> resizedImg = Img.Resize(100, 100, INTER.CV_INTER_CUBIC, true);
-
-                resizedImg._EqualizeHist();
-                images[counter] = resizedImg;
+                    resizedImg._EqualizeHist();
+                    images[counter] = resizedImg;
+                }
                 labels[counter++] = label;
-
             }
 
             // append the faces and labels to the labeldatabase if it exists 
-            if (faceDatabase != null && labelDatabase != null)
+            if (_faceDatabase != null && _labelDatabase != null)
             {
-                faceDatabase = faceDatabase.Concat(images).ToArray();
-                labelDatabase = labelDatabase.Concat(labels).ToArray();
+                _faceDatabase = _faceDatabase.Concat(images).ToArray();
+                _labelDatabase = _labelDatabase.Concat(labels).ToArray();
             }
             else
             {
                 // or create them if they dont
-                faceDatabase = images;
-                labelDatabase = labels;
+                _faceDatabase = images;
+                _labelDatabase = labels;
             }
 
             // flag the recognizer as changed
-            isRecognizerLoaded = false;
+            _isRecognizerLoaded = false;
             // and reload it
-            initRecognizer();
+            InitRecognizer();
 
             // create a dictionary to hold both arrays and pass store it on the HDD.
-            Dictionary<Image<Gray, byte>[], string[]> database = new Dictionary<Image<Gray, byte>[], string[]>();
-
-            database.Add(images, labels);
+            var database = new Dictionary<Image<Gray, byte>[], string[]> {{images, labels}};
 
             FileLoader.saveFaceDB(database, "../../FaceDB");
         }
 
 
-
-        private void initRecognizer()
+        private void InitRecognizer()
         {
-            if (!isRecognizerLoading)
-            {
-                // if something changed in the recognizer or its not loaded start the 
-                // initialization process.
-                isRecognizerLoading = true;
+            if (_isRecognizerLoading) return;
+            // if something changed in the recognizer or its not loaded start the 
+            // initialization process.
+            _isRecognizerLoading = true;
 
-                recognizerInitWorker.RunWorkerAsync(isDatabaseLoaded);
-            }
-
+            if (_recognizerInitWorker != null) _recognizerInitWorker.RunWorkerAsync(_isDatabaseLoaded);
         }
 
         /// <summary>
@@ -472,56 +430,50 @@ namespace Kinect
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void recognizerInitWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void RecognizerInitWorkerDoWork(object sender, DoWorkEventArgs e)
         {
-
-            if (!isRecognizerLoaded)
+            if (!_isRecognizerLoaded)
             {
                 // check if the db has been loaded already.
-                bool dbLoaded = (bool)e.Argument;
+                var dbLoaded = (bool) e.Argument;
 
                 if (!dbLoaded)
                 {
                     // db needs to be loaded so retrieve the faces and labels from HDD
-                    Dictionary<Image<Gray, byte>[], string[]> database = new Dictionary<Image<Gray, byte>[], string[]>();
 
-                    database = FileLoader.loadFaceDB("FaceDB");
+                    var database = FileLoader.loadFaceDB("FaceDB");
 
                     // empty database??? cant be right... no need to load the recognizer then.
                     if (database == null)
                     {
-                        //Console.Out.WriteLine("Database could not be loaded");
+                        Console.Out.WriteLine("Database could not be loaded");
                         return;
+                    }
 
-                    } 
-                    
                     // for each entry in the database retrieve the faces and labels and append them to the local
                     // faceDatabase and labelDatabase arrays.
-                    foreach (KeyValuePair<Image<Gray, byte>[], string[]> entry in database)
+                    foreach (var entry in database)
                     {
-                        Image<Gray, byte>[] images = entry.Key;
-                        string[] label = entry.Value;
+                        var images = entry.Key;
+                        var label = entry.Value;
 
-                        if (faceDatabase != null && labelDatabase != null)
+                        if (_faceDatabase != null && _labelDatabase != null)
                         {
                             //Console.Out.WriteLine(label[0]);
-                            faceDatabase = faceDatabase.Concat(images).ToArray();
-                            labelDatabase = labelDatabase.Concat(label).ToArray();
+                            if (images != null) _faceDatabase = _faceDatabase.Concat(images).ToArray();
+                            if (label != null) _labelDatabase = _labelDatabase.Concat(label).ToArray();
                         }
                         else
                         {
-                            faceDatabase = images;
-                            labelDatabase = label;
+                            _faceDatabase = images;
+                            _labelDatabase = label;
                         }
                     }
-
-                    // shuffle the data so the neural network works better.
-                    this.shuffle(faceDatabase, labelDatabase);
                 }
 
                 // initialize the recognizer and train it wth the database data.
-                MCvTermCriteria termCrit = new MCvTermCriteria(32, 0.001);
-                recognizer = new EigenObjectRecognizer(faceDatabase, labelDatabase, 1700, ref termCrit);
+                var termCrit = new MCvTermCriteria(32, 0.001);
+                _recognizer = new EigenObjectRecognizer(_faceDatabase, _labelDatabase, 1700, ref termCrit);
             }
         }
 
@@ -531,16 +483,16 @@ namespace Kinect
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void recognizerInitWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void RecognizerInitWorkerRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            isDatabaseLoaded = true;
-            isRecognizerLoading = false;
-            isRecognizerLoaded = true;
+            _isDatabaseLoaded = true;
+            _isRecognizerLoading = false;
+            _isRecognizerLoaded = true;
 
-            if (faceRecognitionActive)
+            if (_faceRecognitionActive)
             {
-                this.recognizeFace(recFaces);
-                faceRecognitionActive = false;
+                RecognizeFace(_recFaces);
+                _faceRecognitionActive = false;
             }
         }
 
@@ -550,56 +502,53 @@ namespace Kinect
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void recognizerWorker_DoWork(object sender, DoWorkEventArgs e)
+        private void RecognizerWorkerDoWork(object sender, DoWorkEventArgs e)
         {
-
             // retrieve the arraylist from the arguments
-            ArrayList faces = e.Argument as ArrayList;
+            var faces = e.Argument as ArrayList;
 
             // copy them into an image array
-            Image<Gray, byte>[] facesCopy = new Image<Gray, byte>[faces.Count];
+            var facesCopy = new Image<Gray, byte>[faces.Count];
 
             faces.CopyTo(facesCopy);
 
-            Image<Gray, byte> bestMatch = null; // stores the face that was the closest match.
-            string bestLabel = ""; // and the closest matching label as well.
-            float bestDistance = float.MaxValue; // keeps track of the best match distance
-            float eigenDistance = 0;
-            string tempLabel = "";
+            var bestLabel = ""; // and the closest matching label as well.
+            var bestDistance = float.MaxValue; // keeps track of the best match distance
             Image<Gray, byte> optiImage = null;
 
             // loop though the faces and find the most similar object in the EigenRecognizer.
-            foreach (Image<Gray, byte> face in facesCopy)
+            foreach (var face in facesCopy)
             {
-                int index = 0;
-                optiImage = face.Resize(100, 100, INTER.CV_INTER_CUBIC, false);
-                optiImage._EqualizeHist();
+                var index = 0;
+                if (face != null) optiImage = face.Resize(100, 100, INTER.CV_INTER_CUBIC, false);
+                if (optiImage != null) optiImage._EqualizeHist();
 
-                recognizer.FindMostSimilarObject(optiImage, out index, out eigenDistance, out tempLabel);
+                float eigenDistance = 0;
+                string tempLabel = null;
+                if (_recognizer != null)
+                    _recognizer.FindMostSimilarObject(optiImage, out index, out eigenDistance, out tempLabel);
 
                 // if the new eigendistance is better than the current best one, replace the values for 
                 // best distance, best label and best image.
                 if (bestDistance > eigenDistance)
                 {
                     bestDistance = eigenDistance;
-                    bestMatch = optiImage;
                     bestLabel = tempLabel;
                 }
             }
 
             // recognition is done so create a new UserFeature object to store the results.
-            UserFeature user = new UserFeature();
+            var user = new UserFeature();
 
             // if a label has been returned
-            if (!bestLabel.Equals(""))
+            if (!"".Equals(bestLabel))
             {
                 // calculate the confidence as a percentage value.
-                user.FaceConfidence = Math.Max(0, (1 - bestDistance / 3000));
+                user.FaceConfidence = Math.Max(0, (1 - bestDistance/3000));
                 // store the username
                 user.Name = bestLabel;
                 // and the closest matching image.
                 user.curImage = optiImage;
-
             }
             //Console.Out.WriteLine("User label: " + user.Name);
             e.Result = user;
@@ -611,76 +560,30 @@ namespace Kinect
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void recognizerWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void RecognizerWorkerRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            UserFeature user = e.Result as UserFeature;
-            recProcessor.userRecognized(user);
+            var user = e.Result as UserFeature;
+            if (_recProcessor != null) _recProcessor.UserRecognized(user);
         }
 
         /// <summary>
         /// Invoked by the recognitionProcessor to start recognition of faces passed to the method.
         /// </summary>
         /// <param name="faces"></param>
-        public void recognizeFace(ArrayList faces)
+        public void RecognizeFace(ArrayList faces)
         {
             // if the recognizer needs to be loaded do so.
-            if (!isRecognizerLoaded)
+            if (!_isRecognizerLoaded)
             {
-                faceRecognitionActive = true;
-                recFaces = faces;
-                initRecognizer();
+                _faceRecognitionActive = true;
+                _recFaces = faces;
+                InitRecognizer();
             }
             else
             {
                 // otherwise start recognition in the background.
-                recognizerWorker.RunWorkerAsync(faces);
+                if (_recognizerWorker != null) _recognizerWorker.RunWorkerAsync(faces);
             }
-
-
-        }
-
-
-        public Image<Gray, byte> detectFaceGPU(Image<Rgb, byte> image, bool p)
-        {
-
-            if (image == null)
-            {
-                return null;
-            }
-            Image<Gray, byte> grayImage = image.Convert<Gray, byte>();
-
-            GpuImage<Gray, byte> grayGPUImage = new GpuImage<Gray, byte>(grayImage);
-
-            // image conversion went wrong or image passed was null
-            if (grayGPUImage == null) { return null; }
-
-            // do the detection and mark the startime for performance tracking.
-            DateTime time = DateTime.Now;
-            Rectangle[] faces = null;
-            try
-            {
-                faces = haarGPU.DetectMultiScale<Gray>(grayGPUImage, 1.2, 4, new Size(image.Width / 12, image.Height / 12));
-            }
-            catch (Exception ex)
-            {
-                //Console.Out.WriteLine("[FaceProcessor] detectFaceGPU: " + ex.Message);
-            }
-
-            // if a face has been detected store each in the facelist and indicate there are new values in the list.
-            if (faces != null && faces.Count() != 0)
-            {
-                foreach (Rectangle face in faces)
-                {
-                    Image<Gray, byte> resizedImg = grayGPUImage.GetSubRect(face).ToImage().Resize(100, 100, INTER.CV_INTER_CUBIC, true);
-                    return resizedImg;
-                }
-                isNew = true;
-            }
-            // mark the end time of the operation.
-            TimeSpan endTime = DateTime.Now - time;
-            return null;
-            //Console.WriteLine("Time to find face: " + endTime.Milliseconds + "ms");
-
         }
     }
 }

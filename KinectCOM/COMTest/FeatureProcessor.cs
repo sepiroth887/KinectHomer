@@ -1,28 +1,40 @@
 ﻿using System;
 using System.Collections;
-using System.Linq;
-using System.Text;
-using Microsoft.Kinect;
-using System.Drawing;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Windows;
+using Microsoft.Kinect;
 
 namespace KinectCOM
 {
-    class FeatureProcessor
+    internal class FeatureProcessor
     {
-        private KinectData kinect; // refernce to Kinect manager
-        private bool isProcessing = false; // indicates whether the processor is active
+        private readonly ArrayList armVals = new ArrayList(); // list of last 20 arm length values.
+        private readonly IKinect handler;
+        private readonly ArrayList headVals = new ArrayList(); // list of last 20 hip to head height values.
+
+        private readonly Dictionary<JointType, ColorImagePoint> jointPoints =
+            new Dictionary<JointType, ColorImagePoint>(); // Dictionary of joints for the actively tracked user.
+
+        private readonly KinectData kinect; // refernce to Kinect manager
+        private readonly ArrayList shoulderVals = new ArrayList(); // list of last 20 shoulder length values.
+        private readonly ArrayList users = new ArrayList(); // list of user ids that are in the FOV
         private int activeUser = -1; // current actively tracked user
-        private ArrayList users = new ArrayList(); // list of user ids that are in the FOV
-        private Dictionary<JointType, ColorImagePoint> jointPoints = new Dictionary<JointType, ColorImagePoint>(); // Dictionary of joints for the actively tracked user.
-        private long skeletonFrameTime = 0; // time of the last frame.
+
         private SkeletonPoint activeUserHeadPos; // location of the active users head
-        private IKinect handler;
-        private ArrayList shoulderVals = new ArrayList(); // list of last 20 shoulder length values.
-        private ArrayList armVals = new ArrayList(); // list of last 20 arm length values.
-        private ArrayList headVals = new ArrayList(); // list of last 20 hip to head height values.
+        private bool isProcessing; // indicates whether the processor is active
+
+        /// <summary>
+        /// Event handler activated when a skeletonFrame is ready. Returns immediately if the processor is
+        /// no started. The frame is retrieved and for each skeleton in the frame the user id is stored. 
+        /// If an active user has been selected, its skeleton is parsed for joints and the  is updated.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// 
+        private Skeleton[] skeletonData;
+
+        public SkeletonFrame skeletonFrame;
+        private long skeletonFrameTime; // time of the last frame.
 
 
         /// <summary>
@@ -30,11 +42,10 @@ namespace KinectCOM
         /// </summary>
         /// <param name="kinect">Kinect Data object</param>
         /// <param name="p">GUI object</param>
-        public FeatureProcessor(KinectData kinect,IKinect kinectHandler)
+        public FeatureProcessor(KinectData kinect, IKinect kinectHandler)
         {
             this.kinect = kinect;
-            this.handler = kinectHandler;
-
+            handler = kinectHandler;
         }
 
         /// <summary>
@@ -83,24 +94,19 @@ namespace KinectCOM
         /// gets the active users head position as a SkeletonPoint.
         /// </summary>
         /// <returns></returns>
-        public SkeletonPoint getUserHeadPos() {
+        public SkeletonPoint getUserHeadPos()
+        {
             return activeUserHeadPos;
         }
 
-        /// <summary>
-        /// Event handler activated when a skeletonFrame is ready. Returns immediately if the processor is
-        /// no started. The frame is retrieved and for each skeleton in the frame the user id is stored. 
-        /// If an active user has been selected, its skeleton is parsed for joints and the  is updated.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        /// 
-        private Skeleton[] skeletonData;
-        public SkeletonFrame skeletonFrame; 
-        public void SkeletonImageReady(object sender, SkeletonFrameReadyEventArgs e) {
-            this.skeletonData = new Skeleton[kinect.getSensor().SkeletonStream.FrameSkeletonArrayLength];
+        public void SkeletonImageReady(object sender, SkeletonFrameReadyEventArgs e)
+        {
+            skeletonData = new Skeleton[kinect.GetSensor().SkeletonStream.FrameSkeletonArrayLength];
 
-            if (!isProcessing) { return; }
+            if (!isProcessing)
+            {
+                return;
+            }
             // retrieve the frame
             skeletonFrame = e.OpenSkeletonFrame();
             skeletonFrame.CopySkeletonDataTo(skeletonData);
@@ -109,36 +115,40 @@ namespace KinectCOM
             skeletonFrameTime = skeletonFrame.Timestamp;
 
             //Logger.logIt("[FeatureProcessor]Skeletons in frame: " + skeletons.Length);
-    
+
             // clear both, the last users stored, and the active users joints.
             users.Clear();
             jointPoints.Clear();
 
-            
 
             // loop through all skeletons and add the TrackingID to the users arraylist.
-            foreach (Skeleton skeleton in skeletonData) { 
-                
-                if(!skeleton.TrackingState.Equals(SkeletonTrackingState.NotTracked)){
-                     users.Add(skeleton.TrackingId);
-                     ////Console.Out.WriteLine("Tracked user found: " + skeleton.TrackingID);
+            foreach (Skeleton skeleton in skeletonData)
+            {
+                if (!skeleton.TrackingState.Equals(SkeletonTrackingState.NotTracked))
+                {
+                    users.Add(skeleton.TrackingId);
+                    ////Console.Out.WriteLine("Tracked user found: " + skeleton.TrackingID);
                 }
 
                 // if no active user has been selected, skip the remainder.
-                if (!users.Contains(activeUser)) { continue; }
+                if (!users.Contains(activeUser))
+                {
+                    continue;
+                }
 
                 // if an active user is present
-                if (activeUser == skeleton.TrackingId) {
-
+                if (activeUser == skeleton.TrackingId)
+                {
                     // loop through each joint and if its tracked 
                     foreach (Joint joint in skeleton.Joints)
                     {
-                        if(joint.Equals(JointTrackingState.Tracked) ||
-                            joint.TrackingState.Equals(JointTrackingState.Inferred)){
+                        if (joint.Equals(JointTrackingState.Tracked) ||
+                            joint.TrackingState.Equals(JointTrackingState.Inferred))
+                        {
                             // get the location as a point fitting on the GUI picturebox for the skeleton
                             ColorImagePoint p = getDisplayPosition(joint.Position);
                             // and add it to the list of jointpoints
-                            jointPoints.Add(joint.JointType,p);
+                            jointPoints.Add(joint.JointType, p);
 
                             //Console.WriteLine("Joint: "+joint.ID+" position: "+p.X+"|"+p.Y);
                         }
@@ -148,14 +158,12 @@ namespace KinectCOM
                     activeUserHeadPos = skeleton.Joints[JointType.Head].Position;
 
                     // and try to find the features of this skeleton for later processing.
-                    this.findFeatures(skeleton);
+                    findFeatures(skeleton);
                 }
-
-                
             }
 
             // update the  with the retrieved information
-           
+
             handler.updateSkeletons(jointPoints, users);
         }
 
@@ -167,7 +175,8 @@ namespace KinectCOM
         public Dictionary<FeatureType, string> getFeatures(int skelID)
         {
             // the passed userID does not match the currently tracked user so stop working.
-            if (activeUser != skelID) {
+            if (activeUser != skelID)
+            {
                 return null;
             }
 
@@ -181,7 +190,7 @@ namespace KinectCOM
                     avgShoulder += value;
                 }
 
-                avgShoulder = avgShoulder / shoulderVals.Count;
+                avgShoulder = avgShoulder/shoulderVals.Count;
             }
 
             // add all the arm values and calculate the average.
@@ -194,7 +203,7 @@ namespace KinectCOM
                     avgArm += value;
                 }
 
-                avgArm = avgArm / armVals.Count;
+                avgArm = avgArm/armVals.Count;
             }
 
             // add all the head values and calculate the average.
@@ -207,11 +216,11 @@ namespace KinectCOM
                     avgHead += value;
                 }
 
-                avgHead = avgHead / headVals.Count;
+                avgHead = avgHead/headVals.Count;
             }
 
             // store all average values in a dictionary of featureTypes.
-            Dictionary<FeatureType, string> vals = new Dictionary<FeatureType, string>();
+            var vals = new Dictionary<FeatureType, string>();
 
             vals.Add(FeatureType.ShoulderWidth, avgShoulder.ToString(CultureInfo.CreateSpecificCulture("en-GB")));
             vals.Add(FeatureType.ArmLength, avgArm.ToString(CultureInfo.CreateSpecificCulture("en-GB")));
@@ -220,7 +229,7 @@ namespace KinectCOM
             return vals;
         }
 
-        
+
         /// <summary>
         /// Progresses through the skeletonData and if the joints of interest are tracked, do some 
         /// maths to calculate distances and store the results for future use.
@@ -234,45 +243,43 @@ namespace KinectCOM
 
             // if left and right shoulder is tracked
             if (skeleton.Joints[JointType.ShoulderLeft].TrackingState.Equals(JointTrackingState.Tracked)
-                 && skeleton.Joints[JointType.ShoulderRight].TrackingState.Equals(JointTrackingState.Tracked))
+                && skeleton.Joints[JointType.ShoulderRight].TrackingState.Equals(JointTrackingState.Tracked))
             {
-                
                 // get the SkeletonPoint of each 
                 SkeletonPoint sL = skeleton.Joints[JointType.ShoulderLeft].Position;
                 SkeletonPoint sR = skeleton.Joints[JointType.ShoulderRight].Position;
 
                 // and calculate the Eucledian distance between them.
-                double sSqr = (sL.X - sR.X) * (sL.X - sR.X) + (sL.Y - sR.Y) * (sL.Y - sR.Y) + (sL.Z - sR.Z) * (sL.Z - sR.Z);
+                double sSqr = (sL.X - sR.X)*(sL.X - sR.X) + (sL.Y - sR.Y)*(sL.Y - sR.Y) + (sL.Z - sR.Z)*(sL.Z - sR.Z);
 
                 ShoulderWidth = Math.Sqrt(sSqr);
             }
 
             // if either the left shoulder and left elbow, or the right shoulder and right elbow are tracked 
             if ((skeleton.Joints[JointType.ShoulderLeft].TrackingState.Equals(JointTrackingState.Tracked)
-                  && skeleton.Joints[JointType.ElbowLeft].TrackingState.Equals(JointTrackingState.Tracked))
-               ||
+                 && skeleton.Joints[JointType.ElbowLeft].TrackingState.Equals(JointTrackingState.Tracked))
+                ||
                 (skeleton.Joints[JointType.ShoulderRight].TrackingState.Equals(JointTrackingState.Tracked)
-                  && skeleton.Joints[JointType.ElbowRight].TrackingState.Equals(JointTrackingState.Tracked)))
+                 && skeleton.Joints[JointType.ElbowRight].TrackingState.Equals(JointTrackingState.Tracked)))
             {
-
                 // get the SkeletonPoints of the tracked joints and determine the distance between both joints
                 if (skeleton.Joints[JointType.ShoulderLeft].TrackingState.Equals(JointTrackingState.Tracked))
                 {
-                
                     SkeletonPoint sL = skeleton.Joints[JointType.ShoulderLeft].Position;
                     SkeletonPoint eL = skeleton.Joints[JointType.ElbowLeft].Position;
 
-                    double aSqr = (sL.X - eL.X) * (sL.X - eL.X) + (sL.Y - eL.Y) * (sL.Y - eL.Y) + (sL.Z - eL.Z) * (sL.Z - eL.Z);
+                    double aSqr = (sL.X - eL.X)*(sL.X - eL.X) + (sL.Y - eL.Y)*(sL.Y - eL.Y) +
+                                  (sL.Z - eL.Z)*(sL.Z - eL.Z);
 
                     ArmLength = Math.Sqrt(aSqr);
-
                 }
                 else
                 {
                     SkeletonPoint sR = skeleton.Joints[JointType.ShoulderRight].Position;
                     SkeletonPoint eR = skeleton.Joints[JointType.ElbowRight].Position;
 
-                    double aSqr = (sR.X - eR.X) * (sR.X - eR.X) + (sR.Y - eR.Y) * (sR.Y - eR.Y) + (sR.Z - eR.Z) * (sR.Z - eR.Z);
+                    double aSqr = (sR.X - eR.X)*(sR.X - eR.X) + (sR.Y - eR.Y)*(sR.Y - eR.Y) +
+                                  (sR.Z - eR.Z)*(sR.Z - eR.Z);
 
                     ArmLength = Math.Sqrt(aSqr);
                 }
@@ -280,13 +287,13 @@ namespace KinectCOM
 
             // finally if the hip and the center shoulder joint is tracked
             if (skeleton.Joints[JointType.ShoulderCenter].TrackingState.Equals(JointTrackingState.Tracked)
-                 && skeleton.Joints[JointType.HipCenter].TrackingState.Equals(JointTrackingState.Tracked))
+                && skeleton.Joints[JointType.HipCenter].TrackingState.Equals(JointTrackingState.Tracked))
             {
                 // get their SkeletonPoints and calculate the distance again.
                 SkeletonPoint sC = skeleton.Joints[JointType.ShoulderLeft].Position;
                 SkeletonPoint hC = skeleton.Joints[JointType.HipCenter].Position;
 
-                double sSqr = (sC.X - hC.X) * (sC.X - hC.X) + (sC.Y - hC.Y) * (sC.Y - hC.Y) + (sC.Z - hC.Z) * (sC.Z - hC.Z);
+                double sSqr = (sC.X - hC.X)*(sC.X - hC.X) + (sC.Y - hC.Y)*(sC.Y - hC.Y) + (sC.Z - hC.Z)*(sC.Z - hC.Z);
 
                 HipHeadHeight = Math.Sqrt(sSqr);
             }
@@ -330,8 +337,6 @@ namespace KinectCOM
                     shoulderVals.Add(ShoulderWidth);
                 }
             }
-
-
         }
 
         /// <summary>
@@ -341,7 +346,7 @@ namespace KinectCOM
         /// <returns>the x and y components of that joints pixel position</returns>
         private ColorImagePoint getDisplayPosition(SkeletonPoint joint)
         {
-            return kinect.getSensor().MapSkeletonPointToColor(joint,ColorImageFormat.RgbResolution1280x960Fps12);
+            return kinect.GetSensor().MapSkeletonPointToColor(joint, ColorImageFormat.RgbResolution1280x960Fps12);
         }
 
 

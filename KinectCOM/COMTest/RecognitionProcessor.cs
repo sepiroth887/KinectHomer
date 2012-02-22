@@ -1,157 +1,178 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Emgu.CV;
 using Emgu.CV.Structure;
-using System.Collections;
-using KinectCOM;
+using Kinect;
+using log4net;
 
-namespace Kinect
+namespace KinectCOM
 {
-    class RecognitionProcessor
+    internal class RecognitionProcessor
     {
-        private IKinect kinectHandler;
-        private FeatureProcessor featureProcessor;
-        private FaceProcessor faceProcessor;
+        private static readonly ILog Log = LogManager.GetLogger(typeof (RecognitionProcessor));
+        private readonly ArrayList _faces;
+        private readonly IKinect _kinectHandler;
+        private FaceProcessor _faceProcessor;
+        private FeatureProcessor _featureProcessor;
 
-        private Image<Gray, byte> latestFace = null;
-        private ArrayList faces;
-        
-        public RecognitionProcessor(IKinect handler) {
-            kinectHandler = handler;
-            faces = new ArrayList();
-        }
+        private Image<Gray, byte> _latestFace;
+        private int _trackedUser;
 
-        public void setFeatureProcessor(FeatureProcessor feat) {
-            this.featureProcessor = feat;
-        }
-
-        public void setFaceProcessor(FaceProcessor face) {
-            this.faceProcessor = face;
-        }
-
-        public void learnUser(string name, int skeletonID) {
-
-            faceProcessor.learnFace(faces,name);
-
-            Dictionary<FeatureType, string> features = featureProcessor.getFeatures(skeletonID);
-            features.Add(FeatureType.Face,name);
-            new DataStore().storeUserData(features);
-
-        }
-
-        public void startRecognition(int skeletonID) {
-            trackedUser = skeletonID;
-            faceProcessor.recognizeFace(faces);
+        public RecognitionProcessor(IKinect handler)
+        {
+            _kinectHandler = handler;
+            _faces = new ArrayList();
+            Log.Info("RecognitionProcessor created");
         }
 
         public Image<Gray, byte> LatestFace
         {
-            get { return latestFace; }
+            get { return _latestFace; }
             set
             {
-                latestFace = value;
+                _latestFace = value;
 
-                if (faces.Count < 10)
+
+                if (_faces != null && _faces.Count < 10)
                 {
-                    faces.Add(latestFace);
+                    if (_latestFace != null) _faces.Add(_latestFace);
                 }
                 else
                 {
-                    faces.RemoveAt(0);
-                    faces.Add(latestFace);
+                    if (_faces != null)
+                    {
+                        _faces.RemoveAt(0);
+                        if (_latestFace != null) _faces.Add(_latestFace);
+                    }
                 }
-
-           }
+            }
         }
 
-        private int trackedUser;
-        public void userRecognized(UserFeature user) { 
-           
-            Dictionary<string, Dictionary<FeatureType,string>> users = DataStore.loadAllUsers();
+        public void SetFeatureProcessor(FeatureProcessor feat)
+        {
+            _featureProcessor = feat;
+        }
 
-            if (user != null && users != null) {
-                
-                Dictionary<FeatureType,string> actualFeatures = featureProcessor.getFeatures(trackedUser);
-                if (actualFeatures == null) { kinectHandler.userDetected(null); return; }                
-                
+        public void SetFaceProcessor(FaceProcessor face)
+        {
+            _faceProcessor = face;
+        }
+
+        public void LearnUser(string name, int skeletonID)
+        {
+            if (_faceProcessor == null)
+            {
+                Log.Warn("Learning failed, no faceProcessor present");
+                return;
+            }
+
+            _faceProcessor.LearnFace(_faces, name);
+
+            if (_featureProcessor == null)
+            {
+                Log.Warn("Learning failed, no featureProcessor present");
+                return;
+            }
+
+            var features = _featureProcessor.getFeatures(skeletonID);
+            if (features == null)
+            {
+                Log.Warn("Learning failed, could not extract features from skeletonID: " + skeletonID);
+                return;
+            }
+
+            features.Add(FeatureType.Face, name);
+            new DataStore().storeUserData(features);
+            Log.Info("User trained");
+        }
+
+        public void StartRecognition(int skeletonID)
+        {
+            _trackedUser = skeletonID;
+            if (_faceProcessor != null) _faceProcessor.RecognizeFace(_faces);
+        }
+
+        public void UserRecognized(UserFeature user)
+        {
+            var users = DataStore.loadAllUsers();
+
+            if (user == null || users == null)
+            {
+                Log.Warn("Recognition failed, no user found");
+                return;
+            }
+
+            if (_featureProcessor == null)
+            {
+                Log.Warn("Recognition failed, no featureProcessor present");
+                return;
+            }
+
+            var actualFeatures = _featureProcessor.getFeatures(_trackedUser);
+            if (actualFeatures != null)
+            {
                 string userLabel = "";
                 string bestMatch = "";
-                float sumConfidence = 0;
                 float bestConfidence = 0;
 
-                foreach (KeyValuePair<string, Dictionary<FeatureType, string>> storedFeatures in users)
+                foreach (var storedFeatures in users)
                 {
-                    Dictionary<FeatureType, float> featureConfidence = new Dictionary<FeatureType, float>(); 
+                    var featureConfidence = new Dictionary<FeatureType, float>();
 
-                    foreach (KeyValuePair<FeatureType, string> feature in storedFeatures.Value)
-                    {
-
-                        
-                        if (feature.Key == FeatureType.Face)
+                    if (storedFeatures.Value != null)
+                        foreach (var feature in storedFeatures.Value)
                         {
-                            userLabel = feature.Value;
+                            if (feature.Key == FeatureType.Face)
+                            {
+                                userLabel = feature.Value;
+                            }
+                            else
+                            {
+                                var actual = float.Parse(actualFeatures[feature.Key]);
+                                var stored = float.Parse(feature.Value);
+                                //float diff = Math.Abs(actual - stored);
+                                var perDiff = Math.Abs(1 - (actual/stored));
+
+                                var confidence = 1 - perDiff;
+
+                                featureConfidence.Add(feature.Key, confidence);
+                            }
                         }
-                        else
-                        {
-                            float actual = float.Parse(actualFeatures[feature.Key]);
-                            float stored = float.Parse(feature.Value);
-                            //float diff = Math.Abs(actual - stored);
-                            float perDiff = Math.Abs(1 - (actual/stored));
 
-                            float confidence = 1 - perDiff;
+                    var sumConfidence = featureConfidence.Sum(feature2 => feature2.Value);
 
-                            featureConfidence.Add(feature.Key, confidence);
-                        }
+                    sumConfidence = sumConfidence/3;
 
-                       
-                    }
-
-                    sumConfidence = 0;
-
-                    foreach (KeyValuePair<FeatureType, float> feature2 in featureConfidence)
-                    {
-                        sumConfidence += feature2.Value;
-                    }
-
-                    sumConfidence = sumConfidence / 3;
-
-                    if (bestConfidence < sumConfidence)
-                    {
-                        bestConfidence = sumConfidence;
-                        bestMatch = userLabel;
-                    }
-
+                    if (bestConfidence >= sumConfidence) continue;
+                    bestConfidence = sumConfidence;
+                    bestMatch = userLabel;
                 }
+
                 if (bestMatch != user.Name)
                 {
-                    user.Confidence = (user.FaceConfidence - bestConfidence/2) /2;
+                    user.Confidence = (user.FaceConfidence - bestConfidence/2)/2;
                 }
-                else {
-                    user.Confidence = (user.FaceConfidence + bestConfidence/2) /2;
+                else
+                {
+                    user.Confidence = (user.FaceConfidence + bestConfidence/2)/2;
                 }
 
                 if (user.Confidence < 0)
                 {
-                    UserFeature newUser = new UserFeature();
-                    newUser.Confidence = bestConfidence / 2;
-                    newUser.FaceConfidence = 0;
-                    newUser.Name = bestMatch;
-                    kinectHandler.userDetected(newUser);
+                    var newUser = new UserFeature {Confidence = bestConfidence/2, FaceConfidence = 0, Name = bestMatch};
+                    if (_kinectHandler != null) _kinectHandler.userDetected(newUser);
                 }
-                else {
-                    kinectHandler.userDetected(user);    
+                else
+                {
+                    if (_kinectHandler != null) _kinectHandler.userDetected(user);
                 }
-
             }
-
-            
+            else
+            {
+                if (_kinectHandler != null) _kinectHandler.userDetected(null);
+            }
         }
-
-        
-
     }
-        
-
 }
