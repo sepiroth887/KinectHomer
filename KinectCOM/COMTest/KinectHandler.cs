@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+using System.Linq;
 using Kinect;
 using Kinect.Toolbox.Voice;
 using Microsoft.Kinect;
-using Microsoft.Xna.Framework;
 using log4net;
 using log4net.Appender;
 
@@ -13,19 +12,16 @@ namespace KinectCOM
 {
     internal class KinectHandler : IKinect
     {
-        private readonly Device COMInterface;
-        private readonly string[] commands;
-        private readonly KinectData kinect;
-        private readonly ArrayList skeletons;
-        private readonly VoiceCommander vocCom;
-        private FaceProcessor faceProcessor;
-        private FeatureProcessor featureProcessor;
-        private GestureProcessor gestureProcessor;
-        private bool marking;
-        private Vector3 pointA;
-        private Vector3 pointB;
-        private RecognitionProcessor recognitionProcessor;
-        private static readonly ILog Log = LogManager.GetLogger(type: typeof(KinectHandler));
+        private readonly Device _comInterface;
+        private readonly string[] _commands;
+        private readonly KinectData _kinect;
+        private readonly ArrayList _skeletons;
+        private readonly VoiceCommander _vocCom;
+        private FaceProcessor _faceProcessor;
+        private FeatureProcessor _featureProcessor;
+        private GestureProcessor _gestureProcessor;
+        private RecognitionProcessor _recognitionProcessor;
+        private static readonly ILog Log = LogManager.GetLogger(typeof(KinectHandler));
 
         public KinectHandler(KinectData kinect, Device comInterface)
         {
@@ -36,245 +32,221 @@ namespace KinectCOM
                                  };
             log4net.Config.BasicConfigurator.Configure(rollAppend);
             Log.Info("Initializing Framework");
-            COMInterface = comInterface;
-            skeletons = new ArrayList();
-            this.kinect = kinect;
+            _comInterface = comInterface;
+            _skeletons = new ArrayList();
+            _kinect = kinect;
 
-            commands = DataStore.loadVoiceCommands();
+            _commands = DataStore.loadVoiceCommands();
             //Console.Out.WriteLine("VC loaded: " + commands.Length);
-            vocCom = new VoiceCommander(commands);
-            vocCom.OrderDetected += voiceCommandDetected;
+            _vocCom = new VoiceCommander(_commands);
+            _vocCom.OrderDetected += VoiceCommandDetected;
         }
 
         #region IKinect Members
 
-        public void init()
+        void IKinect.Init()
         {
             // initialize the KinectData object
 
             //initialize the FeatureProcessor
-            featureProcessor = new FeatureProcessor(kinect, this);
+            _featureProcessor = new FeatureProcessor(_kinect, this);
 
-            featureProcessor.init();
+            _featureProcessor.Init();
 
             // initialize RecognitionProcessor
-            recognitionProcessor = new RecognitionProcessor(this);
+            _recognitionProcessor = new RecognitionProcessor(this);
             //Console.Out.WriteLine("Feature processor init complete");
 
             //initialize the FaceProcessor
-            faceProcessor = new FaceProcessor(kinect, featureProcessor, recognitionProcessor);
+            _faceProcessor = new FaceProcessor(_kinect, _featureProcessor, _recognitionProcessor);
 
-            faceProcessor.Init();
+            _faceProcessor.Init();
 
             // pass face and feature processor references to the recongition processor.
-            recognitionProcessor.SetFaceProcessor(faceProcessor);
-            recognitionProcessor.SetFeatureProcessor(featureProcessor);
+            _recognitionProcessor.SetFaceProcessor(_faceProcessor);
+            _recognitionProcessor.SetFeatureProcessor(_featureProcessor);
 
-            gestureProcessor = new GestureProcessor(this, kinect);
+            _gestureProcessor = new GestureProcessor(this, _kinect);
 
-            featureProcessor.startProcess();
-            vocCom.Start(kinect.GetSensor());
+            _featureProcessor.StartProcess();
+            if (_vocCom != null && _kinect != null) _vocCom.Start(_kinect.GetSensor());
         }
 
-        public void uninit()
+        void IKinect.Uninit()
         {
-            featureProcessor.stopProcess();
-            recognitionProcessor = null;
-            featureProcessor = null;
-            faceProcessor = null;
-            kinect.GetSensor().Stop();
+            if (_featureProcessor != null) _featureProcessor.StopProcess();
+            _recognitionProcessor = null;
+            _featureProcessor = null;
+            _faceProcessor = null;
+            if (_kinect != null)
+            {
+                var kinectSensor = _kinect.GetSensor();
+                if (kinectSensor != null) kinectSensor.Stop();
+            }
         }
 
-        public void updateFace()
+        void IKinect.UpdateFace()
         {
             throw new NotImplementedException();
         }
 
-        public void updateSkeletons(Dictionary<JointType, ColorImagePoint> points, ArrayList users)
+        void IKinect.UpdateSkeletons(Dictionary<JointType, ColorImagePoint> points, ArrayList users)
         {
             ////Console.Out.WriteLine(users.Count+""+skeletons.Count);
+            if (users == null || _skeletons == null || users.Count == _skeletons.Count) return;
 
-            if (users.Count != skeletons.Count)
+            if (users.Count > _skeletons.Count)
             {
-                if (users.Count > skeletons.Count)
-                {
-                    // new user fire presence event
+                // new user fire presence event
 
-                    foreach (int newUser in users)
-                    {
-                        if (!skeletons.Contains(newUser))
-                        {
-                            skeletons.Add(newUser);
-                            presenceDetected(newUser);
-                            break;
-                        }
-                    }
-                }
-                else
+                foreach (var newUser in users.Cast<int>().Where(newUser => !_skeletons.Contains(newUser)))
                 {
-                    foreach (int lostUser in skeletons)
-                    {
-                        if (!users.Contains(lostUser))
-                        {
-                            skeletons.Remove(lostUser);
-                            presenceLost(lostUser);
-                            break;
-                        }
-                    }
+                    _skeletons.Add(newUser);
+                    PresenceDetected(newUser);
+                    break;
+                }
+            }
+            else
+            {
+                foreach (var lostUser in _skeletons.Cast<int>().Where(lostUser => !users.Contains(lostUser)))
+                {
+                    _skeletons.Remove(lostUser);
+                    PresenceLost(lostUser);
+                    break;
                 }
             }
         }
 
-        public void recordGesture(string gestureName, string ctxt)
+        void IKinect.RecordGesture(string gestureName, string ctxt)
         {
-            gestureProcessor.recordGesture(gestureName, ctxt);
+            if (_gestureProcessor != null) _gestureProcessor.RecordGesture(gestureName, ctxt);
         }
 
-        public void recognizeGesture(string ctxt)
+        void IKinect.RecognizeGesture(string ctxt)
         {
-            gestureProcessor.recognizeGesture(ctxt);
+            if (_gestureProcessor != null) _gestureProcessor.RecognizeGesture(ctxt);
         }
 
-        public void learnUser(int skeletonID)
+        void IKinect.LearnUser(int skeletonID)
         {
             throw new NotImplementedException();
         }
 
-        public bool startTracking(int skeletonID)
+        private bool AreProcessorsLoaded()
+        {
+            return _skeletons != null && _featureProcessor != null && _faceProcessor != null &&
+                   _gestureProcessor != null && _recognitionProcessor != null;
+        }
+
+        public bool StartTracking(int skeletonID)
         {
             ////Console.Out.WriteLine("Trying to start tracking!");
-            if (skeletons.Contains(skeletonID))
+// ReSharper disable PossibleNullReferenceException
+            if ( AreProcessorsLoaded() && _skeletons.Contains(skeletonID))
             {
-                featureProcessor.setActiveUser(skeletonID);
-                gestureProcessor.setActiveUser(skeletonID);
-                faceProcessor.DoProcess();
-                recognitionProcessor.StartRecognition(skeletonID);
+                _featureProcessor.SetActiveUser(skeletonID);
+                _gestureProcessor.SetActiveUser(skeletonID);
+                _faceProcessor.DoProcess();
+                _recognitionProcessor.StartRecognition(skeletonID);
+// ReSharper restore PossibleNullReferenceException
                 //Console.Out.WriteLine("Tracking user success");
                 return true;
             }
-            else
-            {
-                ////Console.Out.WriteLine("Tracking user failed");
-                return false;
-            }
+
+            return false;
         }
 
-        public void stopTracking(int skeletonID)
+        public void StopTracking(int skeletonID)
         {
-            featureProcessor.setActiveUser(-1);
-            gestureProcessor.setActiveUser(-1);
+            if (!AreProcessorsLoaded()) return;
+
+// ReSharper disable PossibleNullReferenceException
+            _featureProcessor.SetActiveUser(-1); 
+            _gestureProcessor.SetActiveUser(-1);
+// ReSharper restore PossibleNullReferenceException
         }
 
 
-        public void presenceDetected(int skeletonID)
+        public void PresenceDetected(int skeletonID)
         {
-            COMInterface.presenceDetected(skeletonID);
+            if (_comInterface != null) _comInterface.PresenceDetected(skeletonID);
         }
 
-        public void presenceLost(int skeletonID)
+        public void PresenceLost(int skeletonID)
         {
             //Console.WriteLine("User lost: " + skeletonID);
-            COMInterface.presenceLost(skeletonID);
-            stopTracking(skeletonID);
+            if (_comInterface != null) _comInterface.PresenceLost(skeletonID);
+            StopTracking(skeletonID);
         }
 
 
-        public void userDetected(UserFeature user)
+        void IKinect.UserDetected(UserFeature user)
         {
-            if (!"".Equals(user.Name))
+            if (user != null && !"".Equals(user.Name))
             {
                 //Console.Out.WriteLine("User detected:" + user.Name +" Confidence: "+user.Confidence);
-                COMInterface.userFound(user.Name, user.Confidence, featureProcessor.getActiveUser());
-            }
-            else
-            {
-                //Console.Out.WriteLine("No User detected:" + user.Name);
+                if (_comInterface != null && AreProcessorsLoaded())
+                    _comInterface.UserFound(user.Name, user.Confidence, _featureProcessor.GetActiveUser());
             }
         }
 
-        public void userLost(UserFeature user)
+        void IKinect.UserLost(UserFeature user)
         {
-            COMInterface.userLost(user.Name);
+            if (_comInterface != null && user != null) _comInterface.UserLost(user.Name);
         }
 
 
-        public void gestureRecordCompleted(string gestureName, string ctxt)
+        void IKinect.GestureRecordCompleted(string gestureName, string ctxt)
         {
-            COMInterface.gestureRecordCompleted(gestureName, ctxt);
+            if (_comInterface != null) _comInterface.GestureRecordCompleted(gestureName, ctxt);
         }
 
-        public void recordingCountdownEvent(int p)
+        void IKinect.RecordingCountdownEvent(int p)
         {
-            COMInterface.recordingCountDownEvent(p);
-        }
-
-
-        public void gestureRecognitionCompleted(string gesture)
-        {
-            COMInterface.gestureRecognitionCompleted(gesture);
+            if (_comInterface != null) _comInterface.RecordingCountDownEvent(p);
         }
 
 
-        public void stopRecGesture()
+        void IKinect.GestureRecognitionCompleted(string gesture)
         {
-            gestureProcessor.stopRecognition();
+            if (_comInterface != null) _comInterface.GestureRecognitionCompleted(gesture);
         }
 
 
-        public void contextSelected(string ctxt)
+        void IKinect.StopRecGesture()
         {
-            COMInterface.onContextSelected(ctxt);
+            if (_gestureProcessor != null) _gestureProcessor.StopRecognition();
         }
 
 
-        public void onAddOnGestureValueChange(float value)
+        void IKinect.ContextSelected(string ctxt)
         {
-            COMInterface.onAddonGestureValueChange(value);
+            if (_comInterface != null) _comInterface.onContextSelected(ctxt);
         }
 
 
-        public void storeGestures()
+        void IKinect.OnAddOnGestureValueChange(float value)
         {
-            gestureProcessor.storeGestures();
+            if (_comInterface != null) _comInterface.onAddonGestureValueChange(value);
         }
 
-        public string[] loadGestures()
+
+        void IKinect.StoreGestures()
         {
-            return gestureProcessor.loadGestures();
+            if (_gestureProcessor != null) _gestureProcessor.StoreGestures();
+        }
+
+        public IEnumerable<string> LoadGestures()
+        {
+            return _gestureProcessor != null ? _gestureProcessor.LoadGestures() : null;
         }
 
         #endregion
 
-        public void voiceCommandDetected(string command)
+        private void VoiceCommandDetected(string command)
         {
             //Console.Out.WriteLine("Voice command detected: " + command);
-
-            if (command.Equals("mark one"))
-            {
-                marking = true;
-                pointA = gestureProcessor.getHandPos();
-            }
-
-            if (command.Equals("mark two") && marking)
-            {
-                pointB = gestureProcessor.getHandPos();
-
-                var vectors = new Vector3[2];
-
-                vectors[0] = pointA;
-                vectors[1] = pointB;
-
-                int context = gestureProcessor.returnLastContext() + 1;
-
-                FileLoader.saveObject(
-                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\KinectHomer", context,
-                    vectors);
-                marking = false;
-
-                gestureProcessor.updateContextObjects();
-            }
-
-            COMInterface.onVoiceCommandDetected(command);
+            if (_comInterface != null) _comInterface.onVoiceCommandDetected(command);
         }
     }
 }

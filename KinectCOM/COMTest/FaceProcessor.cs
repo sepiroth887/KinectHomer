@@ -76,16 +76,16 @@ namespace KinectCOM
                 // choose the appropriate haarCascade for face detection
                 if (_hasCuda)
                 {
-                    _haarGpu = new GpuCascadeClassifier(FileLoader.DEFAULT_PATH + "haarcascade_frontalface_default.xml");
+                    _haarGpu = new GpuCascadeClassifier(FileLoader.DefaultPath + "haarcascade_frontalface_default.xml");
                 }
                 else
                 {
-                    _haar = new HaarCascade(FileLoader.DEFAULT_PATH + "haarcascade_frontalface_default.xml");
+                    _haar = new HaarCascade(FileLoader.DefaultPath + "haarcascade_frontalface_default.xml");
                 }
             }
             catch (Exception ex)
             {   
-                Console.Out.WriteLine(ex.StackTrace);
+                Log.Error("Couldn't create FaceProcessor",ex);
             }
         }
 
@@ -98,7 +98,6 @@ namespace KinectCOM
                 if (_kinect != null)
                 {
                     _kinect.attachRGBHandler(rgbHandler);
-                    _kinect.attachDepthHandler(depthHandler);
                 }
 
                 // initialize the Background workers required for face detection, face recognition, and recognition initialization.
@@ -118,7 +117,7 @@ namespace KinectCOM
             }
             catch (Exception ex)
             {
-                Console.Out.WriteLine(ex.StackTrace);
+                Log.Error("Couldn't initialize FaceProcessor", ex);
             }
         }
 
@@ -126,7 +125,7 @@ namespace KinectCOM
 
         // passes the image from the camera to either the detectFaceCPU or detectFaceGPU method 
         // to detect a face in it. If one is found, that face is passed to the RecognitionProcessor instance.
-        private void PassImage(Image<Bgr, byte> camImage, long time)
+        private void PassImage(Image<Bgr, byte> camImage)
         {
             _isNew = false;
 
@@ -140,28 +139,8 @@ namespace KinectCOM
             }
 
 
-            if (_faceList != null && _faceList.Count != 0 && _isNew)
-            {
-                if (_recProcessor != null) _recProcessor.LatestFace = _faceList[0];
-            }
-        }
-
-
-        /// <summary>
-        /// This handler is only active if the class is processing. It stores the latest depth image and 
-        /// the time it was created. 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void depthHandler(object sender, DepthImageFrameReadyEventArgs e)
-        {
-            if (!_isProcessing)
-            {
-                return;
-            }
-
-            var dFrame = e.OpenDepthImageFrame();
-            if (dFrame != null) _depthFrameTime = dFrame.Timestamp;
+            if (_faceList == null || _faceList.Count == 0 || !_isNew) return;
+            if (_recProcessor != null) _recProcessor.LatestFace = _faceList[0];
         }
 
         /// <summary>
@@ -186,11 +165,11 @@ namespace KinectCOM
             // check wether the latest frames are still fresh enough.
             if (_featureProcessor == null ||
                 (Math.Abs(_depthFrameTime - _rgbFrameTime) >= 500 ||
-                 Math.Abs(_featureProcessor.getFrameNumber() - _rgbFrameTime) >= 500)) return;
+                 Math.Abs(_featureProcessor.GetFrameNumber() - _rgbFrameTime) >= 500)) return;
 
             _isBwDone = false;
             var args = new Dictionary<int, object>
-                           {{0, frame}, {1, _featureProcessor.getUserHeadPos()}, {2, _rgbFrameTime}};
+                           {{0, frame}, {1, _featureProcessor.GetUserHeadPos()}, {2, _rgbFrameTime}};
 
             // pass all required arguments to the background worker.
             if (_bw != null) _bw.RunWorkerAsync(args);
@@ -210,22 +189,24 @@ namespace KinectCOM
                 // retrieve all passed arguments and store them locally.
                 var args = e.Argument as Dictionary<int, object>;
 
-                if (args == null) return;
+                if (args == null || args.Count < 3) return;
                 
                 var frame = args[0] as ColorImageFrame;
 
                 var activeHeadPos = (SkeletonPoint) args[1];
 
                 // get the depth pixel location of the head.
-                if (_kinect.GetSensor() == null) return;
 
-                var headDepth = _kinect.GetSensor().MapSkeletonPointToColor(activeHeadPos,
+                var sensor = _kinect.GetSensor();
+                if (sensor == null) return;
+
+                var headDepth = sensor.MapSkeletonPointToColor(activeHeadPos,
                                                                             ColorImageFormat.
                                                                                 RgbResolution1280x960Fps12);
 
-                var pixelData = new byte[_kinect.GetSensor().ColorStream.FramePixelDataLength];
+                var pixelData = new byte[sensor.ColorStream.FramePixelDataLength];
                 frame.CopyPixelDataTo(pixelData);
-
+                frame.Dispose();
                 var mystream = new MemoryStream(pixelData);
                 var p = Image.FromStream(mystream);
                 var img = new Bitmap(p);
@@ -244,7 +225,7 @@ namespace KinectCOM
                     reImg.ROI = new Rectangle((headDepth.X) - (roi/2), (headDepth.Y), roi, roi);
 
                     // pass the image and the timestamp on to the faceDetection methods
-                    PassImage(reImg, (long) args[3]);
+                    PassImage(reImg);
                 }
             }
         }
@@ -288,22 +269,20 @@ namespace KinectCOM
             }
             catch (Exception ex)
             {
-                Console.Out.WriteLine("[FaceProcessor] detectFaceGPU: " + ex.Message);
+                Log.Error("Detecting face failed." ,ex);
             }
 
             
             _faceList.Clear();
             // if a face has been detected store each in the facelist and indicate there are new values in the list.
+
+            if (faces == null || !faces.Any()) return;
             
-            if (faces != null && faces.Count() != 0)
+            foreach (var faceImg in faces.Select(grayGPUImage.GetSubRect).Where(faceImg => faceImg != null))
             {
-                foreach (var face in faces)
-                {
-                    var faceImg = grayGPUImage.GetSubRect(face);
-                    if (faceImg != null) _faceList.Add(faceImg.ToImage());
-                }
-                _isNew = true;
+                _faceList.Add(faceImg.ToImage());
             }
+            _isNew = true;
             // mark the end time of the operation.
             //var endTime = DateTime.Now - time;
 
@@ -329,7 +308,7 @@ namespace KinectCOM
             }
             catch (Exception ex)
             {
-                Console.Out.WriteLine("[FaceProcessor] detectFaceCPU: " + ex.Message);
+                Log.Error("Detecting face failed.", ex);   
             }
 
             _faceList.Clear();
@@ -410,7 +389,7 @@ namespace KinectCOM
             // create a dictionary to hold both arrays and pass store it on the HDD.
             var database = new Dictionary<Image<Gray, byte>[], string[]> {{images, labels}};
 
-            FileLoader.saveFaceDB(database, "../../FaceDB");
+            FileLoader.SaveFaceDB(database, "../../FaceDB");
         }
 
 
@@ -441,12 +420,12 @@ namespace KinectCOM
                 {
                     // db needs to be loaded so retrieve the faces and labels from HDD
 
-                    var database = FileLoader.loadFaceDB("FaceDB");
+                    var database = FileLoader.LoadFaceDB("FaceDB");
 
                     // empty database??? cant be right... no need to load the recognizer then.
                     if (database == null)
                     {
-                        Console.Out.WriteLine("Database could not be loaded");
+                       Log.Error("Database could not be loaded");
                         return;
                     }
 

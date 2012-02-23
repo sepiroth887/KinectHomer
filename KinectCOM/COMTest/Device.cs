@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace KinectCOM
@@ -60,158 +61,156 @@ namespace KinectCOM
 
     //Declare COM method interface for instruction methods
     [InterfaceType(ComInterfaceType.InterfaceIsIDispatch)]
-    public interface _Device
+    public interface IDevice
     {
         [DispId(8)]
-        void userRecognition(bool on);
+        void UserRecognition(bool on);
 
         [DispId(9)]
-        void setContext(string contextID);
+        void SetContext(string contextID);
 
         [DispId(10)]
-        void speechRecognition(bool on);
+        void SpeechRecognition(bool on);
 
         [DispId(11)]
-        Boolean learnUser(string name, int skeletonID);
+        Boolean LearnUser(string name, int skeletonID);
 
         [DispId(12)]
-        Boolean updateUser(string name, int skeletonID);
+        Boolean UpdateUser(string name, int skeletonID);
 
         [DispId(13)]
-        Boolean setUserToSkeleton(string name, int skeletonID);
+        Boolean SetUserToSkeleton(string name, int skeletonID);
 
         [DispId(14)]
-        void incAngle();
+        void IncAngle();
 
         [DispId(15)]
-        void decAngle();
+        void DecAngle();
 
         [DispId(16)]
-        bool startTracking(int skeletonID);
+        bool StartTracking(int skeletonID);
 
         [DispId(17)]
-        void recordGesture(string gestureName, string ctxt);
+        void RecordGesture(string gestureName, string ctxt);
 
         [DispId(18)]
-        void recognizeGesture(string ctxt);
+        void RecognizeGesture(string ctxt);
 
         [DispId(19)]
-        void stopGestureRecognition();
+        void StopGestureRecognition();
 
         [DispId(20)]
-        void storeGestures();
+        void StoreGestures();
 
         [DispId(21)]
-        string loadGestures();
+        string LoadGestures();
 
         [DispId(42)]
-        Boolean init();
+        Boolean Init();
 
         [DispId(43)]
-        void uninit();
+        void Uninit();
     }
 
     [ClassInterface(ClassInterfaceType.None)]
     [ProgId("KinectCOM.Device")]
     [ComSourceInterfaces(typeof (IUserEvents))]
-    public class Device : _Device
+    public abstract class Device : IDevice
     {
-        private IKinect kHandler;
-        private KinectData kinect;
+        private IKinect _kHandler;
+        private KinectData _kinect;
 
         #region _Device Members
 
-        public Boolean init()
+        Boolean IDevice.Init()
         {
-            kinect = new KinectData(0);
-            kHandler = new KinectHandler(kinect, this);
+            _kinect = new KinectData(0);
+            _kHandler = new KinectHandler(_kinect, this);
 
-            kHandler.init();
+            _kHandler.Init();
             return true;
         }
 
-        public void uninit()
+        void IDevice. Uninit()
         {
-            kHandler.uninit();
+            if (_kHandler != null) _kHandler.Uninit();
         }
 
-        public bool setUserToSkeleton(string name, int skelID)
+        public bool SetUserToSkeleton(string name, int skelID)
         {
             return true;
         }
 
-        public bool updateUser(string name, int skelID)
+        public bool UpdateUser(string name, int skelID)
         {
             return false;
         }
 
-        public bool learnUser(string name, int skelID)
+        public bool LearnUser(string name, int skelID)
         {
             return false;
         }
 
-        public void speechRecognition(bool on)
+        void IDevice. SpeechRecognition(bool on)
         {
         }
 
-        public void setContext(string ctxt)
+        void IDevice. SetContext(string ctxt)
         {
         }
 
-        public void userRecognition(bool on)
+        void IDevice. UserRecognition(bool on)
         {
         }
 
-        public void incAngle()
+        void IDevice. IncAngle()
         {
-            kinect.IncAngle();
+            if (_kinect != null) _kinect.IncAngle();
         }
 
-        public void decAngle()
+        void IDevice. DecAngle()
         {
-            kinect.DecAngle();
+            if (_kinect != null) _kinect.DecAngle();
         }
 
-        public bool startTracking(int skeletonID)
+        public bool StartTracking(int skeletonID)
         {
-            return kHandler.startTracking(skeletonID);
+            return _kHandler != null && _kHandler.StartTracking(skeletonID);
         }
 
-        public void recordGesture(string gestureName, string ctxt)
+        void IDevice. RecordGesture(string gestureName, string ctxt)
         {
-            kHandler.recordGesture(gestureName, ctxt);
+            if (_kHandler != null) _kHandler.RecordGesture(gestureName, ctxt);
         }
 
-        public void recognizeGesture(string ctxt)
+        void IDevice. RecognizeGesture(string ctxt)
         {
-            kHandler.recognizeGesture(ctxt);
+            if (_kHandler != null) _kHandler.RecognizeGesture(ctxt);
         }
 
 
-        public void stopGestureRecognition()
+        void IDevice. StopGestureRecognition()
         {
-            kHandler.stopRecGesture();
+            if (_kHandler != null) _kHandler.StopRecGesture();
         }
 
-        public void storeGestures()
+        public void StoreGestures()
         {
-            kHandler.storeGestures();
+            if (_kHandler != null) _kHandler.StoreGestures();
         }
 
-        public string loadGestures()
+        public string LoadGestures()
         {
-            string outStr = string.Empty;
-
-            string[] arr = kHandler.loadGestures();
-
-            if (arr == null) return "";
-
-            foreach (string gesture in arr)
+            if (_kHandler != null)
             {
-                outStr += gesture + "\n";
+                var arr = _kHandler.LoadGestures() as string[];
+
+                if (arr == null) return "";
+
+                return arr.Aggregate("", (current, gesture) => current + (gesture + "\n"));
             }
 
-            return outStr;
+            return "";
         }
 
         #endregion
@@ -227,28 +226,28 @@ namespace KinectCOM
         public event OnUserLostDel OnUserLost;
         public event OnUserFoundDel OnUserFound;
 
-        public void presenceDetected(int newUser)
+        public void PresenceDetected(int newUser)
         {
             OnPresenceDetected(newUser);
         }
 
 
-        public void presenceLost(int skeletonID)
+        public void PresenceLost(int skeletonID)
         {
             OnPresenceLost(skeletonID);
         }
 
-        public void gestureRecordCompleted(string gestureName, string ctxt)
+        public void GestureRecordCompleted(string gestureName, string ctxt)
         {
             OnGestureRecordCompleted(gestureName, ctxt);
         }
 
-        public void recordingCountDownEvent(int p)
+        public void RecordingCountDownEvent(int p)
         {
             OnRecordingCountDownEvent(p);
         }
 
-        public void gestureRecognitionCompleted(string gesture)
+        public void GestureRecognitionCompleted(string gesture)
         {
             OnGestureRecognitionCompleted(gesture);
         }
@@ -269,12 +268,12 @@ namespace KinectCOM
             OnAddonGestureValueChange(value);
         }
 
-        public void userFound(string name, float confidence, int skeletonID)
+        public void UserFound(string name, float confidence, int skeletonID)
         {
             OnUserFound(name, confidence, skeletonID);
         }
 
-        public void userLost(string name)
+        public void UserLost(string name)
         {
             OnUserLost(name);
         }

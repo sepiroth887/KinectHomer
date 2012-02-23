@@ -5,38 +5,38 @@ using Microsoft.Kinect;
 
 namespace KinectCOM
 {
-    internal interface IKinect
+    public interface IKinect
     {
-        void init();
-        void uninit();
-        void updateFace();
-        void updateSkeletons(Dictionary<JointType, ColorImagePoint> points, ArrayList users);
-        void learnUser(int skeletonID);
-        bool startTracking(int skeletonID);
-        void stopTracking(int skeletonID);
-        void userDetected(UserFeature user);
-        void presenceDetected(int skeletonID);
-        void userLost(UserFeature user);
-        void presenceLost(int skeletonID);
+        void Init();
+        void Uninit();
+        void UpdateFace();
+        void UpdateSkeletons(Dictionary<JointType, ColorImagePoint> points, ArrayList users);
+        void LearnUser(int skeletonID);
+        bool StartTracking(int skeletonID);
+        void StopTracking(int skeletonID);
+        void UserDetected(UserFeature user);
+        void PresenceDetected(int skeletonID);
+        void UserLost(UserFeature user);
+        void PresenceLost(int skeletonID);
 
-        void gestureRecordCompleted(string gestureName, string ctxt);
+        void GestureRecordCompleted(string gestureName, string ctxt);
 
-        void recordingCountdownEvent(int p);
+        void RecordingCountdownEvent(int p);
 
-        void gestureRecognitionCompleted(string gesture);
+        void GestureRecognitionCompleted(string gesture);
 
-        void recordGesture(string gestureName, string ctxt);
+        void RecordGesture(string gestureName, string ctxt);
 
-        void recognizeGesture(string ctxt);
+        void RecognizeGesture(string ctxt);
 
-        void stopRecGesture();
+        void StopRecGesture();
 
-        void onAddOnGestureValueChange(float value);
+        void OnAddOnGestureValueChange(float value);
 
-        void contextSelected(string ctxt);
+        void ContextSelected(string ctxt);
 
-        void storeGestures();
+        void StoreGestures();
 
-        string[] loadGestures();
+        IEnumerable<string> LoadGestures();
     }
 }

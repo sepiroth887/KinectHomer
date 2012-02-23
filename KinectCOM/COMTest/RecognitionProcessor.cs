@@ -76,7 +76,7 @@ namespace KinectCOM
                 return;
             }
 
-            var features = _featureProcessor.getFeatures(skeletonID);
+            var features = _featureProcessor.GetFeatures(skeletonID);
             if (features == null)
             {
                 Log.Warn("Learning failed, could not extract features from skeletonID: " + skeletonID);
@@ -110,7 +110,7 @@ namespace KinectCOM
                 return;
             }
 
-            var actualFeatures = _featureProcessor.getFeatures(_trackedUser);
+            var actualFeatures = _featureProcessor.GetFeatures(_trackedUser);
             if (actualFeatures != null)
             {
                 string userLabel = "";
@@ -162,16 +162,16 @@ namespace KinectCOM
                 if (user.Confidence < 0)
                 {
                     var newUser = new UserFeature {Confidence = bestConfidence/2, FaceConfidence = 0, Name = bestMatch};
-                    if (_kinectHandler != null) _kinectHandler.userDetected(newUser);
+                    if (_kinectHandler != null) _kinectHandler.UserDetected(newUser);
                 }
                 else
                 {
-                    if (_kinectHandler != null) _kinectHandler.userDetected(user);
+                    if (_kinectHandler != null) _kinectHandler.UserDetected(user);
                 }
             }
             else
             {
-                if (_kinectHandler != null) _kinectHandler.userDetected(null);
+                if (_kinectHandler != null) _kinectHandler.UserDetected(null);
             }
         }
     }

@@ -14,12 +14,6 @@ namespace Kinect
     {
         #region Units enum
 
-        /// <summary>
-        /// static method to load all images of users from the hard disk.
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
-        /// 
         public enum Units
         {
             mm = 1000,
@@ -29,7 +23,7 @@ namespace Kinect
 
         #endregion
 
-        public static readonly string DEFAULT_PATH =
+        public static readonly string DefaultPath =
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\KinectHomer\\";
 
         /// <summary>
@@ -37,7 +31,7 @@ namespace Kinect
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static Dictionary<Image<Gray, byte>[], string[]> loadFaceDB(string path)
+        public static Dictionary<Image<Gray, byte>[], string[]> LoadFaceDB(string path)
         {
             // get the directory info of the passed path
             var dir = new DirectoryInfo(path);
@@ -46,14 +40,14 @@ namespace Kinect
             var database = new Dictionary<Image<Gray, byte>[], string[]>();
 
             // go through each sub directory and retrieve all PNG files.
-            foreach (DirectoryInfo dirs in dir.GetDirectories())
+            foreach (var dirs in dir.GetDirectories())
             {
                 var images = new Image<Gray, byte>[dirs.GetFiles("*.png").Count()];
                 var label = new string[images.Length];
 
                 //loop though all files in the subfolder 
                 int counter = 0;
-                foreach (FileInfo file in dirs.GetFiles("*.png"))
+                foreach (var file in dirs.GetFiles("*.png"))
                 {
                     // and store each png file as an image in the images array.
                     images[counter] = new Image<Gray, byte>(file.FullName);
@@ -69,20 +63,20 @@ namespace Kinect
             return database;
         }
 
-        public static Dictionary<string, Vector3[]> loadObj(string file, Units unit)
+        public static Dictionary<string, Vector3[]> LoadObj(string file, Units unit)
         {
-            var dir = new DirectoryInfo(DEFAULT_PATH);
+            var dir = new DirectoryInfo(DefaultPath);
 
             if (!dir.Exists)
             {
                 return null;
             }
 
-            var reader = new StreamReader(DEFAULT_PATH + "" + file);
+            var reader = new StreamReader(DefaultPath + "" + file);
 
             string line;
-            bool objectFound = false;
-            string objectName = "";
+            var objectFound = false;
+            var objectName = "";
             var points = new ArrayList();
             var objects = new Dictionary<string, Vector3[]>();
 
@@ -106,7 +100,7 @@ namespace Kinect
 
                         points.CopyTo(pointV);
 
-                        objects.Add(objectName, pointV);
+                        if (objectName != null && !objects.ContainsKey(objectName)) objects.Add(objectName, pointV);
                         points.Clear();
                     }
                 }
@@ -114,11 +108,13 @@ namespace Kinect
                 {
                     string[] parts = line.Split(' ');
 
-                    var point = new Vector3();
+                    var point = new Vector3
+                                    {
+                                        X = (float.Parse(parts[2]))/(float) unit,
+                                        Y = float.Parse(parts[3])/(float) unit,
+                                        Z = (float.Parse(parts[4])/(float) unit)
+                                    };
 
-                    point.X = (float.Parse(parts[2]))/(float) unit;
-                    point.Y = float.Parse(parts[3])/(float) unit;
-                    point.Z = (float.Parse(parts[4])/(float) unit);
 
                     points.Add(point);
                 }
@@ -127,149 +123,45 @@ namespace Kinect
             return objects;
         }
 
-        public static void saveObject(string path, int context, Vector3[] points)
-        {
-            var dir = new DirectoryInfo(path);
-
-            if (!dir.Exists)
-            {
-                throw new Exception("Cannot load objects. Invalid path:" + path);
-            }
-
-            StreamWriter file = File.AppendText(dir.FullName + "\\objects.hos");
-
-            file.Write(context + ":");
-            for (int i = 0; i < points.Length; i++)
-            {
-                if (i + 1 == points.Length)
-                {
-                    file.Write(points[i].X + ";" + points[i].Y + ";" + points[i].Z);
-                }
-                else
-                {
-                    file.Write(points[i].X + ";" + points[i].Y + ";" + points[i].Z + ",");
-                }
-            }
-            file.WriteLine();
-            file.Flush();
-            file.Close();
-        }
-
-        public static Dictionary<int, Vector3[]> loadObjects(string path)
-        {
-            var dir = new DirectoryInfo(path);
-
-            if (!dir.Exists)
-            {
-                throw new Exception("Cannot load objects. Invalid path:" + path);
-            }
-
-            var objects = new Dictionary<int, Vector3[]>();
-            Vector3[] vectors;
-
-            var file = new StreamReader(dir.FullName + "\\objects.hos");
-            string line;
-            while ((line = file.ReadLine()) != null)
-            {
-                if (line.StartsWith("//"))
-                {
-                    //Console.Out.WriteLine(line);
-                }
-                else
-                {
-                    string[] split1 = line.Split(':');
-
-                    int context = Int32.Parse(split1[0]);
-
-                    string[] vstrings = split1[1].Split(',');
-
-                    vectors = new Vector3[vstrings.Length];
-
-                    for (int i = 0; i < vstrings.Length; i++)
-                    {
-                        string[] components = vstrings[i].Split(';');
-
-                        float x = float.Parse(components[0]);
-                        float y = float.Parse(components[1]);
-                        float z = float.Parse(components[2]);
-
-                        vectors[i] = new Vector3(x, y, z);
-                    }
-
-                    objects.Add(context, vectors);
-                }
-            }
-
-            file.Close();
-            return objects;
-        }
-
-        public static Dictionary<Image<Rgb, byte>[], string[]> loadFaceDBC(string path)
-        {
-            // get the directory info of the passed path
-            var dir = new DirectoryInfo(path);
-
-
-            var database = new Dictionary<Image<Rgb, byte>[], string[]>();
-
-            // go through each sub directory and retrieve all PNG files.
-            foreach (DirectoryInfo dirs in dir.GetDirectories())
-            {
-                var images = new Image<Rgb, byte>[dirs.GetFiles("*.pgm").Count()];
-                var label = new string[images.Length];
-
-                //loop though all files in the subfolder 
-                int counter = 0;
-                foreach (FileInfo file in dirs.GetFiles("*.pgm"))
-                {
-                    // and store each png file as an image in the images array.
-                    images[counter] = new Image<Rgb, byte>(file.FullName);
-                    // and the folder name as the label for that file.
-                    label[counter++] = dirs.Name;
-                }
-
-                // add the arrays to the database.
-                database.Add(images, label);
-            }
-
-            // return the loaded database.
-            return database;
-        }
-
         /// <summary>
         /// Saves a set of images for one user and its name to the file path
         /// </summary>
         /// <param name="database"></param>
         /// <param name="path">file path to store the images</param>
-        public static void saveFaceDB(Dictionary<Image<Gray, byte>[], string[]> database, string path)
+        public static void SaveFaceDB(Dictionary<Image<Gray, byte>[], string[]> database, string path)
         {
             // loop though each entry in the dictionary 
-            foreach (var entry in database)
-            {
-                // and get the name of the user as the folder name
-                string folderName = entry.Value[0];
-
-                var dir = new DirectoryInfo(path + "/" + folderName);
-
-                int numFiles = 0;
-
-                // check whether the folder already exists or create it if not.
-                if (!dir.Exists)
+            if (database != null)
+                foreach (var entry in database)
                 {
-                    dir.Create();
-                }
-                else
-                {
-                    // retrieve the number of images already stored 
-                    numFiles = dir.GetFiles("*.png").Count();
-                }
+                    // and get the name of the user as the folder name
+                    if (entry.Value != null)
+                    {
+                        var folderName = entry.Value[0];
 
-                // loop through all images and save them with a number
-                for (int i = 0; i < entry.Key.Length; i++)
-                {
-                    entry.Key[i].Save(dir.FullName + "/" + (numFiles++)%200 + ".png");
+                        var dir = new DirectoryInfo(path + "/" + folderName);
+
+                        int numFiles = 0;
+
+                        // check whether the folder already exists or create it if not.
+                        if (!dir.Exists)
+                        {
+                            dir.Create();
+                        }
+                        else
+                        {
+                            // retrieve the number of images already stored 
+                            numFiles = dir.GetFiles("*.png").Count();
+                        }
+
+                        // loop through all images and save them with a number
+                        if (entry.Key != null)
+                            foreach (var t in entry.Key.Where(t => t != null))
+                            {
+                                if (t != null) t.Save(dir.FullName + "/" + (numFiles++)%200 + ".png");
+                            }
+                    }
                 }
-            }
         }
 
 
@@ -279,7 +171,7 @@ namespace Kinect
         /// <param name="label"></param>
         /// <param name="image"></param>
         /// <param name="path"></param>
-        public static void saveImage(string label, Image<Gray, byte> image, string path)
+        public static void SaveImage(string label, Image<Gray, byte> image, string path)
         {
             string folderName = label;
             int numFiles = 0;
@@ -295,27 +187,27 @@ namespace Kinect
             }
 
 
-            image.Save(dir.FullName + "/" + (numFiles++)%200 + ".png");
+            if (image != null) image.Save(dir.FullName + "/" + (numFiles)%200 + ".png");
         }
 
-        public static string[] loadGestures(DtwGestureRecognizer dtw)
+        public static string[] LoadGestures(DtwGestureRecognizer dtw)
         {
             string[] result = null;
             int itemCount = 0;
             string line;
-            string gestureName = string.Empty;
-            string contextName = string.Empty;
+            var gestureName = string.Empty;
+            var contextName = string.Empty;
             // TODO I'm defaulting this to 12 here for now as it meets my current need but I need to cater for variable lengths in the future
             var frames = new ArrayList();
             var items = new double[12];
 
             // Read the file and display it line by line.
-            if (!File.Exists(DEFAULT_PATH + "gestures.sav"))
+            if (!File.Exists(DefaultPath + "gestures.sav"))
             {
                 //Console.Out.WriteLine("Gesture file not found");
                 return null;
             }
-            var file = new StreamReader(DEFAULT_PATH + "gestures.sav");
+            var file = new StreamReader(DefaultPath + "gestures.sav");
 
             int counter = 0;
 
@@ -380,9 +272,9 @@ namespace Kinect
             return result;
         }
 
-        public static void saveGestures(string gestureData)
+        public static void SaveGestures(string gestureData)
         {
-            File.WriteAllText(DEFAULT_PATH + "gestures.sav", gestureData);
+            File.WriteAllText(DefaultPath + "gestures.sav", gestureData);
             //Console.Out.WriteLine("Gestures saved");
         }
     }

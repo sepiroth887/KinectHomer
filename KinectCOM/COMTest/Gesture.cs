@@ -5,7 +5,7 @@ namespace KinectCOM
 {
     public class Gesture
     {
-        private ArrayList sequence;
+        private ArrayList _sequence;
 
         public Gesture(String name, String context)
         {
@@ -17,7 +17,7 @@ namespace KinectCOM
         {
             Name = name;
             Context = context;
-            sequence = (ArrayList) seq.Clone();
+            if (seq != null) _sequence = (ArrayList) seq.Clone();
         }
 
         public String Name { get; set; }
@@ -26,8 +26,8 @@ namespace KinectCOM
 
         public ArrayList Sequence
         {
-            get { return sequence; }
-            set { sequence = (ArrayList) value.Clone(); }
+            get { return _sequence; }
+            set { if (value != null) _sequence = (ArrayList) value.Clone(); }
         }
     }
 }

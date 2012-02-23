@@ -9,8 +9,8 @@ namespace KinectCOM
     internal class DataStore
     {
         // location of the user info file
-        private static readonly string user_xml_path = FileLoader.DEFAULT_PATH + "users.xml";
-        private static readonly string voice_commands_path = FileLoader.DEFAULT_PATH + "voiceCommands.cfg";
+        private static readonly string user_xml_path = FileLoader.DefaultPath + "users.xml";
+        private static readonly string voice_commands_path = FileLoader.DefaultPath + "voiceCommands.cfg";
 
 
         /**
