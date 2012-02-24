@@ -4,8 +4,8 @@
 <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/OSGi%Minimum-1.2"/>
 <mapAttribute key="org.knopflerfish.eclipse.core.launcher.bundle_projects">
 <mapEntry key="ComponentSimulatedBoiler" value="80,1"/>
-<mapEntry key="ComponentVisonicSensors" value="80,1"/>
 <mapEntry key="HomerFramework" value="40,1"/>
+<mapEntry key="Kinect" value="60,1"/>
 <mapEntry key="ServiceCOMMs" value="10,0"/>
 <mapEntry key="ServiceDatabase" value="10,1"/>
 <mapEntry key="ServiceJSON" value="10,0"/>
@@ -13,12 +13,12 @@
 <mapEntry key="UserInterfaceJavaClient" value="90,1"/>
 </mapAttribute>
 <mapAttribute key="org.knopflerfish.eclipse.core.launcher.bundles">
-<mapEntry key="C:\Program Files\Knopflerfish\knopflerfish_osgi_3.1.0\osgi\jars\cm\cm_api-3.0.1.jar" value="1,1,C:\Program Files\Knopflerfish\knopflerfish_osgi_3.1.0\osgi\bundles\cm\cm\src"/>
-<mapEntry key="C:\Program Files\Knopflerfish\knopflerfish_osgi_3.1.0\osgi\jars\event\event_all-3.0.4.jar" value="1,1,C:\Program Files\Knopflerfish\knopflerfish_osgi_3.1.0\osgi\bundles\event\src"/>
-<mapEntry key="C:\Program Files\Knopflerfish\knopflerfish_osgi_3.1.0\osgi\jars\log\log_api-3.0.5.jar" value="1,1,C:\Program Files\Knopflerfish\knopflerfish_osgi_3.1.0\osgi\bundles\log\src"/>
+<mapEntry key="F:\KinectHomer\knopflerfish\osgi\jars\cm\cm_all-3.0.1.jar" value="1,1"/>
+<mapEntry key="F:\KinectHomer\knopflerfish\osgi\jars\event\event_all-3.0.4.jar" value="1,1"/>
+<mapEntry key="F:\KinectHomer\knopflerfish\osgi\jars\log\log_all-3.0.5.jar" value="1,1"/>
 </mapAttribute>
-<stringAttribute key="org.knopflerfish.eclipse.core.launcher.install_name" value="Knopflerfish"/>
-<stringAttribute key="org.knopflerfish.eclipse.core.launcher.instance_dir" value="C:\Users\cma\Documents\HomerWorkspace\runtime-osgi"/>
+<stringAttribute key="org.knopflerfish.eclipse.core.launcher.install_name" value="knopflerfish"/>
+<stringAttribute key="org.knopflerfish.eclipse.core.launcher.instance_dir" value="F:\KinectHomer\Homer\runtime-osgi"/>
 <booleanAttribute key="org.knopflerfish.eclipse.core.launcher.instance_init" value="true"/>
 <mapAttribute key="org.knopflerfish.eclipse.core.launcher.instance_properties">
 <mapEntry key="org.knopflerfish.log.level" value="System:off"/>

@@ -55,7 +55,7 @@
 			<accessrule kind="nonaccessible" pattern="**/*"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/Development Programs/knopflerfish.org/osgi/jars/event/event_all-3.0.4.jar"/>
-	<classpathentry kind="lib" path="D:/Development Programs/knopflerfish.org/osgi/jars/event/event_api-3.0.4.jar"/>
+	<classpathentry kind="lib" path="F:/KinectHomer/knopflerfish/osgi/jars/event/event_all-3.0.4.jar"/>
+	<classpathentry kind="lib" path="F:/KinectHomer/knopflerfish/osgi/jars/event/event_api-3.0.4.jar"/>
 	<classpathentry kind="output" path="out"/>
 </classpath>

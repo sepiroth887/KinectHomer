@@ -17,9 +17,9 @@ public class User extends DBObject {
 	
 	public User() {}
 	
-	public User(String id, String name)
+	public User(int i, String name)
 	{
-		init(new String[] {id, name});
+		init(new String[] {""+i, name});
 	}
 	
 	public String getId() {

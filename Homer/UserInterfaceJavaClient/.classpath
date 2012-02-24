@@ -11,7 +11,7 @@
 	<classpathentry kind="src" path="/HomerFramework"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/ServiceDatabase"/>
 	<classpathentry kind="src" path="/ServiceJSON"/>
-	<classpathentry kind="lib" path="D:/Development Programs/knopflerfish.org/osgi/jars/event/event_api-3.0.4.jar"/>
+	<classpathentry kind="lib" path="F:/KinectHomer/knopflerfish/osgi/jars/event/event_api-3.0.4.jar"/>
 	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/ServiceJSON">
 		<accessrules>
 			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceJSON/"/>
@@ -43,6 +43,6 @@
 			<accessrule kind="nonaccessible" pattern="**/*"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry kind="lib" path="D:/Development Programs/knopflerfish.org/osgi/jars/event/event_all-3.0.4.jar"/>
+	<classpathentry kind="lib" path="F:/KinectHomer/knopflerfish/osgi/jars/event/event_all-3.0.4.jar"/>
 	<classpathentry kind="output" path="out"/>
 </classpath>
