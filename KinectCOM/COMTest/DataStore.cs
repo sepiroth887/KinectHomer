@@ -147,7 +147,7 @@ namespace KinectCOM
                     }
                     catch (Exception ex)
                     {
-                        //Console.Out.WriteLine(ex.Message);
+                        Console.Out.WriteLine(ex.Message);
                         return null;
                     }
 

@@ -40,10 +40,11 @@ public class KinectSensorListener {
 		
 		try{
 			connect();
+			logger.info("Connected to KinectCOM");
 		}catch(Exception ex){
 			logger.error("COM init failed:",ex);
 		}
-		gestureModel = kinectComponent.getGestureModel();
+		
 	}
 	
 	public String getSysDeviceID(){
@@ -51,6 +52,9 @@ public class KinectSensorListener {
 	}
 	
 	public void fireAction(String gestureName,String context){
+			if(gestureModel == null){
+				gestureModel = kinectComponent.getGestureModel();
+			}
 		 Gesture g = null;
 		 
 		 g = gestureModel.findGesture(gestureName, context);
@@ -64,7 +68,8 @@ public class KinectSensorListener {
 		try { 
 			ComFunctions.coInitialize();
 
-			comDevice = Device.create(ClsCtx.INPROC_SERVER);
+			comDevice = Device.create(ClsCtx.ALL);
+			
 			comDevice.init();
 		} catch (AutomationException e) { 
 			ExcepInfo info = e.getExceptionInformation(); 
@@ -145,6 +150,8 @@ public class KinectSensorListener {
 		String gestures = comDevice.loadGestures().toString();
 		
 		String[] gestureArray = gestures.split("\n");
+		
+		logger.info("Gestures received");
 		
 		return gestureArray;
 	}

@@ -65,7 +65,7 @@ namespace DTWGestureRecognition
         private readonly double _minimumLength;
 
 
-        private readonly ArrayList gestures;
+        private ArrayList _gestures;
 
         /// <summary>
         /// Initializes a new instance of the DtwGestureRecognizer class
@@ -77,7 +77,7 @@ namespace DTWGestureRecognition
         public DtwGestureRecognizer(int dim, double threshold, double firstThreshold, double minLen)
         {
             _dimension = dim;
-            gestures = new ArrayList();
+            _gestures = new ArrayList();
             _globalThreshold = threshold;
             _firstThreshold = firstThreshold;
             _maxSlope = int.MaxValue;
@@ -95,7 +95,7 @@ namespace DTWGestureRecognition
         public DtwGestureRecognizer(int dim, double threshold, double firstThreshold, int ms, double minLen)
         {
             _dimension = dim;
-            gestures = new ArrayList();
+            _gestures = new ArrayList();
             _globalThreshold = threshold;
             _firstThreshold = firstThreshold;
             _maxSlope = ms;
@@ -109,37 +109,52 @@ namespace DTWGestureRecognition
         /// </summary>
         /// <param name="seq">The sequence</param>
         /// <param name="lab">Sequence name</param>
-        /// 
-        public void AddOrUpdate(ArrayList seq, string lab, string ctxt)
+        /// <param name="ctxt"> </param>
+        /// <param name="saveToFile"> </param>
+        public void AddOrUpdate(ArrayList seq, string lab, string ctxt, bool saveToFile)
         {
-            if (seq.Count == 0) return;
-            // First we check whether there is already a recording for this label. If so overwrite it, otherwise add a new entry
-            int existingIndex = -1;
-
-            for (int i = 0; i < gestures.Count; i++)
-            {
-                var gesture = (Gesture) gestures[i];
-
-                if (gesture.Name == lab && gesture.Context == ctxt)
+                if (seq.Count == 0) return;
+                // First we check whether there is already a recording for this label. If so overwrite it, otherwise add a new entry
+                var existingIndex = -1;
+                
+                if(_gestures == null)
                 {
-                    existingIndex = i;
+                    _gestures = new ArrayList();
                 }
-            }
+                
+            for (var i = 0; i < _gestures.Count; i++)
+                {
+                    var gesture = (Gesture) _gestures[i];
 
-            // If we have a match then remove the entries at the existing index to avoid duplicates. We will add the new entries later anyway
-            if (existingIndex >= 0)
-            {
-                ((Gesture) gestures[existingIndex]).Sequence = seq;
-            }
+                    if (gesture != null && gesture.Name == lab && gesture.Context == ctxt)
+                    {
+                        existingIndex = i;
+                    }
+                }
 
-            // Add the new entries
-            var g = new Gesture(lab, ctxt, seq);
-            gestures.Add(g);
+                Gesture g;
+                // If we have a match then remove the entries at the existing index to avoid duplicates. We will add the new entries later anyway
+                if (existingIndex >= 0)
+                {
+                    g = ((Gesture)_gestures[existingIndex]);
+                    g.Sequence = seq;
+                }
+                else
+                {
+                    g = new Gesture(lab, ctxt, seq);
+                }
+                // Add the new entries
+                
+                _gestures.Add(g);
+
+            if(saveToFile)
+                FileLoader.SaveGestures(RetrieveText());
+            
         }
 
         public void AddOrUpdate(ArrayList seq, Gesture g)
         {
-            AddOrUpdate(seq, g.Name, g.Context);
+            AddOrUpdate(seq, g.Name, g.Context, true);
         }
 
         /// <summary>
@@ -152,9 +167,9 @@ namespace DTWGestureRecognition
         public Gesture Recognize(ArrayList seq, string ctxt)
         {
             double minDist = double.PositiveInfinity;
-            for (int i = 0; i < gestures.Count; i++)
+            for (int i = 0; i < _gestures.Count; i++)
             {
-                var gesture = (Gesture) gestures[i];
+                var gesture = (Gesture) _gestures[i];
                 ArrayList example = gesture.Sequence;
                 ////Debug.WriteLine(Dist2((double[]) seq[seq.Count - 1], (double[]) example[example.Count - 1]));
                 if (Dist2((double[]) seq[seq.Count - 1], (double[]) example[example.Count - 1]) < _firstThreshold)
@@ -183,17 +198,17 @@ namespace DTWGestureRecognition
         {
             string retStr = string.Empty;
 
-            int numGestures = gestures.Count;
+            int numGestures = _gestures.Count;
 
             retStr += "//numGestures=" + numGestures + "\r\n";
 
-            if (gestures != null)
+            if (_gestures != null)
             {
                 // Iterate through each gesture
                 for (int gestureNum = 0; gestureNum < numGestures; gestureNum++)
                 {
                     // Echo the label
-                    var gesture = (Gesture) gestures[gestureNum];
+                    var gesture = (Gesture) _gestures[gestureNum];
 
                     retStr += "@" + gesture.Name + "\r\n";
                     retStr += "$" + gesture.Context + "\r\n";

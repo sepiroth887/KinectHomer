@@ -25,6 +25,8 @@ namespace KinectCOM
 
         public KinectHandler(KinectData kinect, Device comInterface)
         {
+            
+           
             var rollAppend = new RollingFileAppender
                                  {
                                      File =
@@ -32,12 +34,14 @@ namespace KinectCOM
                                  };
             log4net.Config.BasicConfigurator.Configure(rollAppend);
             Log.Info("Initializing Framework");
+            
             _comInterface = comInterface;
             _skeletons = new ArrayList();
             _kinect = kinect;
 
             _commands = DataStore.loadVoiceCommands();
             //Console.Out.WriteLine("VC loaded: " + commands.Length);
+            if (_commands == null) return;
             _vocCom = new VoiceCommander(_commands);
             _vocCom.OrderDetected += VoiceCommandDetected;
         }
@@ -50,16 +54,16 @@ namespace KinectCOM
 
             //initialize the FeatureProcessor
             _featureProcessor = new FeatureProcessor(_kinect, this);
-
+            Console.Out.WriteLine("Feature processor created");
             _featureProcessor.Init();
 
             // initialize RecognitionProcessor
             _recognitionProcessor = new RecognitionProcessor(this);
             //Console.Out.WriteLine("Feature processor init complete");
-
+            Console.Out.WriteLine("Recognition processor created");
             //initialize the FaceProcessor
             _faceProcessor = new FaceProcessor(_kinect, _featureProcessor, _recognitionProcessor);
-
+            Console.Out.WriteLine("Face processor created");
             _faceProcessor.Init();
 
             // pass face and feature processor references to the recongition processor.
@@ -67,9 +71,10 @@ namespace KinectCOM
             _recognitionProcessor.SetFeatureProcessor(_featureProcessor);
 
             _gestureProcessor = new GestureProcessor(this, _kinect);
-
+            Console.Out.WriteLine("Gesture processor created");
             _featureProcessor.StartProcess();
             if (_vocCom != null && _kinect != null) _vocCom.Start(_kinect.GetSensor());
+            Console.Out.WriteLine("Voice Commands loaded.");
         }
 
         void IKinect.Uninit()

@@ -95,5 +95,8 @@ public class Action extends DBObject implements Comparable<Action> {
 		return 0;
 	}
 	
-
+	@Override
+	public String toString(){
+		return getDescription();
+	}
 }

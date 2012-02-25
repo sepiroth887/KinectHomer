@@ -39,13 +39,13 @@ namespace KinectCOM
             bounds = new Dictionary<string, BoundingBox>();
             selectSound =
                 new SoundPlayer(
-                    "C:\\Users\\Admin\\Documents\\Visual Studio 2010\\Projects\\KinectCOM\\COMTest\\Whit.wav");
+                    FileLoader.DefaultPath+"Whit.wav");
             unselectSound =
                 new SoundPlayer(
-                    "C:\\Users\\Admin\\Documents\\Visual Studio 2010\\Projects\\KinectCOM\\COMTest\\WhitR.wav");
+                    FileLoader.DefaultPath+"WhitR.wav");
             activeSound =
                 new SoundPlayer(
-                    "C:\\Users\\Admin\\Documents\\Visual Studio 2010\\Projects\\KinectCOM\\COMTest\\Voltage.wav");
+                    FileLoader.DefaultPath + "Voltage.wav");
         }
 
         public event ContextSelectedEventHandler ContextSelected;
@@ -98,7 +98,7 @@ namespace KinectCOM
             if (selectionCoolingDown && selectionCooldown.IsRunning && selectionCooldown.ElapsedMilliseconds < 4000)
                 return;
 
-            if (selectionCooldown.ElapsedMilliseconds > 4000 && selectionCoolingDown)
+            if (selectionCooldown.ElapsedMilliseconds > 2000 && selectionCoolingDown)
             {
                 selectionCoolingDown = false;
                 selectionCooldown.Stop();

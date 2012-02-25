@@ -115,22 +115,18 @@ namespace KinectCOM
     [ClassInterface(ClassInterfaceType.None)]
     [ProgId("KinectCOM.Device")]
     [ComSourceInterfaces(typeof (IUserEvents))]
-    public abstract class Device : IDevice
+    public class Device : IDevice
     {
         private IKinect _kHandler;
         private KinectData _kinect;
 
         #region _Device Members
 
-        public Device()
-        {
-        }
-
         Boolean IDevice.Init()
         {
             _kinect = new KinectData(0);
             _kHandler = new KinectHandler(_kinect, this);
-
+            Console.Out.WriteLine("Kinect and Handler created");
             _kHandler.Init();
             return true;
         }

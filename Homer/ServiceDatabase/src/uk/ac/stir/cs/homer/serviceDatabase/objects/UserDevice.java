@@ -108,4 +108,9 @@ public class UserDevice extends DBObject implements Comparable<UserDevice>{
 		}
 		return 0;
 	}
+	
+	@Override
+	public String toString(){
+		return getName();
+	}
 }

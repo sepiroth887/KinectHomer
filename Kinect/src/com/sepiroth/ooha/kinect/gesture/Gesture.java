@@ -85,7 +85,11 @@ public class Gesture {
 	}
 	
 	public void triggerAction(){
-		SystemGateway.Singleton.get().doAction(device.getId(),action.getId(),null);
+		if(action != null && device != null)
+			SystemGateway.Singleton.get().doAction(device.getId(),action.getId(),null);
+		else{
+			System.err.println("Gesture not bound to a device");
+		}
 	}
 	
 	

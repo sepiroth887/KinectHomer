@@ -8,7 +8,7 @@ using Emgu.CV;
 using Emgu.CV.Structure;
 using Microsoft.Xna.Framework;
 
-namespace Kinect
+namespace KinectCOM
 {
     internal static class FileLoader
     {
@@ -65,10 +65,12 @@ namespace Kinect
 
         public static Dictionary<string, Vector3[]> LoadObj(string file, Units unit)
         {
+            Console.Out.WriteLine("loading objects in room");
             var dir = new DirectoryInfo(DefaultPath);
 
             if (!dir.Exists)
             {
+                Console.Out.WriteLine("Directory doesn't exist: "+DefaultPath);
                 return null;
             }
 
@@ -191,12 +193,19 @@ namespace Kinect
         }
 
         public static string[] LoadGestures(DtwGestureRecognizer dtw)
-        {
+        {   
+            if(dtw == null )
+            {
+                Console.Out.WriteLine("DtwGestureRecognizer is null");
+                return null;
+            }
+
+            Console.Out.WriteLine("Loading gestures");
             string[] result = null;
             int itemCount = 0;
             string line;
-            var gestureName = string.Empty;
-            var contextName = string.Empty;
+            var gestureName = "";
+            var contextName = "";
             // TODO I'm defaulting this to 12 here for now as it meets my current need but I need to cater for variable lengths in the future
             var frames = new ArrayList();
             var items = new double[12];
@@ -204,9 +213,10 @@ namespace Kinect
             // Read the file and display it line by line.
             if (!File.Exists(DefaultPath + "gestures.sav"))
             {
-                //Console.Out.WriteLine("Gesture file not found");
+                Console.Out.WriteLine("Gesture file not found");
                 return null;
             }
+
             var file = new StreamReader(DefaultPath + "gestures.sav");
 
             int counter = 0;
@@ -258,7 +268,8 @@ namespace Kinect
                 if (line.StartsWith("----"))
                 {
                     if (frames.Count == 0) continue;
-                    dtw.AddOrUpdate(frames, gestureName, contextName);
+                    Console.Out.WriteLine("Gesture frames loaded. Saving...");
+                    dtw.AddOrUpdate(frames, gestureName, contextName, false);
                     frames = new ArrayList();
                     gestureName = string.Empty;
                     contextName = string.Empty;
@@ -267,7 +278,7 @@ namespace Kinect
                 }
             }
 
-            //Console.Out.WriteLine(counter + " Gestures loaded");
+            Console.Out.WriteLine(counter + " Gestures loaded");
             file.Close();
             return result;
         }

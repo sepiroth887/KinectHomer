@@ -62,8 +62,10 @@ namespace KinectCOM
         {
             
             _pointer = new ObjectPointer();
-
+            Console.Out.WriteLine("objectPointer loaded");
             _pointer.setObjects(FileLoader.LoadObj("livingRoom.obj", FileLoader.Units.cm));
+
+            Console.Out.WriteLine("objects loaded");
 
             _kinectHandler = kinectHandler;
             _kinect = kinect;
@@ -289,56 +291,60 @@ namespace KinectCOM
 
         private void NuiSkeleton2DdataCoordReady(object sender, Skeleton2DdataCoordEventArgs a)
         {
-            if (_kinectHandler == null || _seqCoords == null || _dtw == null) return;
+          
+                if (_kinectHandler == null || _seqCoords == null || _dtw == null) return;
 
-            if (_seqCoords.Count > MinimumFrames && !_isRecording && _isRecognizing)
-            {
-                ////Console.Out.WriteLine("No of frames: " + seqCoords.Count);
-                if (_dtw != null)
+                if (_seqCoords.Count > MinimumFrames && !_isRecording && _isRecognizing)
                 {
-                    var g = _dtw.Recognize(_seqCoords, _ctxt);
-
-
-                    if (_recTimer != null && (g != null || _recTimer.ElapsedMilliseconds > 3000))
+                    ////Console.Out.WriteLine("No of frames: " + seqCoords.Count);
+                    if (_dtw != null)
                     {
-                        _seqCoords.Clear();
+                        var g = _dtw.Recognize(_seqCoords, _ctxt);
 
-                        _kinectHandler.GestureRecognitionCompleted(g.Name);
 
-                        _isRecognizing = false;
+                        if (_recTimer != null && (g != null || _recTimer.ElapsedMilliseconds > 3000))
+                        {
+                            _isRecognizing = false;
+                            _seqCoords.Clear();
+
+                            
+                                if (g != null)
+                                    _kinectHandler.GestureRecognitionCompleted(g.Name);
+
+                        }
                     }
                 }
-            }
 
-            if (_isRecording)
-            {
-                _kinectHandler.RecordingCountdownEvent(_seqCoords.Count);
-            }
+                if (_isRecording)
+                {
+                    _kinectHandler.RecordingCountdownEvent(_seqCoords.Count);
+                }
 
-            if (_seqCoords.Count > BufferSize)
-            {
-                if (_isRecording && _currentGesture != null)
+                if (_seqCoords.Count > BufferSize)
                 {
-                    _isRecording = false;
-                    _dtw.AddOrUpdate(_seqCoords, _currentGesture);
-                    _seqCoords.Clear();
-                    _kinectHandler.GestureRecordCompleted(_currentGesture.Name, _currentGesture.Context);
-                    _currentGesture = null;
+                    lock (this) { 
+                        if (_isRecording && _currentGesture != null)
+                        {
+                            _isRecording = false;
+                        
+                            _dtw.AddOrUpdate(_seqCoords, _currentGesture);
+                            _seqCoords.Clear();
+                            _kinectHandler.GestureRecordCompleted(_currentGesture.Name, _currentGesture.Context);
+                            _currentGesture = null;
+                        }
+                        else
+                        {
+                            _seqCoords.RemoveAt(0);
+                        }
+                    }
                 }
-                else
-                {
-                    _seqCoords.RemoveAt(0);
-                }
-            }
 
-            if (a != null && !double.IsNaN(a.GetPoint(0).X))
+            if (a == null || double.IsNaN(a.GetPoint(0).X)) return;
+            // Optionally register only 1 frame out of every n
+            _flipFlop = (_flipFlop + 1)%Ignore;
+            if (_flipFlop == 0)
             {
-                // Optionally register only 1 frame out of every n
-                _flipFlop = (_flipFlop + 1)%Ignore;
-                if (_flipFlop == 0)
-                {
-                    _seqCoords.Add(a.GetCoords());
-                }
+                _seqCoords.Add(a.GetCoords());
             }
         }
 

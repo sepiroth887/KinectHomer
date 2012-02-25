@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Export-Package: javax.comm, uk.ac.stir.cs.homer.serviceCOMMs
+DynamicImport-Package: *
+Bundle-ClassPath: ., libs/serialPort-8.3.jar
+Bundle-Version: 1.0.0
+Bundle-Name: ServiceCOMMs
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: ServiceCOMMs
+Import-Package: org.slf4j
+Build-Date: Sat Feb 25 15:11:21 GMT 2012
+

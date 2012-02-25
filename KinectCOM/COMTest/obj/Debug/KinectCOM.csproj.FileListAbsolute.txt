@@ -24,9 +24,9 @@ D:\DevEnv\Honours\KinectCOM\COMTest\obj\Debug\KinectCOM.pdb
 D:\DevEnv\Honours\Kinect\libs\KinectCOM\KinectCOM.dll
 D:\DevEnv\Honours\Kinect\libs\KinectCOM\KinectCOM.pdb
 D:\DevEnv\Honours\Kinect\libs\KinectCOM\KinectCOM.tlb
-F:\KinectHomer\Kinect\libs\KinectCOM\KinectCOM.tlb
 F:\KinectHomer\Kinect\libs\KinectCOM\KinectCOM.dll
 F:\KinectHomer\Kinect\libs\KinectCOM\KinectCOM.pdb
+F:\KinectHomer\Kinect\libs\KinectCOM\KinectCOM.tlb
 F:\KinectHomer\KinectCOM\COMTest\obj\Debug\ResolveAssemblyReference.cache
 F:\KinectHomer\KinectCOM\COMTest\obj\Debug\KinectCOM.dll
 F:\KinectHomer\KinectCOM\COMTest\obj\Debug\KinectCOM.pdb

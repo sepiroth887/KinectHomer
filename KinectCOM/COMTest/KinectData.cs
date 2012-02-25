@@ -18,7 +18,7 @@ namespace KinectCOM
         {
             try
             {
-                if (KinectSensor.KinectSensors != null) _kinect = KinectSensor.KinectSensors[deviceId];
+                 _kinect = KinectSensor.KinectSensors[deviceId];
                 var parameters = new TransformSmoothParameters
                                      {
                                          Smoothing = 0.7f,

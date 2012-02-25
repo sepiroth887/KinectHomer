@@ -126,7 +126,9 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 	}
 	
 	public String[] loadGestures(){
-		return kinectSensorListener.loadGestures();
+		if(kinectSensorListener!= null)
+			return kinectSensorListener.loadGestures();
+		return null;
 	}
 
 	public void updateGestureModel() {
@@ -139,7 +141,13 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 	
 	public GestureListModel getGestureModel() {
 		if(gestureModel == null){
-			this.gestureModel = new GestureListModel(this.loadGestures());
+			String[] gestures = this.loadGestures();
+			if(gestures != null){
+				this.gestureModel = new GestureListModel(gestures);
+			}else{
+				this.gestureModel = new GestureListModel(new String[]{"No gestures;available"});
+			}
+			
 		}
 		
 		return gestureModel;

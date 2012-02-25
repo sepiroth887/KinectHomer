@@ -42,6 +42,7 @@ public class KinectUI extends JFrame{
 	private JTextField gPermTF;
 	private GestureListModel gestureModel;
 	private KinectSensorComponent kinect;
+	private final JLabel statusLabel = new JLabel("");;
 	
 	public KinectUI(KinectSensorComponent kinect) {
 		this.kinect = kinect;
@@ -149,12 +150,16 @@ public class KinectUI extends JFrame{
 					actionModel.addElement(action);
 				}
 				
+				statusLabel.setText("");
 			}});
 
 		
 		JButton btnBind = new JButton("Bind");
 		btnBind.setBounds(151, 135, 91, 23);
 		selectPanel.add(btnBind);
+		 
+		statusLabel.setBounds(305, 298, 151, 14);
+		bindingTab.add(statusLabel);
 		
 		btnBind.addActionListener(new ActionListener(){
 
@@ -164,6 +169,8 @@ public class KinectUI extends JFrame{
 				
 				g.setAction(actionComboB.getItemAt(actionComboB.getSelectedIndex()));
 				g.setDevice(deviceComboB.getItemAt(deviceComboB.getSelectedIndex()));
+				
+				statusLabel.setText("Device bound to gesture");
 			}
 			
 		});
@@ -349,8 +356,11 @@ public class KinectUI extends JFrame{
 	}
 
 	public void updateGestureModel(){
+		Gesture g = gestureModel.findGesture(gNameTF.getText(), gCtxtTF.getText());
+		if(g == null){
+			g = new Gesture(gNameTF.getText(),gCtxtTF.getText());
+		}
 		
-		Gesture g = new Gesture(gNameTF.getText(),gCtxtTF.getText());
 		gestureModel.updateModel(g);
 	}
 }
