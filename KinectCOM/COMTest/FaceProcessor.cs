@@ -564,5 +564,13 @@ namespace KinectCOM
                 if (_recognizerWorker != null) _recognizerWorker.RunWorkerAsync(faces);
             }
         }
+
+        internal void RecognizeFace(System.Windows.Media.Imaging.WriteableBitmap writeableBitmap)
+        {
+            if(_hasCuda)
+            {
+                
+            }
+        }
     }
 }

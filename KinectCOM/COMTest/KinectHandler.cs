@@ -253,5 +253,10 @@ namespace KinectCOM
             //Console.Out.WriteLine("Voice command detected: " + command);
             if (_comInterface != null) _comInterface.onVoiceCommandDetected(command);
         }
+
+        internal void recognizeFace(System.Windows.Media.Imaging.WriteableBitmap writeableBitmap)
+        {
+            _faceProcessor.RecognizeFace(writeableBitmap);
+        }
     }
 }

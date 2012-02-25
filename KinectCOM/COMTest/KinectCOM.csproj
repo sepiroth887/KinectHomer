@@ -117,6 +117,7 @@
     <Compile Include="RecognitionProcessor.cs" />
     <Compile Include="Skeleton2DdataCoordEventArgs.cs" />
     <Compile Include="Skeleton2DDataExtract.cs" />
+    <Compile Include="TrackingEngine.cs" />
     <Compile Include="UserFeature.cs" />
   </ItemGroup>
   <ItemGroup>
