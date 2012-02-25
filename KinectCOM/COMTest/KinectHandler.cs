@@ -90,7 +90,7 @@ namespace KinectCOM
             throw new NotImplementedException();
         }
 
-        void IKinect.UpdateSkeletons(Dictionary<JointType, ColorImagePoint> points, ArrayList users)
+        void IKinect.UpdateSkeletons(IDictionary points, ArrayList users)
         {
             ////Console.Out.WriteLine(users.Count+""+skeletons.Count);
             if (users == null || _skeletons == null || users.Count == _skeletons.Count) return;
@@ -236,7 +236,7 @@ namespace KinectCOM
             if (_gestureProcessor != null) _gestureProcessor.StoreGestures();
         }
 
-        public IEnumerable<string> LoadGestures()
+        public IEnumerable LoadGestures()
         {
             return _gestureProcessor != null ? _gestureProcessor.LoadGestures() : null;
         }

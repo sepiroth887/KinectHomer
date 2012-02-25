@@ -122,6 +122,10 @@ namespace KinectCOM
 
         #region _Device Members
 
+        public Device()
+        {
+        }
+
         Boolean IDevice.Init()
         {
             _kinect = new KinectData(0);

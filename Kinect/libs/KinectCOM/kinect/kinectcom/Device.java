@@ -27,19 +27,19 @@ public class Device extends CoClass
     /**
      * Creates coclass and returns its default interface.
      */
-    public static _DeviceImpl create(ClsCtx dwClsContext) throws ComException
+    public static IDeviceImpl create(ClsCtx dwClsContext) throws ComException
     {
-        final _DeviceImpl intf = new _DeviceImpl(CLASS_ID, dwClsContext);
+        final IDeviceImpl intf = new IDeviceImpl(CLASS_ID, dwClsContext);
         OleFunctions.oleRun(intf);
         return intf;
     }
 
     /**
-     * Queries the <code>_DeviceImpl</code> interface from IUnknown instance.
+     * Queries the <code>IDeviceImpl</code> interface from IUnknown instance.
      */
-    public static _DeviceImpl queryInterface(IUnknown unknown) throws ComException
+    public static IDeviceImpl queryInterface(IUnknown unknown) throws ComException
     {
-        final _DeviceImpl result = new _DeviceImpl();
+        final IDeviceImpl result = new IDeviceImpl();
         unknown.queryInterface(result.getIID(), result);
         return result;
     }

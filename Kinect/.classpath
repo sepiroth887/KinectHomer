@@ -8,11 +8,6 @@
 			<accessrule kind="nonaccessible" pattern="**/*"/>
 		</accessrules>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="libs/KinectCOM/kinect.jar" sourcepath="D:/DevEnv/Honours/Kinect/libs/KinectCOM/doc">
-		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Kinect/libs/comfyJ/bin"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="libs/comfyJ/lib/winpack-3.8.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/comfyJ/lib/comfyj-2.9.jar">
 		<attributes>
@@ -27,6 +22,11 @@
 	<classpathentry exported="true" kind="lib" path="libs/comfyJ/lib/slf4j-api-1.5.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/comfyJ/lib/slf4j-simple-1.5.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/comfyJ/lib/velocity-dep-1.3.1.jar"/>
+	<classpathentry kind="lib" path="libs/KinectCOM/kinect.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/F:/KinectHomer/Kinect/libs/KinectCOM/doc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/HomerFramework">
 		<accessrules>
 			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/homerFrameworkAPI/osgi/"/>
@@ -40,6 +40,7 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.knopflerfish.eclipse.core.BUNDLE_CONTAINER/ServiceDatabase">
 		<accessrules>
+			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceDatabase/queryBuilder/"/>
 			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceDatabase/objects/"/>
 			<accessrule kind="accessible" pattern="uk/ac/stir/cs/homer/serviceDatabase/"/>
 			<accessrule kind="nonaccessible" pattern="**/*"/>

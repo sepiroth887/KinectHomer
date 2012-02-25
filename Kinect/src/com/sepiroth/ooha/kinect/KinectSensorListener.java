@@ -2,13 +2,11 @@ package com.sepiroth.ooha.kinect;
 
 import kinect.kinectcom.Device;
 import kinect.kinectcom.IUserEvents;
-import kinect.kinectcom.impl._DeviceImpl;
+import kinect.kinectcom.impl.IDeviceImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-import com.jniwrapper.DefaultLibraryLoader;
 import com.jniwrapper.Int32;
 import com.jniwrapper.win32.automation.AutomationException;
 import com.jniwrapper.win32.automation.IDispatch;
@@ -31,7 +29,7 @@ import com.sepiroth.ooha.kinect.gesture.GestureListModel;
 
 public class KinectSensorListener {
 	
-	private _DeviceImpl comDevice;
+	private IDeviceImpl comDevice;
 	private IDispatchImpl userEventsHandlerDP;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private KinectSensorComponent kinectComponent ;
@@ -39,8 +37,13 @@ public class KinectSensorListener {
 	
 	public KinectSensorListener(KinectSensorComponent kinectComponent) throws Exception{
 		this.kinectComponent = kinectComponent;
+		
+		try{
+			connect();
+		}catch(Exception ex){
+			logger.error("COM init failed:",ex);
+		}
 		gestureModel = kinectComponent.getGestureModel();
-		connect();
 	}
 	
 	public String getSysDeviceID(){
@@ -56,11 +59,12 @@ public class KinectSensorListener {
 	}
 	
 	private void connect() throws Exception{
-		ComFunctions.coInitialize();
-
-		comDevice = Device.create(ClsCtx.INPROC_SERVER);
-		System.out.println("Handler attached");
+		
+		//System.out.println("Handler attached");
 		try { 
+			ComFunctions.coInitialize();
+
+			comDevice = Device.create(ClsCtx.INPROC_SERVER);
 			comDevice.init();
 		} catch (AutomationException e) { 
 			ExcepInfo info = e.getExceptionInformation(); 
@@ -95,7 +99,7 @@ public class KinectSensorListener {
 	
 	private UserEventsHandler userEventsHandler;
 	
-	private void attachToListeners(_DeviceImpl device) throws Exception{
+	private void attachToListeners(IDeviceImpl comDevice2) throws Exception{
 		
 		try{
 		IClassFactoryServer server = new IClassFactoryServer(UserEventsHandler.class);
@@ -109,7 +113,7 @@ public class KinectSensorListener {
 		userEventsHandler = (UserEventsHandler)server.getInstances().pop();
 		userEventsHandler.setKinectListener(this);
 		
-		IConnectionPointContainer cpc = new IConnectionPointContainerImpl(device);
+		IConnectionPointContainer cpc = new IConnectionPointContainerImpl(comDevice2);
 		IConnectionPoint cp = cpc.findConnectionPoint(new IID(IUserEvents.INTERFACE_IDENTIFIER));
 
 		cp.advise(userEventsHandlerDP);

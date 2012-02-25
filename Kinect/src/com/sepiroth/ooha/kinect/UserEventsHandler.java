@@ -5,8 +5,6 @@ import kinect.kinectcom.server.IUserEventsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.stir.cs.homer.homerFrameworkAPI.systemUtils.SystemGateway;
-
 import com.jniwrapper.Int32;
 import com.jniwrapper.win32.automation.types.BStr;
 import com.jniwrapper.win32.automation.types.Variant;
@@ -25,6 +23,7 @@ public class UserEventsHandler extends IUserEventsServer {
 		// TODO Auto-generated constructor stub
 	}
 	
+	@Override
 	public void onPresenceDetected(Int32 skelID){
 		logger.info("User presence detected with userID: "+skelID);
 		//ComponentGateway.Singleton.get().triggerOccured(kinectListener.getSysDeviceID(), KinectSensorComponent.PRESENCE_DETECTED, new String[]{skelID.toString()});
@@ -41,10 +40,12 @@ public class UserEventsHandler extends IUserEventsServer {
 		
 	}
 	
+	@Override
 	public void onPresenceLost(Int32 skelID){
 		logger.info("User presence lost with userID: "+skelID);
 	}
 	
+	@Override
 	public void onGestureRecognitionCompleted(BStr gestureName){
 		// TODO refactor for Gesture model.
 		if(!gestureName.toString().contains(("__UNKNOWN"))){
@@ -56,15 +57,18 @@ public class UserEventsHandler extends IUserEventsServer {
 		}	
 	}
 	
+	@Override
 	public void onGestureRecordCompleted(BStr gestureName, BStr ctxt){
 		logger.info("Gesture recording result: "+gestureName+", context: "+ctxt);
 		kinectListener.updateGestureModel();
 	}
 	
+	@Override
 	public void onRecordingCountDownEvent(Int32 time){
 		logger.info("Recording countdown event received: "+time);
 	}
 
+	@Override
 	public void onContextSelected(BStr ctxt){
 		if(!ctxt.toString().equals("__NOCONTEXT")){
 			System.out.println("Context "+ctxt+" selected. Recognition starting.");
@@ -82,6 +86,7 @@ public class UserEventsHandler extends IUserEventsServer {
 		System.out.println("Value recieved: "+value.getFltVal());
 	}
 	
+	@Override
 	public void onVoiceCommandDetected(BStr command){
 		
 	}

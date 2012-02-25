@@ -35,6 +35,10 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 	private String sysDeviceID;
 	private GestureListModel gestureModel;
 	
+	static{
+		System.setProperty("java.library.path",System.getProperty("java.library.path")+";F:\\KinectHomer\\Kinect\\libs\\comfyJ\\bin");
+	}
+	
 	public KinectSensorComponent(HomerDatabase db){
 		
 		this.database = db;

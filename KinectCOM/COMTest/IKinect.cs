@@ -10,7 +10,7 @@ namespace KinectCOM
         void Init();
         void Uninit();
         void UpdateFace();
-        void UpdateSkeletons(Dictionary<JointType, ColorImagePoint> points, ArrayList users);
+        void UpdateSkeletons(IDictionary points, ArrayList users);
         void LearnUser(int skeletonID);
         bool StartTracking(int skeletonID);
         void StopTracking(int skeletonID);
@@ -37,6 +37,6 @@ namespace KinectCOM
 
         void StoreGestures();
 
-        IEnumerable<string> LoadGestures();
+        IEnumerable LoadGestures();
     }
 }

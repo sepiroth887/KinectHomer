@@ -179,7 +179,7 @@ public class IUserEventsImpl extends IDispatchImpl
     /**
      * 
      */
-    public void onAddonGestureValueChange(
+    public void onAddOnGestureValueChange(
         SingleFloat /*[in]*/ value)
     {
 
@@ -187,7 +187,7 @@ public class IUserEventsImpl extends IDispatchImpl
                 value
             };
 
-         Automation.invokeDispatch(this, "OnAddonGestureValueChange", parameters, void.class);
+         Automation.invokeDispatch(this, "OnAddOnGestureValueChange", parameters, void.class);
     }
 
     public IID getIID()

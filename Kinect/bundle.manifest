@@ -1,12 +1,4 @@
 Manifest-Version: 1.0
-Bundle-ClassPath: ., libs/KinectCOM/kinect.jar, libs/comfyJ/lib/winpac
- k-3.8.3.jar, libs/comfyJ/lib/comfyj-2.9.jar, libs/comfyJ/lib/jniwrap-
- 3.8.3.jar, libs/comfyJ/lib/slf4j-api-1.5.8.jar, libs/comfyJ/lib/slf4j
- -simple-1.5.8.jar, libs/comfyJ/lib/velocity-dep-1.3.1.jar
-Bundle-Version: 0.8.0
-Bundle-Name: KinectComponent
-Bundle-ManifestVersion: 2
-Bundle-SymbolicName: KinectComponent
 Export-Package: com.jniwrapper, com.jniwrapper.jawt, com.jniwrapper.ut
  il, com.jniwrapper.win32, com.jniwrapper.win32.automation, com.jniwra
  pper.win32.automation.impl, com.jniwrapper.win32.automation.server, c
@@ -54,11 +46,22 @@ Export-Package: com.jniwrapper, com.jniwrapper.jawt, com.jniwrapper.ut
  xen.ant, org.apache.velocity.texen.defaults, org.apache.velocity.texe
  n.util, org.apache.velocity.util, org.apache.velocity.util.introspect
  ion, org.slf4j, org.slf4j.helpers, org.slf4j.impl, org.slf4j.spi
+DynamicImport-Package: *
+Bundle-ClassPath: ., libs/comfyJ/lib/winpack-3.8.3.jar, libs/comfyJ/li
+ b/comfyj-2.9.jar, libs/comfyJ/lib/jniwrap-3.8.3.jar, libs/comfyJ/lib/
+ slf4j-api-1.5.8.jar, libs/comfyJ/lib/slf4j-simple-1.5.8.jar, libs/com
+ fyJ/lib/velocity-dep-1.3.1.jar, libs/KinectCOM/kinect.jar
+Bundle-Version: 0.8.0
+Bundle-Name: KinectComponent
+Bundle-ManifestVersion: 2
 Bundle-Activator: com.sepiroth.ooha.kinect.Activator
+Bundle-SymbolicName: KinectComponent
 Import-Package: javax.swing, org.osgi.framework, uk.ac.stir.cs.homer.h
  omerFrameworkAPI.componentUtils, uk.ac.stir.cs.homer.homerFrameworkAP
  I.componentUtils.encoding, uk.ac.stir.cs.homer.homerFrameworkAPI.home
  rObjects, uk.ac.stir.cs.homer.homerFrameworkAPI.systemUtils, uk.ac.st
  ir.cs.homer.homerFrameworkAPI.tcas, javax.swing.border, javax.swing.e
  vent, uk.ac.stir.cs.homer.serviceDatabase, uk.ac.stir.cs.homer.homerF
- rameworkAPI.osgi, uk.ac.stir.cs.homer.serviceDatabase.objects
+ rameworkAPI.osgi, uk.ac.stir.cs.homer.serviceDatabase.objects, uk.ac.
+ stir.cs.homer.serviceDatabase.queryBuilder
+

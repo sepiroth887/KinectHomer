@@ -29,7 +29,7 @@ public interface IUserEvents extends IDispatch
     public static final int DISPID_onRecordingCountDownEvent = 8;
     public static final int DISPID_onContextSelected = 9;
     public static final int DISPID_onVoiceCommandDetected = 10;
-    public static final int DISPID_onAddonGestureValueChange = 11;
+    public static final int DISPID_onAddOnGestureValueChange = 11;
 
 
     /**
@@ -92,6 +92,6 @@ public interface IUserEvents extends IDispatch
     /**
      * 
      */
-    void onAddonGestureValueChange(
+    void onAddOnGestureValueChange(
         SingleFloat /*[in]*/ value);
 }

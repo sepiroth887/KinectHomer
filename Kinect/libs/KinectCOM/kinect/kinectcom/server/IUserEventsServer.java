@@ -104,7 +104,7 @@ public class IUserEventsServer extends IDispatchServer
     /**
      * 
      */
-    public void onAddonGestureValueChange(
+    public void onAddOnGestureValueChange(
         SingleFloat /*[in]*/ value)
     {
     }

@@ -4,3 +4,6 @@ kinect.kinectcom.server
 kinect.mscorlib
 kinect.mscorlib.impl
 kinect.mscorlib.server
+kinect.stdole
+kinect.stdole.impl
+kinect.stdole.server

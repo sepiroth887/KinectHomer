@@ -1,0 +1,6 @@
+F:\KinectHomer\KinectCOM\COMTest\obj\x86\Debug\ResolveAssemblyReference.cache
+F:\KinectHomer\Kinect\libs\KinectCOM\KinectCOM.dll
+F:\KinectHomer\Kinect\libs\KinectCOM\KinectCOM.pdb
+F:\KinectHomer\Kinect\libs\KinectCOM\KinectCOM.tlb
+F:\KinectHomer\KinectCOM\COMTest\obj\x86\Debug\KinectCOM.dll
+F:\KinectHomer\KinectCOM\COMTest\obj\x86\Debug\KinectCOM.pdb

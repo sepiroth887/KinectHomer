@@ -7,8 +7,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
-import javax.swing.AbstractListModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -21,6 +19,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.WindowConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -28,6 +27,7 @@ import javax.swing.event.ListSelectionListener;
 import uk.ac.stir.cs.homer.serviceDatabase.objects.Action;
 import uk.ac.stir.cs.homer.serviceDatabase.objects.User;
 import uk.ac.stir.cs.homer.serviceDatabase.objects.UserDevice;
+import uk.ac.stir.cs.homer.serviceDatabase.queryBuilder.QueryObject;
 
 import com.sepiroth.ooha.kinect.gesture.Gesture;
 import com.sepiroth.ooha.kinect.gesture.GestureListModel;
@@ -55,7 +55,7 @@ public class KinectUI extends JFrame{
 		initMainFrame();
 		
 		// create the tabpane and add all required panels.
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+		JTabbedPane tabbedPane = new JTabbedPane(SwingConstants.TOP);
 		tabbedPane.setBounds(0, 0, 471, 348);
 		
 		// add the tabs to the main JFrame
@@ -126,15 +126,30 @@ public class KinectUI extends JFrame{
 		actionComboB.setBounds(135, 44, 107, 22);
 		selectPanel.add(actionComboB);
 		
-		DefaultComboBoxModel<Action> actionModel = new DefaultComboBoxModel<Action>();
-
-		Action[] actions = kinect.getDatabase().getAllActions();
-		
-		for(Action action : actions){
-			actionModel.addElement(action);
-		}
+		final DefaultComboBoxModel<Action> actionModel = new DefaultComboBoxModel<Action>();
 		
 		actionComboB.setModel(actionModel);
+		
+		
+		
+		deviceComboB.addActionListener(new ActionListener(){
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JComboBox<UserDevice> box = (JComboBox<UserDevice>)arg0.getSource();
+				
+				UserDevice device = box.getItemAt(box.getSelectedIndex());
+				
+				actionModel.removeAllElements();
+				
+				Action[] actions = kinect.getDatabase().getActions(new QueryObject().userDevice(device.getId()));
+				
+				for(Action action : actions){
+					actionModel.addElement(action);
+				}
+				
+			}});
 
 		
 		JButton btnBind = new JButton("Bind");
@@ -245,6 +260,7 @@ public class KinectUI extends JFrame{
 		});
 		
 		btnRecordGesture.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				String name = gName.getText();
 				String context = gCtxt.getText();
@@ -326,7 +342,7 @@ public class KinectUI extends JFrame{
 	private void initMainFrame() {
 		setAlwaysOnTop(true);
 		setTitle("Kinect Configuration");
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		setType(Type.POPUP);
 		this.setMinimumSize(new Dimension(477,371));
 		getContentPane().setLayout(null);
