@@ -7,7 +7,7 @@
 -Duk.ac.stir.cs.homer.database.querypath=../ServiceDatabase/database/queries/
 -Duk.ac.stir.cs.homer.componentVisonicSensors.port=COM6
 -Duk.ac.stir.cs.homer.user.icons.is_off=80
--Duk.ac.stir.cs.homer.componentX10.port=COM4
+-Duk.ac.stir.cs.homer.componentX10.port=COM3
 -Duk.ac.stir.cs.homer.database.dbpath=../ServiceDatabase/database/homerDatabase
 -Duk.ac.stir.cs.homer.user.icons.finger_point=104
 -Duk.ac.stir.cs.homer.user.icons.movement=91
@@ -47,6 +47,8 @@
 -install file:F:\KinectHomer\Homer\ServiceDatabase\out\ServiceDatabase-1.0.0.jar
 -initlevel 40
 -install file:F:\KinectHomer\Homer\HomerFramework\out\HomerFramework-1.0.0.jar
+-initlevel 80
+-install file:F:\KinectHomer\Homer\ComponentX10\out\ComponentX10-1.0.0.jar
 -initlevel 90
 -install file:F:\KinectHomer\Homer\UserInterfaceJavaClient\out\UserInterfaceJavaClient-1.0.0.jar
 -initlevel 95
@@ -59,5 +61,6 @@
 -start file:F:\KinectHomer\Homer\ServiceLogger\out\ServiceLogger-1.0.0.jar
 -start file:F:\KinectHomer\Homer\ServiceDatabase\out\ServiceDatabase-1.0.0.jar
 -start file:F:\KinectHomer\Homer\HomerFramework\out\HomerFramework-1.0.0.jar
+-start file:F:\KinectHomer\Homer\ComponentX10\out\ComponentX10-1.0.0.jar
 -start file:F:\KinectHomer\Homer\UserInterfaceJavaClient\out\UserInterfaceJavaClient-1.0.0.jar
 -start file:F:\KinectHomer\Kinect\out\Kinect-0.8.0.jar

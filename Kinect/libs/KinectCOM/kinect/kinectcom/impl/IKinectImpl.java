@@ -162,14 +162,14 @@ public class IKinectImpl extends IDispatchImpl
      * 
      */
     public void userDetected(
-        _UserFeature /*[in]*/ user)
+        _User /*[in]*/ User)
         throws ComException
     {
        invokeStandardVirtualMethod(
             14,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
-                user == null ? (Parameter)PTR_NULL : (Parameter)user
+                User == null ? (Parameter)PTR_NULL : (Parameter)User
             }
         );
     }
@@ -194,14 +194,14 @@ public class IKinectImpl extends IDispatchImpl
      * 
      */
     public void userLost(
-        _UserFeature /*[in]*/ user)
+        _User /*[in]*/ User)
         throws ComException
     {
        invokeStandardVirtualMethod(
             16,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
-                user == null ? (Parameter)PTR_NULL : (Parameter)user
+                User == null ? (Parameter)PTR_NULL : (Parameter)User
             }
         );
     }
@@ -376,6 +376,71 @@ public class IKinectImpl extends IDispatchImpl
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
                 pRetVal == null ? (Parameter)PTR_NULL : new Pointer((Parameter)pRetVal)
+            }
+        );
+        return pRetVal;
+    }
+
+    /**
+     * 
+     */
+    public void setTrackingStrategy(
+        Int32 /*[in]*/ strat)
+        throws ComException
+    {
+       invokeStandardVirtualMethod(
+            28,
+            Function.STDCALL_CALLING_CONVENTION,
+            new Parameter[] {
+                strat
+            }
+        );
+    }
+
+    /**
+     * 
+     */
+    public void trackingStarted(
+        Int32 /*[in]*/ matchingSkeleton)
+        throws ComException
+    {
+       invokeStandardVirtualMethod(
+            29,
+            Function.STDCALL_CALLING_CONVENTION,
+            new Parameter[] {
+                matchingSkeleton
+            }
+        );
+    }
+
+    /**
+     * 
+     */
+    public void trackingStopped(
+        Int32 /*[in]*/ matchingSkeleton)
+        throws ComException
+    {
+       invokeStandardVirtualMethod(
+            30,
+            Function.STDCALL_CALLING_CONVENTION,
+            new Parameter[] {
+                matchingSkeleton
+            }
+        );
+    }
+
+    /**
+     * 
+     */
+    public BStr getObjects()
+        throws ComException
+    {
+        BStr pRetVal = new BStr();
+       invokeStandardVirtualMethod(
+            31,
+            Function.STDCALL_CALLING_CONVENTION,
+            new Parameter[] {
+                pRetVal == null ? (Parameter)PTR_NULL : new Pointer(pRetVal)
             }
         );
         return pRetVal;

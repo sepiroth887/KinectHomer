@@ -152,4 +152,8 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 		
 		return gestureModel;
 	}
+
+	public String[] getObjects() {
+		return kinectSensorListener.getObjects();
+	}
 }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Media;
 using Microsoft.Kinect;
 using Microsoft.Xna.Framework;
+using log4net;
 
 namespace KinectCOM
 {
@@ -15,118 +17,130 @@ namespace KinectCOM
 
         #endregion
 
-        private readonly SoundPlayer activeSound;
+        private readonly SoundPlayer _activeSound;
 
-        private readonly Dictionary<string, BoundingBox> bounds;
-        private readonly SoundPlayer selectSound;
+        private readonly Dictionary<string, BoundingBox> _bounds;
+        private readonly SoundPlayer _selectSound;
 
-        private readonly Stopwatch selectionCooldown = new Stopwatch();
-        private readonly Stopwatch selectionTimer = new Stopwatch();
-        private readonly SoundPlayer unselectSound;
-        private bool contextConfirmed;
-        private string currentContext = "__NOCONTEXT";
-        private Vector3 handPos;
-        private long lastPickEvent;
+        private readonly Stopwatch _selectionCooldown = new Stopwatch();
+        private readonly Stopwatch _selectionTimer = new Stopwatch();
+        private readonly SoundPlayer _unselectSound;
+        private bool _contextConfirmed;
+        private string _currentContext = "__NOCONTEXT";
+        private Vector3 _handPos;
+        private long _lastPickEvent;
 
 
-        private bool playSound = true;
-        private bool pointedLastEvent;
-        private Boolean pointing;
-        private bool selectionCoolingDown;
+        private bool _playSound = true;
+        private bool _pointedLastEvent;
+        private Boolean _pointing;
+        private bool _selectionCoolingDown;
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ObjectPointer));
 
         public ObjectPointer()
         {
-            bounds = new Dictionary<string, BoundingBox>();
-            selectSound =
+            _bounds = new Dictionary<string, BoundingBox>();
+            _selectSound =
                 new SoundPlayer(
                     FileLoader.DefaultPath+"Whit.wav");
-            unselectSound =
+            _unselectSound =
                 new SoundPlayer(
                     FileLoader.DefaultPath+"WhitR.wav");
-            activeSound =
+            _activeSound =
                 new SoundPlayer(
                     FileLoader.DefaultPath + "Voltage.wav");
         }
 
         public event ContextSelectedEventHandler ContextSelected;
 
-        public int returnLastContext()
+        public static int ReturnLastContext()
         {
             return -1;
         }
 
-        public void setObjects(Dictionary<string, Vector3[]> objects)
+        public String GetObjects()
         {
-            bounds.Clear();
+            var ret = "";
+            if (_bounds != null)
+                ret = _bounds.Aggregate(ret, (current, bound) => current + (bound.Key + ";"));
 
-            foreach (var obj in objects)
+            return ret != null ? ret.Substring(0, ret.Length - 1) : null;
+        }
+
+        public void SetObjects(Dictionary<string, Vector3[]> objects)
+        {
+            if (_bounds != null)
             {
-                if (obj.Key.Contains("Room"))
-                {
-                    continue;
-                }
-                BoundingBox box = BoundingBox.CreateFromPoints(obj.Value);
-                bounds.Add(obj.Key, box);
-                //Console.Out.WriteLine(obj.Key+": "+box.ToString());
+                _bounds.Clear();
+
+                if (objects != null)
+                    foreach (var obj in objects)
+                    {
+                        if (obj.Key != null && obj.Key.Contains("Room"))
+                        {
+                            continue;
+                        }
+                        var box = BoundingBox.CreateFromPoints(obj.Value);
+                        _bounds.Add(obj.Key, box);
+                        //Console.Out.WriteLine(obj.Key+": "+box.ToString());
+                    }
             }
         }
 
         //check for an intersection of a ray with a bounding box and return the context of the box
         // or -1 if no intersection is found.
-        public string intersects(Ray ray)
+        private string Intersects(Ray ray)
         {
-            string context = "__NOCONTEXT";
-            foreach (var box in bounds)
-            {
-                if (ray.Intersects(box.Value) != null)
+            var context = "__NOCONTEXT";
+            if (_bounds != null)
+                foreach (var box in _bounds.Where(box => ray.Intersects(box.Value) != null))
                 {
                     context = box.Key;
                     ////Console.Out.WriteLine("Context picked " + context);
                     return context;
                 }
-            }
             return context;
         }
 
-        public Vector3 getHandPos()
+        public Vector3 GetHandPos()
         {
-            return handPos;
+            return _handPos;
         }
 
-        public void findContext(Skeleton skeleton)
+        public void FindContext(Skeleton skeleton)
         {
-            if (selectionCoolingDown && selectionCooldown.IsRunning && selectionCooldown.ElapsedMilliseconds < 4000)
+            if (_selectionCooldown != null && (_selectionCoolingDown && _selectionCooldown.IsRunning && _selectionCooldown.ElapsedMilliseconds < 4000))
                 return;
 
-            if (selectionCooldown.ElapsedMilliseconds > 2000 && selectionCoolingDown)
+            if (_selectionCooldown != null && (_selectionCooldown.ElapsedMilliseconds > 2000 && _selectionCoolingDown))
             {
-                selectionCoolingDown = false;
-                selectionCooldown.Stop();
-                selectionCooldown.Reset();
-                contextConfirmed = false;
-                selectionTimer.Reset();
+                _selectionCoolingDown = false;
+                _selectionCooldown.Stop();
+                _selectionCooldown.Reset();
+                _contextConfirmed = false;
+                if (_selectionTimer != null) _selectionTimer.Reset();
                 ContextSelected("__NOCONTEXT");
                 return;
             }
 
 
-            if (skeleton.Joints[JointType.HandRight].TrackingState == JointTrackingState.NotTracked ||
-                skeleton.Joints[JointType.ElbowRight].TrackingState == JointTrackingState.NotTracked)
+            if (skeleton != null && (skeleton.Joints[JointType.HandRight].TrackingState == JointTrackingState.NotTracked ||
+                                     skeleton.Joints[JointType.ElbowRight].TrackingState == JointTrackingState.NotTracked))
             {
                 return;
             }
 
 
-            SkeletonPoint handV = skeleton.Joints[JointType.HandRight].Position;
-            SkeletonPoint elbowV = skeleton.Joints[JointType.ElbowRight].Position;
-            SkeletonPoint hipL = skeleton.Joints[JointType.HipLeft].Position;
-            SkeletonPoint handL = skeleton.Joints[JointType.HandLeft].Position;
+            var handV = skeleton.Joints[JointType.HandRight].Position;
+            var elbowV = skeleton.Joints[JointType.ElbowRight].Position;
+            var hipL = skeleton.Joints[JointType.HipLeft].Position;
+            var handL = skeleton.Joints[JointType.HandLeft].Position;
 
-            float distanceHandHip = (hipL.X - handL.X)*(hipL.X - handL.X) + (hipL.Y - handL.Y)*(hipL.Y - handL.Y) +
+            var distanceHandHip = (hipL.X - handL.X)*(hipL.X - handL.X) + (hipL.Y - handL.Y)*(hipL.Y - handL.Y) +
                                     (hipL.Z - handL.Z)*(hipL.Z - handL.Z);
 
             ////Console.Out.WriteLine(Math.Sqrt(distanceHandHip));
-            handPos = new Vector3(handV.X, handV.Y, handV.Z);
+            _handPos = new Vector3(handV.X, handV.Y, handV.Z);
 
             if (distanceHandHip > 0.22)
             {
@@ -143,64 +157,64 @@ namespace KinectCOM
 
             var pick = new Ray(rayOrig, rayDir);
 
-            currentContext = intersects(pick);
+            _currentContext = Intersects(pick);
 
-            if (!currentContext.Equals("__NOCONTEXT"))
+            if (!"__NOCONTEXT".Equals(_currentContext))
             {
-                pointing = true;
+                _pointing = true;
             }
 
-            if (pointing)
+            if (_pointing)
             {
                 ////Console.Out.WriteLine("Pointing at : " + currentContext);
-                if (playSound)
+                if (_playSound)
                 {
-                    selectSound.Play();
+                    if (_selectSound != null) _selectSound.Play();
                     ////Console.Out.WriteLine("Sound should have played");
-                    playSound = false;
+                    _playSound = false;
                 }
 
-                selectionTimer.Start();
+                _selectionTimer.Start();
 
-                if (!pointedLastEvent)
+                if (!_pointedLastEvent)
                 {
-                    selectionTimer.Reset();
-                    lastPickEvent = 0;
-                    playSound = true;
+                    _selectionTimer.Reset();
+                    _lastPickEvent = 0;
+                    _playSound = true;
                 }
                 else
                 {
-                    if (selectionTimer.ElapsedMilliseconds > 1000)
+                    if (_selectionTimer.ElapsedMilliseconds > 1000)
                     {
-                        selectionTimer.Stop();
-                        contextConfirmed = true;
-                        playSound = true;
+                        _selectionTimer.Stop();
+                        _contextConfirmed = true;
+                        _playSound = true;
                     }
                 }
 
-                if (contextConfirmed)
+                if (_contextConfirmed)
                 {
-                    activeSound.Play();
-                    ContextSelected(currentContext);
-                    selectionCooldown.Start();
-                    selectionTimer.Reset();
-                    lastPickEvent = 0;
-                    selectionCoolingDown = true;
-                    pointedLastEvent = false;
+                    if (_activeSound != null) _activeSound.Play();
+                    ContextSelected(_currentContext);
+                    _selectionCooldown.Start();
+                    _selectionTimer.Reset();
+                    _lastPickEvent = 0;
+                    _selectionCoolingDown = true;
+                    _pointedLastEvent = false;
                 }
 
-                pointing = false;
-                pointedLastEvent = true;
+                _pointing = false;
+                _pointedLastEvent = true;
             }
             else
             {
-                if (pointedLastEvent)
+                if (_pointedLastEvent)
                 {
-                    unselectSound.Play();
-                    pointedLastEvent = false;
+                    if (_unselectSound != null) _unselectSound.Play();
+                    _pointedLastEvent = false;
                 }
-                lastPickEvent++;
-                selectionTimer.Stop();
+                _lastPickEvent++;
+                _selectionTimer.Stop();
             }
         }
     }

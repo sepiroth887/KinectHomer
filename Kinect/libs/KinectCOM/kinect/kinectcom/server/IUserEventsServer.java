@@ -38,7 +38,7 @@ public class IUserEventsServer extends IDispatchServer
      * 
      */
     public void onUserFound(
-        BStr /*[in]*/ user,
+        BStr /*[in]*/ User,
         SingleFloat /*[in]*/ confidence,
         Int32 /*[in]*/ skeletonID)
     {
@@ -48,7 +48,7 @@ public class IUserEventsServer extends IDispatchServer
      * 
      */
     public void onUserLost(
-        BStr /*[in]*/ user)
+        BStr /*[in]*/ User)
     {
     }
 
@@ -106,6 +106,22 @@ public class IUserEventsServer extends IDispatchServer
      */
     public void onAddOnGestureValueChange(
         SingleFloat /*[in]*/ value)
+    {
+    }
+
+    /**
+     * 
+     */
+    public void onTrackingStarted(
+        Int32 /*[in]*/ skeletonID)
+    {
+    }
+
+    /**
+     * 
+     */
+    public void onTrackingStopped(
+        Int32 /*[in]*/ skeletonID)
     {
     }
 

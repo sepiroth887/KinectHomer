@@ -118,7 +118,7 @@
     <Compile Include="Skeleton2DdataCoordEventArgs.cs" />
     <Compile Include="Skeleton2DDataExtract.cs" />
     <Compile Include="TrackingEngine.cs" />
-    <Compile Include="UserFeature.cs" />
+    <Compile Include="User.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

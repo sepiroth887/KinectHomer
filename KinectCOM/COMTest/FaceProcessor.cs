@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -10,7 +9,6 @@ using Emgu.CV;
 using Emgu.CV.CvEnum;
 using Emgu.CV.GPU;
 using Emgu.CV.Structure;
-using Kinect;
 using Microsoft.Kinect;
 using log4net;
 
@@ -31,7 +29,6 @@ namespace KinectCOM
         private readonly RecognitionProcessor _recProcessor; // reference to the RecognitionProcessor
         private bool _isProcessing; // indicates state of this processor
         private BackgroundWorker _bw; // background worker to initialize this processor
-        private long _depthFrameTime; // timestamp of the last depthFrame
         private Image<Gray, byte>[] _faceDatabase; // array of all images in the face recognition database
         private bool _faceRecognitionActive; // indicates whether recognition has been requested.
         private Boolean _isBwDone = true; // indicates whether the loading 
@@ -153,7 +150,7 @@ namespace KinectCOM
         /// <param name="e"></param>
         private void rgbHandler(object sender, ColorImageFrameReadyEventArgs e)
         {
-            if (!_isProcessing || !_isBwDone)
+            if (!_isProcessing || !_isBwDone || e == null)
             {
                 return;
             }
@@ -164,8 +161,7 @@ namespace KinectCOM
 
             // check wether the latest frames are still fresh enough.
             if (_featureProcessor == null ||
-                (Math.Abs(_depthFrameTime - _rgbFrameTime) >= 500 ||
-                 Math.Abs(_featureProcessor.GetFrameNumber() - _rgbFrameTime) >= 500)) return;
+                 Math.Abs(_featureProcessor.GetFrameNumber() - _rgbFrameTime) >= 500) return;
 
             _isBwDone = false;
             var args = new Dictionary<int, object>
@@ -182,51 +178,52 @@ namespace KinectCOM
         /// <param name="e"></param>
         private void BwDoWork(object sender, DoWorkEventArgs e)
         {
-            var worker = sender as BackgroundWorker;
+            if (!_isProcessing || e == null) return;
+            // retrieve all passed arguments and store them locally.
+            var args = e.Argument as Dictionary<int, object>;
 
-            if (_isProcessing)
-            {
-                // retrieve all passed arguments and store them locally.
-                var args = e.Argument as Dictionary<int, object>;
-
-                if (args == null || args.Count < 3) return;
+            if (args == null || args.Count < 3) return;
                 
-                var frame = args[0] as ColorImageFrame;
+            var frame = args[0] as ColorImageFrame;
 
-                var activeHeadPos = (SkeletonPoint) args[1];
+            var activeHeadPos = (SkeletonPoint)args[1];
 
-                // get the depth pixel location of the head.
+            // get the depth pixel location of the head.
 
-                var sensor = _kinect.GetSensor();
-                if (sensor == null) return;
+            if (_kinect == null) return;
+            var sensor = _kinect.GetSensor();
+            if (sensor == null) return;
 
-                var headDepth = sensor.MapSkeletonPointToColor(activeHeadPos,
-                                                                            ColorImageFormat.
-                                                                                RgbResolution1280x960Fps12);
+            var headDepth = sensor.MapSkeletonPointToColor(activeHeadPos,
+                                                           ColorImageFormat.
+                                                               RgbResolution1280x960Fps12);
 
-                var pixelData = new byte[sensor.ColorStream.FramePixelDataLength];
+            if (sensor.ColorStream == null) return;
+            var pixelData = new byte[sensor.ColorStream.FramePixelDataLength];
+            if (frame != null)
+            {
                 frame.CopyPixelDataTo(pixelData);
                 frame.Dispose();
-                var mystream = new MemoryStream(pixelData);
-                var p = Image.FromStream(mystream);
-                var img = new Bitmap(p);
+            }
+            var mystream = new MemoryStream(pixelData);
+            var p = Image.FromStream(mystream);
+            var img = new Bitmap(p);
 
-                var camImage = new Image<Bgr, byte>(img);
+            var camImage = new Image<Bgr, byte>(img);
 
-                // resize the 640x480 rgb image to match the depth image size of 320x240
-                var reImg = camImage.Resize(1280, 240, INTER.CV_INTER_CUBIC);
+            // resize the 640x480 rgb image to match the depth image size of 320x240
+            var reImg = camImage.Resize(1280, 240, INTER.CV_INTER_CUBIC);
 
-                // set the region of interest which currently is a 40x40 pixel region where
-                // the face is supposed to be. ( being to close might raise some issues )
-                const int roi = 120;
+            // set the region of interest which currently is a 40x40 pixel region where
+            // the face is supposed to be. ( being to close might raise some issues )
+            const int roi = 120;
 
-                if (reImg != null)
-                {
-                    reImg.ROI = new Rectangle((headDepth.X) - (roi/2), (headDepth.Y), roi, roi);
+            if (reImg != null)
+            {
+                reImg.ROI = new Rectangle((headDepth.X) - (roi/2), (headDepth.Y), roi, roi);
 
-                    // pass the image and the timestamp on to the faceDetection methods
-                    PassImage(reImg);
-                }
+                // pass the image and the timestamp on to the faceDetection methods
+                PassImage(reImg);
             }
         }
 
@@ -243,7 +240,7 @@ namespace KinectCOM
         /// <summary>
         /// Tries to detect a face inside an image using GPU processing. 
         /// This is achieved by converting the image to grayscale and then to 
-        /// a GPUImage<>. Once a face is detected it is passed to the faceList.
+        /// a GPUImage. Once a face is detected it is passed to the faceList.
         /// And marked as new.
         /// </summary>
         /// <param name="image"></param>
@@ -257,7 +254,6 @@ namespace KinectCOM
 
 
             // do the detection and mark the startime for performance tracking.
-            var time = DateTime.Now;
             Rectangle[] faces = null;
             
             try
@@ -272,15 +268,15 @@ namespace KinectCOM
                 Log.Error("Detecting face failed." ,ex);
             }
 
-            
-            _faceList.Clear();
+
+            if (_faceList != null) _faceList.Clear();
             // if a face has been detected store each in the facelist and indicate there are new values in the list.
 
             if (faces == null || !faces.Any()) return;
             
             foreach (var faceImg in faces.Select(grayGPUImage.GetSubRect).Where(faceImg => faceImg != null))
             {
-                _faceList.Add(faceImg.ToImage());
+                if (_faceList != null) _faceList.Add(faceImg.ToImage());
             }
             _isNew = true;
             // mark the end time of the operation.
@@ -311,14 +307,17 @@ namespace KinectCOM
                 Log.Error("Detecting face failed.", ex);   
             }
 
-            _faceList.Clear();
+            if (_faceList != null) _faceList.Clear();
 
             if (faces == null || !faces.Any()) return;
 
             foreach (var face in faces)
             {
-                grayImage.ROI = face.rect;
-                _faceList.Add(grayImage.Copy());
+                if (grayImage != null && _faceList != null)
+                {
+                    grayImage.ROI = face.rect;
+                    _faceList.Add(grayImage.Copy());
+                }
             }
         }
 
@@ -411,10 +410,11 @@ namespace KinectCOM
         /// <param name="e"></param>
         private void RecognizerInitWorkerDoWork(object sender, DoWorkEventArgs e)
         {
+            if (e == null) return;
             if (!_isRecognizerLoaded)
             {
                 // check if the db has been loaded already.
-                var dbLoaded = (bool) e.Argument;
+                var dbLoaded = e.Argument != null && (bool) e.Argument;
 
                 if (!dbLoaded)
                 {
@@ -483,54 +483,58 @@ namespace KinectCOM
         /// <param name="e"></param>
         private void RecognizerWorkerDoWork(object sender, DoWorkEventArgs e)
         {
+            if (e == null) return;
             // retrieve the arraylist from the arguments
             var faces = e.Argument as ArrayList;
 
             // copy them into an image array
-            var facesCopy = new Image<Gray, byte>[faces.Count];
-
-            faces.CopyTo(facesCopy);
-
-            var bestLabel = ""; // and the closest matching label as well.
-            var bestDistance = float.MaxValue; // keeps track of the best match distance
-            Image<Gray, byte> optiImage = null;
-
-            // loop though the faces and find the most similar object in the EigenRecognizer.
-            foreach (var face in facesCopy)
+            if (faces != null)
             {
-                var index = 0;
-                if (face != null) optiImage = face.Resize(100, 100, INTER.CV_INTER_CUBIC, false);
-                if (optiImage != null) optiImage._EqualizeHist();
+                var facesCopy = new Image<Gray, byte>[faces.Count];
 
-                float eigenDistance = 0;
-                string tempLabel = null;
-                if (_recognizer != null)
-                    _recognizer.FindMostSimilarObject(optiImage, out index, out eigenDistance, out tempLabel);
+                faces.CopyTo(facesCopy);
 
-                // if the new eigendistance is better than the current best one, replace the values for 
-                // best distance, best label and best image.
-                if (bestDistance > eigenDistance)
+                var bestLabel = ""; // and the closest matching label as well.
+                var bestDistance = float.MaxValue; // keeps track of the best match distance
+                Image<Gray, byte> optiImage = null;
+
+                // loop though the faces and find the most similar object in the EigenRecognizer.
+                foreach (var face in facesCopy)
                 {
-                    bestDistance = eigenDistance;
-                    bestLabel = tempLabel;
+                    int index;
+                    if (face != null) optiImage = face.Resize(100, 100, INTER.CV_INTER_CUBIC, false);
+                    if (optiImage != null) optiImage._EqualizeHist();
+
+                    float eigenDistance = 0;
+                    string tempLabel = null;
+                    if (_recognizer != null)
+                        _recognizer.FindMostSimilarObject(optiImage, out index, out eigenDistance, out tempLabel);
+
+                    // if the new eigendistance is better than the current best one, replace the values for 
+                    // best distance, best label and best image.
+                    if (bestDistance > eigenDistance)
+                    {
+                        bestDistance = eigenDistance;
+                        bestLabel = tempLabel;
+                    }
                 }
-            }
 
-            // recognition is done so create a new UserFeature object to store the results.
-            var user = new UserFeature();
+                // recognition is done so create a new User object to store the results.
+                var user = new User();
 
-            // if a label has been returned
-            if (!"".Equals(bestLabel))
-            {
-                // calculate the confidence as a percentage value.
-                user.FaceConfidence = Math.Max(0, (1 - bestDistance/3000));
-                // store the username
-                user.Name = bestLabel;
-                // and the closest matching image.
-                user.curImage = optiImage;
+                // if a label has been returned
+                if (!"".Equals(bestLabel))
+                {
+                    // calculate the confidence as a percentage value.
+                    user.FaceConfidence = Math.Max(0, (1 - bestDistance/3000));
+                    // store the username
+                    user.Name = bestLabel;
+                    // and the closest matching image.
+                    user.Image = optiImage;
+                }
+                //Console.Out.WriteLine("User label: " + user.Name);
+                e.Result = user;
             }
-            //Console.Out.WriteLine("User label: " + user.Name);
-            e.Result = user;
         }
 
         /// <summary>
@@ -541,7 +545,8 @@ namespace KinectCOM
         /// <param name="e"></param>
         private void RecognizerWorkerRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            var user = e.Result as UserFeature;
+            if (e == null) return;
+            var user = e.Result as User;
             if (_recProcessor != null) _recProcessor.UserRecognized(user);
         }
 
@@ -565,12 +570,14 @@ namespace KinectCOM
             }
         }
 
-        internal void RecognizeFace(System.Windows.Media.Imaging.WriteableBitmap writeableBitmap)
+        internal User RecognizeFace(System.Windows.Media.Imaging.WriteableBitmap writeableBitmap)
         {
+            //@TODO identify faces and associate users to skeletons... tough luck...
             if(_hasCuda)
             {
                 
             }
+            return null;
         }
     }
 }

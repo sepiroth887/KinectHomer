@@ -24,6 +24,7 @@ import com.jniwrapper.win32.com.types.IID;
 import com.jniwrapper.win32.ole.IConnectionPoint;
 import com.jniwrapper.win32.ole.IConnectionPointContainer;
 import com.jniwrapper.win32.ole.impl.IConnectionPointContainerImpl;
+import com.sepiroth.ooha.kinect.events.UserEventsHandler;
 import com.sepiroth.ooha.kinect.gesture.Gesture;
 import com.sepiroth.ooha.kinect.gesture.GestureListModel;
 
@@ -160,4 +161,12 @@ public class KinectSensorListener {
 		kinectComponent.updateGestureModel();
 	}
 	
+	public String[] getObjects(){
+		
+		String obj = comDevice.getObjects().toString();
+		
+		String[] objects = obj.split(";");
+		
+		return objects;
+	}
 }

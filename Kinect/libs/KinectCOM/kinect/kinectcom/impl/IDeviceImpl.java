@@ -17,7 +17,7 @@ import kinect.kinectcom.*;
 public class IDeviceImpl extends IDispatchImpl
     implements IDevice
 {
-    public static final String INTERFACE_IDENTIFIER = "{EAC218B0-859F-34F9-A2BF-3339C5B46795}";
+    public static final String INTERFACE_IDENTIFIER = "{ABF23968-C7BF-3ED0-B967-A7C0A776A3EC}";
     private static final IID _iid = IID.create(INTERFACE_IDENTIFIER);
 
     public IDeviceImpl()
@@ -235,6 +235,18 @@ public class IDeviceImpl extends IDispatchImpl
         Parameter[] parameters = new Parameter[0];
 
          Object result = Automation.invokeDispatch(this, "LoadGestures", parameters, BStr.class);
+        return (BStr) result;
+    }
+
+    /**
+     * 
+     */
+    public BStr getObjects()
+    {
+
+        Parameter[] parameters = new Parameter[0];
+
+         Object result = Automation.invokeDispatch(this, "getObjects", parameters, BStr.class);
         return (BStr) result;
     }
 

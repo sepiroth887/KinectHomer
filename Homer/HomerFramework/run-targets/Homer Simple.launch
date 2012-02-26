@@ -3,7 +3,7 @@
 <stringAttribute key="org.eclipse.debug.core.SOURCE_PATH_COMPUTER_ID" value="org.knopflerfish.eclipse.core.launcher.SourcePathComputer"/>
 <stringAttribute key="org.eclipse.jdt.launching.JRE_CONTAINER" value="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/OSGi%Minimum-1.2"/>
 <mapAttribute key="org.knopflerfish.eclipse.core.launcher.bundle_projects">
-<mapEntry key="ComponentSimulatedBoiler" value="80,1"/>
+<mapEntry key="ComponentX10" value="80,1"/>
 <mapEntry key="HomerFramework" value="40,1"/>
 <mapEntry key="Kinect" value="95,1"/>
 <mapEntry key="ServiceCOMMs" value="10,0"/>
@@ -25,7 +25,7 @@
 <mapEntry key="org.osgi.framework.bootdelegation" value="System:*"/>
 <mapEntry key="org.osgi.service.http.port" value="System:8080"/>
 <mapEntry key="uk.ac.stir.cs.homer.componentVisonicSensors.port" value="System:COM6"/>
-<mapEntry key="uk.ac.stir.cs.homer.componentX10.port" value="System:COM4"/>
+<mapEntry key="uk.ac.stir.cs.homer.componentX10.port" value="System:COM3"/>
 <mapEntry key="uk.ac.stir.cs.homer.database.dbpath" value="System:../ServiceDatabase/database/homerDatabase"/>
 <mapEntry key="uk.ac.stir.cs.homer.database.initalise.addBasicInformation" value="System:true"/>
 <mapEntry key="uk.ac.stir.cs.homer.database.initalise.addFullInformation" value="System:false"/>

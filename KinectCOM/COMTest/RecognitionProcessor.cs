@@ -94,7 +94,7 @@ namespace KinectCOM
             if (_faceProcessor != null) _faceProcessor.RecognizeFace(_faces);
         }
 
-        public void UserRecognized(UserFeature user)
+        public void UserRecognized(User user)
         {
             var users = DataStore.loadAllUsers();
 
@@ -161,7 +161,7 @@ namespace KinectCOM
 
                 if (user.Confidence < 0)
                 {
-                    var newUser = new UserFeature {Confidence = bestConfidence/2, FaceConfidence = 0, Name = bestMatch};
+                    var newUser = new User {Confidence = bestConfidence/2, FaceConfidence = 0, Name = bestMatch};
                     if (_kinectHandler != null) _kinectHandler.UserDetected(newUser);
                 }
                 else

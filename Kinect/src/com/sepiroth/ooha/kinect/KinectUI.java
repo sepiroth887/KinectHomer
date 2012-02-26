@@ -33,16 +33,17 @@ import com.sepiroth.ooha.kinect.gesture.Gesture;
 import com.sepiroth.ooha.kinect.gesture.GestureListModel;
 
 
+@SuppressWarnings("serial")
 public class KinectUI extends JFrame{
 	
 	private JTextField nameTF;
 	private JTextField imagePathTF;
 	private JTextField gNameTF;
-	private JTextField gCtxtTF;
 	private JTextField gPermTF;
 	private GestureListModel gestureModel;
 	private KinectSensorComponent kinect;
-	private final JLabel statusLabel = new JLabel("");;
+	private final JLabel statusLabel = new JLabel("");
+	final JComboBox<String> contextCB = new JComboBox<String>();
 	
 	public KinectUI(KinectSensorComponent kinect) {
 		this.kinect = kinect;
@@ -207,10 +208,6 @@ public class KinectUI extends JFrame{
 		JLabel lblContext = new JLabel("Context: ");
 		gCtxtPanel.add(lblContext);
 		
-		gCtxtTF = new JTextField();
-		gCtxtTF.setColumns(10);
-		gCtxtPanel.add(gCtxtTF);
-		
 		JPanel gPermPanel = new JPanel();
 		gPermPanel.setBounds(12, 59, 198, 20);
 		gPermPanel.setLayout(new GridLayout(0, 2, 0, 0));
@@ -236,6 +233,18 @@ public class KinectUI extends JFrame{
 		gNameTF.setColumns(10);
 		gActionPanel.setLayout(null);
 		gActionPanel.add(gCtxtPanel);
+		
+		gCtxtPanel.add(contextCB);
+		
+		final DefaultComboBoxModel<String> contextModel = new DefaultComboBoxModel<String>();
+		
+		String[] objects = this.kinect.getObjects();
+		
+		for(String object : objects){
+			contextModel.addElement(object);
+		}
+		
+		contextCB.setModel(contextModel);
 		gActionPanel.add(gNamePanel);
 		gActionPanel.add(gPermPanel);
 		gActionPanel.add(btnRecordGesture);
@@ -246,7 +255,6 @@ public class KinectUI extends JFrame{
 		gestureTab.add(gActionPanel);
 
 		final JTextField gName = gNameTF;
-		final JTextField gCtxt = gCtxtTF;
 		final JTextField gPerm = gPermTF;
 		
 		
@@ -260,7 +268,13 @@ public class KinectUI extends JFrame{
 				Gesture g = list.getSelectedValue();
 				
 				gName.setText(g.getName());
-				gCtxt.setText(g.getContext());
+				
+				for(int i = 0; i<contextModel.getSize();i++){
+					if(contextModel.getElementAt(i).equals(g.getContext())){
+						contextCB.setSelectedIndex(i);
+					}
+				}
+				
 				gPerm.setText(g.getPermission());
 			}
 			
@@ -270,7 +284,7 @@ public class KinectUI extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				String name = gName.getText();
-				String context = gCtxt.getText();
+				String context = (String)contextCB.getSelectedItem();
 				kinect.recordGesture(name,context);
 			}
 		});
@@ -356,9 +370,9 @@ public class KinectUI extends JFrame{
 	}
 
 	public void updateGestureModel(){
-		Gesture g = gestureModel.findGesture(gNameTF.getText(), gCtxtTF.getText());
+		Gesture g = gestureModel.findGesture(gNameTF.getText(),(String)contextCB.getSelectedItem());
 		if(g == null){
-			g = new Gesture(gNameTF.getText(),gCtxtTF.getText());
+			g = new Gesture(gNameTF.getText(),(String)contextCB.getSelectedItem());
 		}
 		
 		gestureModel.updateModel(g);

@@ -82,7 +82,7 @@ public class IKinectVTBL extends IDispatchVTBL
                     "userDetected",
                     new HResult(),
                     new Parameter[] {
-                        new _UserFeatureImpl()
+                        new _UserImpl()
                     }
                 ),
                 new VirtualMethodCallback(
@@ -96,7 +96,7 @@ public class IKinectVTBL extends IDispatchVTBL
                     "userLost",
                     new HResult(),
                     new Parameter[] {
-                        new _UserFeatureImpl()
+                        new _UserImpl()
                     }
                 ),
                 new VirtualMethodCallback(
@@ -174,6 +174,35 @@ public class IKinectVTBL extends IDispatchVTBL
                     new HResult(),
                     new Parameter[] {
                         new Pointer(new IEnumerableImpl())
+                    },
+                    0
+                ),
+                new VirtualMethodCallback(
+                    "setTrackingStrategy",
+                    new HResult(),
+                    new Parameter[] {
+                        new Int32()
+                    }
+                ),
+                new VirtualMethodCallback(
+                    "trackingStarted",
+                    new HResult(),
+                    new Parameter[] {
+                        new Int32()
+                    }
+                ),
+                new VirtualMethodCallback(
+                    "trackingStopped",
+                    new HResult(),
+                    new Parameter[] {
+                        new Int32()
+                    }
+                ),
+                new VirtualMethodCallback(
+                    "getObjects",
+                    new HResult(),
+                    new Parameter[] {
+                        new Pointer(new BStr())
                     },
                     0
                 )

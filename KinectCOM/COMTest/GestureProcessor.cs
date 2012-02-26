@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using DTWGestureRecognition;
-using Kinect;
 using Microsoft.Kinect;
 using Microsoft.Xna.Framework;
+using log4net;
 
 namespace KinectCOM
 {
@@ -16,21 +16,21 @@ namespace KinectCOM
         /// How many skeleton frames to ignore (_flipFlop)
         /// 1 = capture every frame, 2 = capture every second frame etc.
         /// </summary>
-        private const int Ignore = 2;
+        private const int IGNORE = 2;
 
         /// <summary>
         /// How many skeleton frames to store in the _video buffer
         /// </summary>
-        private const int BufferSize = 32;
+        private const int BUFFER_SIZE = 32;
 
         /// <summary>
         /// The minumum number of frames in the _video buffer before we attempt to start matching gestures
         /// </summary>
-        private const int MinimumFrames = 10;
+        private const int MINIMUM_FRAMES = 10;
 
-        private const string ZAddon = "z";
-        private const string XAddon = "x";
-        private const string YAddon = "y";
+        private const string Z_ADDON = "z";
+        private const string X_ADDON = "x";
+        private const string Y_ADDON = "y";
 
         private readonly DtwGestureRecognizer _dtw;
         private readonly KinectData _kinect;
@@ -38,7 +38,7 @@ namespace KinectCOM
 
         private readonly ObjectPointer _pointer;
         private readonly Stopwatch _recTimer = new Stopwatch();
-        private readonly ArrayList _seqCoords;
+        private ArrayList _seqCoords;
         private readonly Stopwatch _startoffset = new Stopwatch();
         private readonly Stopwatch _stopTimer = new Stopwatch();
         private readonly Stopwatch _timer = new Stopwatch();
@@ -56,16 +56,16 @@ namespace KinectCOM
         private SkeletonPoint _lastPoint;
         private float _rateOfChange;
         private SkeletonPoint _startPoint;
-
+        private static readonly ILog Log = LogManager.GetLogger(typeof(GestureProcessor));
 
         public GestureProcessor(IKinect kinectHandler, KinectData kinect)
         {
             
             _pointer = new ObjectPointer();
-            Console.Out.WriteLine("objectPointer loaded");
-            _pointer.setObjects(FileLoader.LoadObj("livingRoom.obj", FileLoader.Units.cm));
+            Log.Debug("objectPointer loaded");
+            _pointer.SetObjects(FileLoader.LoadObj("livingRoom.obj", FileLoader.Units.cm));
 
-            Console.Out.WriteLine("objects loaded");
+            Log.Debug("objects loaded");
 
             _kinectHandler = kinectHandler;
             _kinect = kinect;
@@ -76,6 +76,11 @@ namespace KinectCOM
             _dtw = new DtwGestureRecognizer(12, 0.6, 2, 2, 10);
             Skeleton2DDataExtract.Skeleton2DdataCoordReady += NuiSkeleton2DdataCoordReady;
             _pointer.ContextSelected += PointerContextSelected;
+        }
+
+        public String GetObjects()
+        {
+            return _pointer != null ? _pointer.GetObjects() : "";
         }
 
         private void PointerContextSelected(string ctxt)
@@ -97,7 +102,7 @@ namespace KinectCOM
             {
                 Skeleton2DDataExtract.ProcessData(skeleton);
                 if (!_isRecording)
-                    if (_pointer != null) _pointer.findContext(skeleton);
+                    if (_pointer != null) _pointer.FindContext(skeleton);
                 if (_addOnGesture)
                 {
                     AddOnGesture(_addOnGestureType, skeleton);
@@ -110,7 +115,7 @@ namespace KinectCOM
         {
             if (_pointer == null) return null;
                 
-            return _pointer.getHandPos();
+            return _pointer.GetHandPos();
         }
 
 
@@ -156,15 +161,15 @@ namespace KinectCOM
                 return;
             }
 
-            if (XAddon.Equals(type))
+            if (X_ADDON.Equals(type))
             {
                 StartAddonGesture(skel, "X");
             }
-            else if (YAddon.Equals(type))
+            else if (Y_ADDON.Equals(type))
             {
                 StartAddonGesture(skel, "Y");
             }
-            else if (ZAddon.Equals(type))
+            else if (Z_ADDON.Equals(type))
             {
                 StartAddonGesture(skel, "Z");
             }
@@ -284,7 +289,14 @@ namespace KinectCOM
             Thread.Sleep(1000);
             _kinectHandler.RecordingCountdownEvent(0);
             Thread.Sleep(1000);
-            _seqCoords.Clear();
+            if (_seqCoords != null)
+            {
+                _seqCoords.Clear();
+            }
+            else
+            {
+                _seqCoords = new ArrayList();
+            }
             _isRecording = true;
         }
 
@@ -294,7 +306,7 @@ namespace KinectCOM
           
                 if (_kinectHandler == null || _seqCoords == null || _dtw == null) return;
 
-                if (_seqCoords.Count > MinimumFrames && !_isRecording && _isRecognizing)
+                if (_seqCoords.Count > MINIMUM_FRAMES && !_isRecording && _isRecognizing)
                 {
                     ////Console.Out.WriteLine("No of frames: " + seqCoords.Count);
                     if (_dtw != null)
@@ -320,14 +332,14 @@ namespace KinectCOM
                     _kinectHandler.RecordingCountdownEvent(_seqCoords.Count);
                 }
 
-                if (_seqCoords.Count > BufferSize)
+                if (_seqCoords.Count > BUFFER_SIZE)
                 {
                     lock (this) { 
                         if (_isRecording && _currentGesture != null)
                         {
                             _isRecording = false;
-                        
-                            _dtw.AddOrUpdate(_seqCoords, _currentGesture);
+
+                            if (_dtw != null) _dtw.AddOrUpdate(_seqCoords, _currentGesture);
                             _seqCoords.Clear();
                             _kinectHandler.GestureRecordCompleted(_currentGesture.Name, _currentGesture.Context);
                             _currentGesture = null;
@@ -339,9 +351,9 @@ namespace KinectCOM
                     }
                 }
 
-            if (a == null || double.IsNaN(a.GetPoint(0).X)) return;
+            if (a == null || Double.IsNaN(a.GetPoint(0).X)) return;
             // Optionally register only 1 frame out of every n
-            _flipFlop = (_flipFlop + 1)%Ignore;
+            _flipFlop = (_flipFlop + 1)%IGNORE;
             if (_flipFlop == 0)
             {
                 _seqCoords.Add(a.GetCoords());
@@ -355,13 +367,13 @@ namespace KinectCOM
 
         internal void UpdateContextObjects()
         {
-            if (_pointer != null) _pointer.setObjects(FileLoader.LoadObj("livingRoom.obj", FileLoader.Units.cm));
+            if (_pointer != null) _pointer.SetObjects(FileLoader.LoadObj("livingRoom.obj", FileLoader.Units.cm));
         }
 
         public int ReturnLastContext()
         {
             if (_pointer != null) 
-                return _pointer.returnLastContext();
+                return ObjectPointer.ReturnLastContext();
             return -1;
         }
     }

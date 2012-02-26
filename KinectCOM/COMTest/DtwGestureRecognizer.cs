@@ -17,9 +17,10 @@
 
 using System;
 using System.Collections;
-using KinectCOM;
+using System.Collections.Generic;
+using log4net;
 
-namespace DTWGestureRecognition
+namespace KinectCOM
 {
     /// <summary>
     /// Dynamic Time Warping nearest neighbour sequence comparison class.
@@ -33,6 +34,8 @@ namespace DTWGestureRecognition
          * http://social.msdn.microsoft.com/Forums/en-US/kinectsdknuiapi/thread/4a428391-82df-445a-a867-557f284bd4b1
          * http://www.youtube.com/watch?v=XsIoN96yF3E
          */
+
+        private static readonly ILog Log = LogManager.GetLogger(typeof(DtwGestureRecognizer));
 
         /// <summary>
         /// Size of obeservations vectors.
@@ -48,11 +51,6 @@ namespace DTWGestureRecognition
         /// Maximum DTW distance between an example and a sequence being classified.
         /// </summary>
         private readonly double _globalThreshold;
-
-        /// <summary>
-        /// The gesture names. Index matches that of the sequences array in _sequences
-        /// </summary>
-        private readonly ArrayList _labels;
 
         /// <summary>
         /// Maximum vertical or horizontal steps in a row.
@@ -126,7 +124,7 @@ namespace DTWGestureRecognition
                 {
                     var gesture = (Gesture) _gestures[i];
 
-                    if (gesture != null && gesture.Name == lab && gesture.Context == ctxt)
+                    if (gesture != null && lab.Equals(gesture.Name) && ctxt.Equals(gesture.Context))
                     {
                         existingIndex = i;
                     }
@@ -136,16 +134,17 @@ namespace DTWGestureRecognition
                 // If we have a match then remove the entries at the existing index to avoid duplicates. We will add the new entries later anyway
                 if (existingIndex >= 0)
                 {
+                    Log.Info("Found existing gesture, updating sequence.");
                     g = ((Gesture)_gestures[existingIndex]);
                     g.Sequence = seq;
                 }
                 else
                 {
+                    Log.Info("This is a new gesture, saving.");
                     g = new Gesture(lab, ctxt, seq);
+                    _gestures.Add(g);
                 }
-                // Add the new entries
                 
-                _gestures.Add(g);
 
             if(saveToFile)
                 FileLoader.SaveGestures(RetrieveText());
@@ -170,7 +169,7 @@ namespace DTWGestureRecognition
             for (int i = 0; i < _gestures.Count; i++)
             {
                 var gesture = (Gesture) _gestures[i];
-                ArrayList example = gesture.Sequence;
+                var example = gesture.Sequence;
                 ////Debug.WriteLine(Dist2((double[]) seq[seq.Count - 1], (double[]) example[example.Count - 1]));
                 if (Dist2((double[]) seq[seq.Count - 1], (double[]) example[example.Count - 1]) < _firstThreshold)
                 {
@@ -248,9 +247,10 @@ namespace DTWGestureRecognition
         /// <param name="seq1">The first array of sequences to compare</param>
         /// <param name="seq2">The second array of sequences to compare</param>
         /// <returns>The best match</returns>
-        public double Dtw(ArrayList seq1, ArrayList seq2)
+        private double Dtw(ArrayList seq1, ArrayList seq2)
         {
             // Init
+            if (seq1 == null || seq2 == null) return Double.PositiveInfinity;
             var seq1R = new ArrayList(seq1);
             seq1R.Reverse();
             var seq2R = new ArrayList(seq2);
@@ -318,12 +318,12 @@ namespace DTWGestureRecognition
         /// <param name="a">Point a (double)</param>
         /// <param name="b">Point b (double)</param>
         /// <returns>Manhattan distance between the two points</returns>
-        private double Dist1(double[] a, double[] b)
+        private double Dist1(IList<double> a, IList<double> b)
         {
             double d = 0;
             for (int i = 0; i < _dimension; i++)
             {
-                d += Math.Abs(a[i] - b[i]);
+                if (a != null && b != null) d += Math.Abs(a[i] - b[i]);
             }
 
             return d;
@@ -335,12 +335,12 @@ namespace DTWGestureRecognition
         /// <param name="a">Point a (double)</param>
         /// <param name="b">Point b (double)</param>
         /// <returns>Euclidian distance between the two points</returns>
-        private double Dist2(double[] a, double[] b)
+        private double Dist2(IList<Double> a, IList<Double> b)
         {
             double d = 0;
-            for (int i = 0; i < _dimension; i++)
+            for (var i = 0; i < _dimension; i++)
             {
-                d += Math.Pow(a[i] - b[i], 2);
+                if (a != null && b != null) d += Math.Pow(a[i] - b[i], 2);
             }
 
             return Math.Sqrt(d);

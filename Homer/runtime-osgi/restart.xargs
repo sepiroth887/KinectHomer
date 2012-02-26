@@ -7,7 +7,7 @@
 -Duk.ac.stir.cs.homer.database.querypath=../ServiceDatabase/database/queries/
 -Duk.ac.stir.cs.homer.componentVisonicSensors.port=COM6
 -Duk.ac.stir.cs.homer.user.icons.is_off=80
--Duk.ac.stir.cs.homer.componentX10.port=COM4
+-Duk.ac.stir.cs.homer.componentX10.port=COM3
 -Duk.ac.stir.cs.homer.database.dbpath=../ServiceDatabase/database/homerDatabase
 -Duk.ac.stir.cs.homer.user.icons.finger_point=104
 -Duk.ac.stir.cs.homer.user.icons.movement=91

@@ -7,11 +7,13 @@ using DTWGestureRecognition;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Microsoft.Xna.Framework;
+using log4net;
 
 namespace KinectCOM
 {
     internal static class FileLoader
     {
+        private static readonly ILog Log = LogManager.GetLogger(typeof(FileLoader));
         #region Units enum
 
         public enum Units
@@ -33,6 +35,7 @@ namespace KinectCOM
         /// <returns></returns>
         public static Dictionary<Image<Gray, byte>[], string[]> LoadFaceDB(string path)
         {
+            if (path == null) return null;
             // get the directory info of the passed path
             var dir = new DirectoryInfo(path);
 
@@ -42,6 +45,7 @@ namespace KinectCOM
             // go through each sub directory and retrieve all PNG files.
             foreach (var dirs in dir.GetDirectories())
             {
+                if (dirs == null) continue;
                 var images = new Image<Gray, byte>[dirs.GetFiles("*.png").Count()];
                 var label = new string[images.Length];
 
@@ -50,6 +54,7 @@ namespace KinectCOM
                 foreach (var file in dirs.GetFiles("*.png"))
                 {
                     // and store each png file as an image in the images array.
+                    if (file == null) continue;
                     images[counter] = new Image<Gray, byte>(file.FullName);
                     // and the folder name as the label for that file.
                     label[counter++] = dirs.Name;
@@ -108,8 +113,7 @@ namespace KinectCOM
                 }
                 else if (objectFound && line.StartsWith("v"))
                 {
-                    string[] parts = line.Split(' ');
-
+                    var parts = line.Split(' ');
                     var point = new Vector3
                                     {
                                         X = (float.Parse(parts[2]))/(float) unit,
@@ -175,8 +179,8 @@ namespace KinectCOM
         /// <param name="path"></param>
         public static void SaveImage(string label, Image<Gray, byte> image, string path)
         {
-            string folderName = label;
-            int numFiles = 0;
+            var folderName = label;
+            var numFiles = 0;
             var dir = new DirectoryInfo(path + "/" + folderName);
 
             if (!dir.Exists)
@@ -196,13 +200,13 @@ namespace KinectCOM
         {   
             if(dtw == null )
             {
-                Console.Out.WriteLine("DtwGestureRecognizer is null");
+                Log.Error("DtwGestureRecognizer is null");
                 return null;
             }
 
-            Console.Out.WriteLine("Loading gestures");
+            Log.Debug("Loading gestures");
             string[] result = null;
-            int itemCount = 0;
+            var itemCount = 0;
             string line;
             var gestureName = "";
             var contextName = "";
@@ -213,19 +217,19 @@ namespace KinectCOM
             // Read the file and display it line by line.
             if (!File.Exists(DefaultPath + "gestures.sav"))
             {
-                Console.Out.WriteLine("Gesture file not found");
+                Log.Error("Gesture file not found");
                 return null;
             }
 
             var file = new StreamReader(DefaultPath + "gestures.sav");
 
-            int counter = 0;
+            var counter = 0;
 
             while ((line = file.ReadLine()) != null)
             {
                 if (line.StartsWith("//"))
                 {
-                    int numGestures = int.Parse(line.Split('=')[1]);
+                    var numGestures = Int32.Parse(line.Split('=')[1]);
                     if (numGestures != 0)
                     {
                         result = new string[numGestures];
@@ -239,14 +243,14 @@ namespace KinectCOM
                 if (line.StartsWith("@"))
                 {
                     gestureName = line.Substring(1);
-                    result[counter] = gestureName;
+                    if (result != null) result[counter] = gestureName;
                     continue;
                 }
 
                 if (line.StartsWith("$"))
                 {
                     contextName = line.Substring(1);
-                    result[counter] += ";" + contextName;
+                    if (result != null) result[counter] += ";" + contextName;
                     continue;
                 }
 
@@ -268,17 +272,17 @@ namespace KinectCOM
                 if (line.StartsWith("----"))
                 {
                     if (frames.Count == 0) continue;
-                    Console.Out.WriteLine("Gesture frames loaded. Saving...");
+                    Log.Debug("Gesture frames loaded. Saving...");
                     dtw.AddOrUpdate(frames, gestureName, contextName, false);
                     frames = new ArrayList();
-                    gestureName = string.Empty;
-                    contextName = string.Empty;
+                    gestureName = String.Empty;
+                    contextName = String.Empty;
                     counter++;
                     itemCount = 0;
                 }
             }
 
-            Console.Out.WriteLine(counter + " Gestures loaded");
+            Log.Debug(counter + " Gestures loaded");
             file.Close();
             return result;
         }
@@ -286,7 +290,7 @@ namespace KinectCOM
         public static void SaveGestures(string gestureData)
         {
             File.WriteAllText(DefaultPath + "gestures.sav", gestureData);
-            //Console.Out.WriteLine("Gestures saved");
+            Log.Debug("Gestures saved");
         }
     }
 }

@@ -22,7 +22,7 @@ import kinect.stdole.impl.*;
  */
 public interface IKinect extends IDispatch
 {
-    public static final String INTERFACE_IDENTIFIER = "{6EEC98DB-A3C9-37DF-B5A8-BB6140A71D56}";
+    public static final String INTERFACE_IDENTIFIER = "{09E79A9B-F60D-3881-B721-E9104E2E6AA0}";
 
     /**
      * 
@@ -75,7 +75,7 @@ public interface IKinect extends IDispatch
      * 
      */
     void userDetected(
-        _UserFeature /*[in]*/ user)
+        _User /*[in]*/ User)
         throws ComException;
 
     /**
@@ -89,7 +89,7 @@ public interface IKinect extends IDispatch
      * 
      */
     void userLost(
-        _UserFeature /*[in]*/ user)
+        _User /*[in]*/ User)
         throws ComException;
 
     /**
@@ -166,5 +166,32 @@ public interface IKinect extends IDispatch
      * 
      */
     IEnumerable loadGestures()
+        throws ComException;
+
+    /**
+     * 
+     */
+    void setTrackingStrategy(
+        Int32 /*[in]*/ strat)
+        throws ComException;
+
+    /**
+     * 
+     */
+    void trackingStarted(
+        Int32 /*[in]*/ matchingSkeleton)
+        throws ComException;
+
+    /**
+     * 
+     */
+    void trackingStopped(
+        Int32 /*[in]*/ matchingSkeleton)
+        throws ComException;
+
+    /**
+     * 
+     */
+    BStr getObjects()
         throws ComException;
 }

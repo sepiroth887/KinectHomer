@@ -1,41 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Kinect;
 using Kinect.Toolbox;
 using Microsoft.Kinect;
+using log4net;
 
 namespace KinectCOM
 {
     class TrackingEngine
     {
-        private int _currentTrackingID;
-        private KinectData _kinect;
-        private KinectHandler _kinectHandler;
+        private static readonly ILog Log = LogManager.GetLogger(typeof(TrackingEngine));
+        private readonly KinectData _kinect;
+        private readonly KinectHandler _kinectHandler;
 
         private const int CLOSEST_SKELETON = 0x0;
-        private static readonly int RECOGNIZED_FIRST = 0x1;
-        private static readonly int RECOGNIZED_ONLY = 0x2;
+        private const int RECOGNIZED_FIRST = 0x1;
+        private const int RECOGNIZED_ONLY = 0x2;
 
-        private static ColorStreamManager _colorStreamManager = new ColorStreamManager();
+        private static readonly ColorStreamManager ColorStreamManager = new ColorStreamManager();
+
+        private Skeleton[] _skeletons;
+        private int _activeSkeleton;
+
+        private User _currentUser;
 
         public TrackingEngine(KinectData kinect, KinectHandler kinectHandler)
         {
+            Log.Info("Starting TrackingEngine");
             _kinect = kinect;
             _kinectHandler = kinectHandler;
-            _currentTrackingID = -1;
             Strategy = CLOSEST_SKELETON;
             if (_kinect != null)
             {
+                Log.Info("Attaching to Kinect");
                 var kinectSensor = _kinect.GetSensor();
                 if (kinectSensor != null)
-                    kinectSensor.AllFramesReady+=new EventHandler<AllFramesReadyEventArgs>(TrackingEngineAllFramesReady);
+                    kinectSensor.AllFramesReady+=TrackingEngineAllFramesReady;
             }
+            _activeSkeleton = -1;
+            Log.Info("Tracking Engine Started");
         }
-
-        private byte[] _rgbPixelData;
-        private Skeleton[] _skeletons;
-        private int _activeSkeleton;
 
         private void CheckArrayIsSet(int skeletonLenght)
         {
@@ -47,6 +52,7 @@ namespace KinectCOM
 
         private void TrackingEngineAllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
+            if(e == null) return;
             var rgbFrame = e.OpenColorImageFrame();
             var depthFrame = e.OpenDepthImageFrame();
             var skeletonFrame = e.OpenSkeletonFrame();
@@ -57,7 +63,7 @@ namespace KinectCOM
             skeletonFrame.CopySkeletonDataTo(_skeletons);
 
 // ReSharper disable PossibleNullReferenceException
-            _colorStreamManager.Update(rgbFrame);
+            ColorStreamManager.Update(rgbFrame);
 // ReSharper restore PossibleNullReferenceException
 
             FindUserToTrack();
@@ -69,16 +75,21 @@ namespace KinectCOM
 
         private void FindUserToTrack()
         {
-            int matchingSkeleton = -1;
-            if(Strategy == CLOSEST_SKELETON)
+            int matchingSkeleton;
+            switch (Strategy)
             {
-                matchingSkeleton = FindClosestSkeleton();
-            }else if(Strategy == RECOGNIZED_FIRST)
-            {
-                matchingSkeleton = FindCurrentUser(false);
-            }else if(Strategy == RECOGNIZED_ONLY)
-            {
-                matchingSkeleton = FindCurrentUser(true);
+                case CLOSEST_SKELETON:
+                    matchingSkeleton = FindClosestSkeleton();
+                    break;
+                case RECOGNIZED_FIRST:
+                    matchingSkeleton = FindCurrentUser(false);
+                    break;
+                case RECOGNIZED_ONLY:
+                    matchingSkeleton = FindCurrentUser(true);
+                    break;
+                default:
+                    matchingSkeleton = FindClosestSkeleton();
+                    break;
             }
 
             SetTrackedSkeleton(matchingSkeleton);
@@ -86,47 +97,94 @@ namespace KinectCOM
 
         private void SetTrackedSkeleton(int matchingSkeleton)
         {
-            _activeSkeleton = matchingSkeleton;
+            if (matchingSkeleton == _activeSkeleton) return;
+            if(matchingSkeleton != -1 && _kinect != null && _kinect.GetSensor() != null){
+                Log.Info("Closest skeleton found. Starting tracking of id : "+matchingSkeleton);
+                _kinect.GetSensor().SkeletonStream.ChooseSkeletons(matchingSkeleton);
+                _kinectHandler.StartTracking(matchingSkeleton);
+                _kinectHandler.TrackingStarted(matchingSkeleton);
+                _activeSkeleton = matchingSkeleton;
+            }else 
+            {
+                Log.Info("No suitable skeleton found for tracking.");
+                _kinectHandler.StopTracking(_activeSkeleton);
+                _kinectHandler.TrackingStopped(matchingSkeleton);
+                _activeSkeleton = -1;
+            }
         }
 
         private int FindCurrentUser(bool userOnly)
         {
-            foreach (var skeleton in _skeletons)
+            if (_skeletons == null) return -1;
+            if (_skeletons.Any(skeleton => skeleton != null && skeleton.TrackingId == _activeSkeleton) && _currentUser.TrackingID == _activeSkeleton)
             {
-                if (skeleton.TrackingId == _activeSkeleton)
+                return _activeSkeleton;
+            }
+
+            if (_kinectHandler != null && ColorStreamManager != null)
+            {
+                float minDistance = float.MaxValue;
+                User closestUser = null;
+                IEnumerable<User> users = _kinectHandler.FindUsers(ColorStreamManager.Bitmap, _skeletons);
+                if(users != null)
                 {
+                    foreach(var user in users)
+                    {
+                        foreach(var skeleton in _skeletons)
+                        {
+                            if (user.TrackingID != skeleton.TrackingId) continue;
+                            
+                            var distance = getDistanceFromOrigin(skeleton.Position);
+                            
+                            if (distance >= minDistance) continue;
+                            
+                            minDistance = getDistanceFromOrigin(skeleton.Position);
+                            closestUser = user;
+                        }
+                    }
+
+                    _currentUser = closestUser;
+                    if (_currentUser != null) _activeSkeleton = _currentUser.TrackingID;
                     return _activeSkeleton;
                 }
+
+
             }
 
-            if (userOnly)
+            if (!userOnly)
             {
                 return FindClosestSkeleton();
-            }else
-            {
-                _kinectHandler.recognizeFace(_colorStreamManager.Bitmap);
             }
-
+                
             return -1;
+        }
+
+        private float getDistanceFromOrigin(SkeletonPoint skeleton)
+        {
+            //Log.Info("Getting Distance for skeleton with position: "+skeleton.X+","+skeleton.Z+","+skeleton.Z);
+            var x = skeleton.X;
+            var y = skeleton.Y;
+            var z = skeleton.Z;
+
+            return (float)Math.Sqrt(x * x + y * y + z * z);
         }
 
         private int FindClosestSkeleton()
         {
+            if (_skeletons == null) return -1;
             var minDistance = float.MaxValue;
-            var trackingID = int.MaxValue;
+            var trackingID =  -1;
             foreach(var skeleton in _skeletons)
             {
-                var x = skeleton.Position.X;
-                var y = skeleton.Position.Y;
-                var z = skeleton.Position.Z;
+                if (skeleton == null || skeleton.TrackingState == SkeletonTrackingState.NotTracked) continue;
 
-                var distance = x*x + y*y + z*z;
-
+                var distance = getDistanceFromOrigin(skeleton.Position);
                 if (minDistance <= distance) continue;
                 minDistance = distance;
                 trackingID = skeleton.TrackingId;
             }
 
+            
             return trackingID;
         }
 

@@ -18,27 +18,38 @@ namespace KinectCOM
         {
             try
             {
-                 _kinect = KinectSensor.KinectSensors[deviceId];
-                var parameters = new TransformSmoothParameters
-                                     {
-                                         Smoothing = 0.7f,
-                                         Correction = 0.3f,
-                                         Prediction = 0.4f,
-                                         JitterRadius = 1.0f,
-                                         MaxDeviationRadius = 0.5f
-                                     };
-
-
-                if (_kinect != null)
+                if(KinectSensor.KinectSensors.Count > 0)
                 {
-                    if (_kinect.SkeletonStream != null) _kinect.SkeletonStream.Enable(parameters);
-                    if (_kinect.ColorStream != null)
-                        _kinect.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
-                    if (_kinect.DepthStream != null)
-                        _kinect.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
-                    _kinect.Start();
-                    Log.Info("Kinect DevID:"+deviceId+" started");
+                    _kinect = KinectSensor.KinectSensors[deviceId];
+                    var parameters = new TransformSmoothParameters
+                    {
+                        Smoothing = 0.7f,
+                        Correction = 0.3f,
+                        Prediction = 0.4f,
+                        JitterRadius = 1.0f,
+                        MaxDeviationRadius = 0.5f
+                    };
+
+
+                    if (_kinect != null)
+                    {
+                        if (_kinect.SkeletonStream != null)
+                        {
+                            _kinect.SkeletonStream.Enable(parameters);
+                            _kinect.SkeletonStream.AppChoosesSkeletons = true;
+                        }
+                        if (_kinect.ColorStream != null)
+                            _kinect.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
+                        if (_kinect.DepthStream != null)
+                            _kinect.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
+                        _kinect.Start();
+                        Log.Info("Kinect DevID:" + deviceId + " started");
+                    }    
+                }else
+                {
+                    Log.Error("No Kinect device connected, or driver not loaded properly");
                 }
+
             }
             catch (Exception e)
             {

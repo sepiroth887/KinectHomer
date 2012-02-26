@@ -18,7 +18,7 @@ import kinect.kinectcom.impl.*;
  */
 public interface IUserEvents extends IDispatch
 {
-    public static final String INTERFACE_IDENTIFIER = "{A4EF185E-AD46-3E6F-BD8F-D5B2486970D5}";
+    public static final String INTERFACE_IDENTIFIER = "{616748E3-B919-3591-9C9E-87A22B6982E2}";
 
     public static final int DISPID_onPresenceDetected = 1;
     public static final int DISPID_onUserFound = 2;
@@ -30,6 +30,8 @@ public interface IUserEvents extends IDispatch
     public static final int DISPID_onContextSelected = 9;
     public static final int DISPID_onVoiceCommandDetected = 10;
     public static final int DISPID_onAddOnGestureValueChange = 11;
+    public static final int DISPID_onTrackingStarted = 12;
+    public static final int DISPID_onTrackingStopped = 13;
 
 
     /**
@@ -42,7 +44,7 @@ public interface IUserEvents extends IDispatch
      * 
      */
     void onUserFound(
-        BStr /*[in]*/ user,
+        BStr /*[in]*/ User,
         SingleFloat /*[in]*/ confidence,
         Int32 /*[in]*/ skeletonID);
 
@@ -50,7 +52,7 @@ public interface IUserEvents extends IDispatch
      * 
      */
     void onUserLost(
-        BStr /*[in]*/ user);
+        BStr /*[in]*/ User);
 
     /**
      * 
@@ -94,4 +96,16 @@ public interface IUserEvents extends IDispatch
      */
     void onAddOnGestureValueChange(
         SingleFloat /*[in]*/ value);
+
+    /**
+     * 
+     */
+    void onTrackingStarted(
+        Int32 /*[in]*/ skeletonID);
+
+    /**
+     * 
+     */
+    void onTrackingStopped(
+        Int32 /*[in]*/ skeletonID);
 }

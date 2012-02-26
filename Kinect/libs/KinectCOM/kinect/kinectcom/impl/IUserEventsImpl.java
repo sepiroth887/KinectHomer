@@ -17,7 +17,7 @@ import kinect.kinectcom.*;
 public class IUserEventsImpl extends IDispatchImpl
     implements IUserEvents
 {
-    public static final String INTERFACE_IDENTIFIER = "{A4EF185E-AD46-3E6F-BD8F-D5B2486970D5}";
+    public static final String INTERFACE_IDENTIFIER = "{616748E3-B919-3591-9C9E-87A22B6982E2}";
     private static final IID _iid = IID.create(INTERFACE_IDENTIFIER);
 
     public IUserEventsImpl()
@@ -62,13 +62,13 @@ public class IUserEventsImpl extends IDispatchImpl
      * 
      */
     public void onUserFound(
-        BStr /*[in]*/ user,
+        BStr /*[in]*/ User,
         SingleFloat /*[in]*/ confidence,
         Int32 /*[in]*/ skeletonID)
     {
 
         Parameter[] parameters = new Parameter[] {
-                user == null ? (Parameter)PTR_NULL : user,
+                User == null ? (Parameter)PTR_NULL : User,
                 confidence,
                 skeletonID
             };
@@ -80,11 +80,11 @@ public class IUserEventsImpl extends IDispatchImpl
      * 
      */
     public void onUserLost(
-        BStr /*[in]*/ user)
+        BStr /*[in]*/ User)
     {
 
         Parameter[] parameters = new Parameter[] {
-                user == null ? (Parameter)PTR_NULL : user
+                User == null ? (Parameter)PTR_NULL : User
             };
 
          Automation.invokeDispatch(this, "OnUserLost", parameters, void.class);
@@ -188,6 +188,34 @@ public class IUserEventsImpl extends IDispatchImpl
             };
 
          Automation.invokeDispatch(this, "OnAddOnGestureValueChange", parameters, void.class);
+    }
+
+    /**
+     * 
+     */
+    public void onTrackingStarted(
+        Int32 /*[in]*/ skeletonID)
+    {
+
+        Parameter[] parameters = new Parameter[] {
+                skeletonID
+            };
+
+         Automation.invokeDispatch(this, "OnTrackingStarted", parameters, void.class);
+    }
+
+    /**
+     * 
+     */
+    public void onTrackingStopped(
+        Int32 /*[in]*/ skeletonID)
+    {
+
+        Parameter[] parameters = new Parameter[] {
+                skeletonID
+            };
+
+         Automation.invokeDispatch(this, "OnTrackingStopped", parameters, void.class);
     }
 
     public IID getIID()

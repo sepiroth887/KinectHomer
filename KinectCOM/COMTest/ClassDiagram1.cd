@@ -10,7 +10,7 @@
   <Class Name="KinectCOM.Device" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="2.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CACAJCAAQNAQEAkALEAAIgABBRIEAgEAAAIAAkIBBIA=</HashCode>
+      <HashCode>CSCEJCAAQNAQUAkALAAAIAABBRoEAgEACAKAAkIFBIA=</HashCode>
       <FileName>Device.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.342" Collapsed="true" />
@@ -32,7 +32,7 @@
   <Class Name="KinectCOM.GestureProcessor" Collapsed="true">
     <Position X="5.75" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>QQBAAAAEyCEwEABACAoEgKCEAiABGgEQAkMBBCBBAAE=</HashCode>
+      <HashCode>QQBAAAAEyCEwEABAAAoEgKCEKCgBOoEQAkMQBCBBAAE=</HashCode>
       <FileName>GestureProcessor.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -46,7 +46,7 @@
   <Class Name="KinectCOM.KinectHandler" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="2.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CQMABBBAAEAUCAAIIgABFAIAIAgBBkAAkAIAABAZEAA=</HashCode>
+      <HashCode>iSMABBBAQGAUCAAIIgQBFAIAIAgBBkAAkAKAABAZEAA=</HashCode>
       <FileName>KinectHandler.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.243" Collapsed="true" />
@@ -54,14 +54,14 @@
   <Class Name="KinectCOM.ObjectPointer" Collapsed="true">
     <Position X="4" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAASCBAAAAAAAAAAAEBQAAAAIEACABAACiBBEAAg=</HashCode>
+      <HashCode>BQEACAgAACAAAIAQACIAAAAQAAggQAAUCEBAAAAEAIA=</HashCode>
       <FileName>ObjectPointer.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="DTWGestureRecognition.DtwGestureRecognizer" Collapsed="true">
+  <Class Name="KinectCOM.DtwGestureRecognizer" Collapsed="true">
     <Position X="4" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>gAAAIAAAAAAAAgBAAAAAAAAAAAIEDAAAUAAgBEAAAAA=</HashCode>
+      <HashCode>gAAAIAAAAAAAAgBAAAAAAAAAAAgEDAAAUAAgBEAAAAA=</HashCode>
       <FileName>DtwGestureRecognizer.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -82,14 +82,14 @@
   <Class Name="KinectCOM.FaceProcessor" Collapsed="true">
     <Position X="5.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CAAAACQAAAABAIDAAIA4JYEEQggBggAQrAKCAAfCAAA=</HashCode>
+      <HashCode>CAAAACQAAAABAIDAAIAwJYEEQggBggAQrAKCAAfCAAA=</HashCode>
       <FileName>FaceProcessor.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="KinectCOM.FileLoader" Collapsed="true">
     <Position X="2.25" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAgAAAAAAAAAAAAAgAAAAAAABAAAAAhAAAAABABA=</HashCode>
+      <HashCode>AAAAAgAAAAAAAAAAAAAgAAAAAAgBAAAAAhAAAAABABA=</HashCode>
       <FileName>FileLoader.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -100,24 +100,24 @@
       <FileName>RecognitionProcessor.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Kinect.UserFeature" Collapsed="true">
+  <Class Name="KinectCOM.User" Collapsed="true">
     <Position X="4" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>QAAAAAEAAAAAAAAAAAAAAAQgAIAAAAAAAAAAAAAQAAI=</HashCode>
-      <FileName>UserFeature.cs</FileName>
+      <HashCode>QAAAAAAAAAAAAACAAAAAAAQgAIAAABAAAAAAAAAQAAI=</HashCode>
+      <FileName>User.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="KinectCOM.IUserEvents" Collapsed="true">
     <Position X="4" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CAAAAAAAQAAAEAAACAAAAAAABAIAAAAAAAIAAkAABAA=</HashCode>
+      <HashCode>CAAEAAAAQAAAUAAACAAAAAAABAIAAAAAAAIAAkAABAA=</HashCode>
       <FileName>Device.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="KinectCOM.IKinect" Collapsed="true">
     <Position X="2.25" Y="4.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AACABAAACEEAAAABIAAAIAABAAIABAEQAAECAAAFBIA=</HashCode>
+      <HashCode>ASCABAAACEEAAAAhIAAAIAABAAIABAEQAAGCAAAFBIA=</HashCode>
       <FileName>IKinect.cs</FileName>
     </TypeIdentifier>
   </Interface>

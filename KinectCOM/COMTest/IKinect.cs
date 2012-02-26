@@ -1,7 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
-using Kinect;
-using Microsoft.Kinect;
 
 namespace KinectCOM
 {
@@ -14,9 +11,9 @@ namespace KinectCOM
         void LearnUser(int skeletonID);
         bool StartTracking(int skeletonID);
         void StopTracking(int skeletonID);
-        void UserDetected(UserFeature user);
+        void UserDetected(User user);
         void PresenceDetected(int skeletonID);
-        void UserLost(UserFeature user);
+        void UserLost(User user);
         void PresenceLost(int skeletonID);
 
         void GestureRecordCompleted(string gestureName, string ctxt);
@@ -38,5 +35,9 @@ namespace KinectCOM
         void StoreGestures();
 
         IEnumerable LoadGestures();
+        void SetTrackingStrategy(int strat);
+        void TrackingStarted(int matchingSkeleton);
+        void TrackingStopped(int matchingSkeleton);
+        string GetObjects();
     }
 }
