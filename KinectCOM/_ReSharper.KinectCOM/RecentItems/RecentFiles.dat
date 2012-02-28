@@ -1,52 +1,57 @@
 ﻿<RecentFiles>
   <RecentFiles>
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:FeatureProcessor.cs" caret="14306" fromTop="25" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:RecognitionProcessor.cs" caret="0" fromTop="0" />
     <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/d:Properties/f:AssemblyInfo.cs" caret="567" fromTop="11" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:User.cs" caret="824" fromTop="16" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:TrackingEngine.cs" caret="3576" fromTop="102" />
     <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:Gesture.cs" caret="0" fromTop="0" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:FileLoader.cs" caret="10222" fromTop="29" />
     <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:IKinect.cs" caret="25" fromTop="0" />
     <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:Device.cs" caret="5309" fromTop="10" />
     <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:KinectHandler.cs" caret="0" fromTop="0" />
     <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:ObjectPointer.cs" caret="7593" fromTop="126" />
     <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:GestureProcessor.cs" caret="0" fromTop="0" />
     <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:KinectData.cs" caret="493" fromTop="14" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:DtwGestureRecognizer.cs" caret="10023" fromTop="87" />
     <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:DataStore.cs" caret="5480" fromTop="33" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:FaceProcessor.cs" caret="22927" fromTop="11" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:DtwGestureRecognizer.cs" caret="10023" fromTop="87" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:User.cs" caret="0" fromTop="0" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:Skeleton2DdataCoordEventArgs.cs" caret="0" fromTop="0" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:FileLoader.cs" caret="10393" fromTop="19" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:Recognizer.cs" caret="156" fromTop="8" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:FaceDetector.cs" caret="2516" fromTop="16" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:FaceProcessor.cs" caret="9675" fromTop="39" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:FeatureProcessor.cs" caret="450" fromTop="0" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:BodyFeatureDetector.cs" caret="426" fromTop="8" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:RecognitionProcessor.cs" caret="4581" fromTop="4" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:RecognitionEngine.cs" caret="21" fromTop="0" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:TrackingEngine.cs" caret="4028" fromTop="11" />
   </RecentFiles>
   <RecentEdits>
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:GestureProcessor.cs" caret="2117" fromTop="3" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:GestureProcessor.cs" caret="2435" fromTop="12" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:GestureProcessor.cs" caret="2931" fromTop="10" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:GestureProcessor.cs" caret="10481" fromTop="13" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:GestureProcessor.cs" caret="10570" fromTop="17" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:GestureProcessor.cs" caret="12637" fromTop="13" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:GestureProcessor.cs" caret="12134" fromTop="7" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:GestureProcessor.cs" caret="12853" fromTop="15" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:ObjectPointer.cs" caret="1179" fromTop="8" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:ObjectPointer.cs" caret="1083" fromTop="21" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:ObjectPointer.cs" caret="1765" fromTop="18" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:ObjectPointer.cs" caret="2452" fromTop="17" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:ObjectPointer.cs" caret="2672" fromTop="11" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:ObjectPointer.cs" caret="3148" fromTop="17" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:ObjectPointer.cs" caret="3460" fromTop="18" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:ObjectPointer.cs" caret="3817" fromTop="17" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:ObjectPointer.cs" caret="4174" fromTop="19" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:ObjectPointer.cs" caret="4288" fromTop="15" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:ObjectPointer.cs" caret="4861" fromTop="14" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:ObjectPointer.cs" caret="5727" fromTop="13" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:ObjectPointer.cs" caret="6025" fromTop="5" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:ObjectPointer.cs" caret="6861" fromTop="9" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:ObjectPointer.cs" caret="7428" fromTop="14" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:DtwGestureRecognizer.cs" caret="13898" fromTop="346" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:DtwGestureRecognizer.cs" caret="13638" fromTop="12" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:DtwGestureRecognizer.cs" caret="13796" fromTop="17" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:DtwGestureRecognizer.cs" caret="13187" fromTop="12" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:DtwGestureRecognizer.cs" caret="13012" fromTop="7" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:DtwGestureRecognizer.cs" caret="10023" fromTop="9" />
-    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:FaceProcessor.cs" caret="22927" fromTop="11" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:RecognitionEngine.cs" caret="612" fromTop="16" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:RecognitionEngine.cs" caret="295" fromTop="6" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:RecognitionEngine.cs" caret="149" fromTop="1" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:BodyFeatureDetector.cs" caret="254" fromTop="10" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:BodyFeatureDetector.cs" caret="797" fromTop="14" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:BodyFeatureDetector.cs" caret="3762" fromTop="15" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:BodyFeatureDetector.cs" caret="3506" fromTop="16" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:BodyFeatureDetector.cs" caret="3473" fromTop="21" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:BodyFeatureDetector.cs" caret="3095" fromTop="10" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:BodyFeatureDetector.cs" caret="3522" fromTop="10" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:BodyFeatureDetector.cs" caret="1287" fromTop="14" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:BodyFeatureDetector.cs" caret="1509" fromTop="11" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:BodyFeatureDetector.cs" caret="2988" fromTop="37" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:BodyFeatureDetector.cs" caret="392" fromTop="4" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:BodyFeatureDetector.cs" caret="996" fromTop="11" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:RecognitionEngine.cs" caret="2362" fromTop="19" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:RecognitionEngine.cs" caret="1861" fromTop="7" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:RecognitionEngine.cs" caret="21" fromTop="0" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:TrackingEngine.cs" caret="4653" fromTop="0" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:TrackingEngine.cs" caret="1587" fromTop="15" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:TrackingEngine.cs" caret="5190" fromTop="8" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:TrackingEngine.cs" caret="5096" fromTop="4" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:TrackingEngine.cs" caret="2718" fromTop="13" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:TrackingEngine.cs" caret="2551" fromTop="12" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:TrackingEngine.cs" caret="1724" fromTop="13" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:TrackingEngine.cs" caret="2053" fromTop="13" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:TrackingEngine.cs" caret="6489" fromTop="9" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:TrackingEngine.cs" caret="852" fromTop="14" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:TrackingEngine.cs" caret="40" fromTop="1" />
+    <File id="A3B928E3-E751-4EA3-9139-EDBA9E3C583D/f:TrackingEngine.cs" caret="429" fromTop="14" />
   </RecentEdits>
 </RecentFiles>

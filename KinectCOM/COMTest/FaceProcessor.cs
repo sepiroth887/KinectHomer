@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using Emgu.CV;
 using Emgu.CV.CvEnum;
-using Emgu.CV.GPU;
 using Emgu.CV.Structure;
 using Microsoft.Kinect;
 using log4net;
@@ -16,16 +15,11 @@ namespace KinectCOM
 {
     internal class FaceProcessor
     {
-        private readonly HaarCascade _haar; // haarCascade used for CPU face detection
-        private readonly GpuCascadeClassifier _haarGpu; // haarCascade used for GPU face detection
+        
         private readonly KinectData _kinect; // reference to Kinect
-
-        private readonly List<Image<Gray, byte>> _faceList = new List<Image<Gray, byte>>();
-        // list of faces maintained during recognition / detection
 
         private readonly FeatureProcessor _featureProcessor; // reference to the FeatureProcessor
 
-        private readonly bool _hasCuda; // indicator of GPU capabilities
         private readonly RecognitionProcessor _recProcessor; // reference to the RecognitionProcessor
         private bool _isProcessing; // indicates state of this processor
         private BackgroundWorker _bw; // background worker to initialize this processor
@@ -50,6 +44,9 @@ namespace KinectCOM
 
         private long _rgbFrameTime; // timestamp of the last rgbFrame
 
+        private ArrayList _users;
+
+        private FaceDetector _faceDetector;
 
         private static readonly ILog Log = LogManager.GetLogger(typeof(FaceProcessor));
 
@@ -64,26 +61,9 @@ namespace KinectCOM
             _kinect = kinect;
             _featureProcessor = featureProcessor;
             _recProcessor = recProcessor;
-
-            try
-            {
-                // check if the GPU can work with CUDA support
-                _hasCuda = GpuInvoke.HasCuda;
-
-                // choose the appropriate haarCascade for face detection
-                if (_hasCuda)
-                {
-                    _haarGpu = new GpuCascadeClassifier(FileLoader.DefaultPath + "haarcascade_frontalface_default.xml");
-                }
-                else
-                {
-                    _haar = new HaarCascade(FileLoader.DefaultPath + "haarcascade_frontalface_default.xml");
-                }
-            }
-            catch (Exception ex)
-            {   
-                Log.Error("Couldn't create FaceProcessor",ex);
-            }
+            _users = new ArrayList();
+            _faceDetector = new FaceDetector();
+            
         }
 
         // init method is called during the prototype startup.
@@ -124,20 +104,7 @@ namespace KinectCOM
         // to detect a face in it. If one is found, that face is passed to the RecognitionProcessor instance.
         private void PassImage(Image<Bgr, byte> camImage)
         {
-            _isNew = false;
 
-            if ( _hasCuda)
-            {
-                DetectFaceGPU(camImage);
-            }
-            else
-            {
-                DetectFaceCpu(camImage);
-            }
-
-
-            if (_faceList == null || _faceList.Count == 0 || !_isNew) return;
-            if (_recProcessor != null) _recProcessor.LatestFace = _faceList[0];
         }
 
         /// <summary>
@@ -205,6 +172,7 @@ namespace KinectCOM
                 frame.CopyPixelDataTo(pixelData);
                 frame.Dispose();
             }
+
             var mystream = new MemoryStream(pixelData);
             var p = Image.FromStream(mystream);
             var img = new Bitmap(p);
@@ -235,90 +203,6 @@ namespace KinectCOM
         private void BwRunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             _isBwDone = true;
-        }
-
-        /// <summary>
-        /// Tries to detect a face inside an image using GPU processing. 
-        /// This is achieved by converting the image to grayscale and then to 
-        /// a GPUImage. Once a face is detected it is passed to the faceList.
-        /// And marked as new.
-        /// </summary>
-        /// <param name="image"></param>
-        private void DetectFaceGPU(Image<Bgr, byte> image)
-        {
-            if (image == null) return;
-            
-            var grayImage = image.Convert<Gray, byte>();
-
-            var grayGPUImage = new GpuImage<Gray, byte>(grayImage);
-
-
-            // do the detection and mark the startime for performance tracking.
-            Rectangle[] faces = null;
-            
-            try
-            {
-                if (_haarGpu != null)
-                {
-                    faces = _haarGpu.DetectMultiScale(grayGPUImage, 1.2, 4, new Size(image.Width/12, image.Height/12));
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Detecting face failed." ,ex);
-            }
-
-
-            if (_faceList != null) _faceList.Clear();
-            // if a face has been detected store each in the facelist and indicate there are new values in the list.
-
-            if (faces == null || !faces.Any()) return;
-            
-            foreach (var faceImg in faces.Select(grayGPUImage.GetSubRect).Where(faceImg => faceImg != null))
-            {
-                if (_faceList != null) _faceList.Add(faceImg.ToImage());
-            }
-            _isNew = true;
-            // mark the end time of the operation.
-            //var endTime = DateTime.Now - time;
-
-            //Console.WriteLine("Time to find face: " + endTime.Milliseconds + "ms");
-        }
-
-        /// <summary>
-        /// Same as detectFaceGPU only with CPU processing.
-        /// </summary>
-        /// <param name="image"></param>
-        private void DetectFaceCpu(Image<Bgr, byte> image)
-        {
-            if (image == null) return;
-            var grayImage = image.Convert<Gray, byte>();
-
-            MCvAvgComp[] faces = null;
-
-            try
-            {
-                if (_haar != null)
-                    faces = _haar.Detect(grayImage, 1.2, 4, HAAR_DETECTION_TYPE.DO_CANNY_PRUNING,
-                                         new Size(image.Width/12, image.Height/12));
-            }
-            catch (Exception ex)
-            {
-                Log.Error("Detecting face failed.", ex);   
-            }
-
-            if (_faceList != null) _faceList.Clear();
-
-            if (faces == null || !faces.Any()) return;
-
-            foreach (var face in faces)
-            {
-                if (grayImage != null && _faceList != null)
-                {
-                    grayImage.ROI = face.rect;
-                    _faceList.Add(grayImage.Copy());
-                }
-            }
         }
 
         /// <summary>
@@ -388,7 +272,7 @@ namespace KinectCOM
             // create a dictionary to hold both arrays and pass store it on the HDD.
             var database = new Dictionary<Image<Gray, byte>[], string[]> {{images, labels}};
 
-            FileLoader.SaveFaceDB(database, "../../FaceDB");
+            FileLoader.SaveFaceDB(database);
         }
 
 
@@ -568,16 +452,6 @@ namespace KinectCOM
                 // otherwise start recognition in the background.
                 if (_recognizerWorker != null) _recognizerWorker.RunWorkerAsync(faces);
             }
-        }
-
-        internal User RecognizeFace(System.Windows.Media.Imaging.WriteableBitmap writeableBitmap)
-        {
-            //@TODO identify faces and associate users to skeletons... tough luck...
-            if(_hasCuda)
-            {
-                
-            }
-            return null;
         }
     }
 }

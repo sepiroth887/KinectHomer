@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
-using Kinect;
 using Kinect.Toolbox;
 using Microsoft.Kinect;
 using log4net;
@@ -13,6 +12,7 @@ namespace KinectCOM
         private static readonly ILog Log = LogManager.GetLogger(typeof(TrackingEngine));
         private readonly KinectData _kinect;
         private readonly KinectHandler _kinectHandler;
+        private readonly RecognitionEngine _recognitionEngine;
 
         private const int CLOSEST_SKELETON = 0x0;
         private const int RECOGNIZED_FIRST = 0x1;
@@ -22,8 +22,10 @@ namespace KinectCOM
 
         private Skeleton[] _skeletons;
         private int _activeSkeleton;
-
         private User _currentUser;
+        private readonly ArrayList _users;
+        private byte[] _pixelData;
+
 
         public TrackingEngine(KinectData kinect, KinectHandler kinectHandler)
         {
@@ -37,16 +39,22 @@ namespace KinectCOM
                 var kinectSensor = _kinect.GetSensor();
                 if (kinectSensor != null)
                     kinectSensor.AllFramesReady+=TrackingEngineAllFramesReady;
+                _recognitionEngine = new RecognitionEngine(kinect);
             }
             _activeSkeleton = -1;
+            _users = new ArrayList();
             Log.Info("Tracking Engine Started");
         }
 
-        private void CheckArrayIsSet(int skeletonLenght)
+        private void CheckArrayIsSet(int skeletonLenght, int rgbLength)
         {
             if(_skeletons == null || _skeletons.Length != skeletonLenght)
             {
                 _skeletons = new Skeleton[skeletonLenght];
+            }
+            if (_pixelData == null || _pixelData.Length != rgbLength)
+            {
+                _pixelData = new byte[rgbLength];
             }
         }
 
@@ -59,11 +67,11 @@ namespace KinectCOM
 
             if (rgbFrame == null || depthFrame == null || skeletonFrame == null) return;
 
-            CheckArrayIsSet(skeletonFrame.SkeletonArrayLength);
+            CheckArrayIsSet(skeletonFrame.SkeletonArrayLength,rgbFrame.PixelDataLength);
             skeletonFrame.CopySkeletonDataTo(_skeletons);
 
 // ReSharper disable PossibleNullReferenceException
-            ColorStreamManager.Update(rgbFrame);
+            rgbFrame.CopyPixelDataTo(_pixelData);
 // ReSharper restore PossibleNullReferenceException
 
             FindUserToTrack();
@@ -125,10 +133,12 @@ namespace KinectCOM
             {
                 float minDistance = float.MaxValue;
                 User closestUser = null;
-                IEnumerable<User> users = _kinectHandler.FindUsers(ColorStreamManager.Bitmap, _skeletons);
-                if(users != null)
+
+                DetectUsers();
+
+                if(_users != null)
                 {
-                    foreach(var user in users)
+                    foreach(User user in _users)
                     {
                         foreach(var skeleton in _skeletons)
                         {
@@ -157,6 +167,15 @@ namespace KinectCOM
             }
                 
             return -1;
+        }
+
+        private void DetectUsers()
+        {
+            foreach(var skel in _skeletons)
+            {
+                if (_pixelData != null)
+                    _recognitionEngine.Recognize(skel, Coding4Fun.Kinect.WinForm.BitmapExtensions.ToBitmap(_pixelData,640,480));
+            }
         }
 
         private float getDistanceFromOrigin(SkeletonPoint skeleton)

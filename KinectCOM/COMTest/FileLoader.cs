@@ -292,5 +292,11 @@ namespace KinectCOM
             File.WriteAllText(DefaultPath + "gestures.sav", gestureData);
             Log.Debug("Gestures saved");
         }
+
+        public static void SaveFaceDB(Dictionary<Image<Gray, byte>[], string[]> database)
+        {
+            SaveFaceDB(database,DefaultPath+"FaceDB");
+            Log.Debug("Face database saved");
+        }
     }
 }
