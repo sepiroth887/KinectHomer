@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Kinect.Toolbox;
 using Microsoft.Kinect;
@@ -18,14 +19,17 @@ namespace KinectCOM
         private const int RECOGNIZED_FIRST = 0x1;
         private const int RECOGNIZED_ONLY = 0x2;
 
-        private static readonly ColorStreamManager ColorStreamManager = new ColorStreamManager();
-
         private Skeleton[] _skeletons;
         private int _activeSkeleton;
-        private User _currentUser;
-        private readonly ArrayList _users;
         private byte[] _pixelData;
 
+        private readonly object lockObj = new object();
+
+        private readonly Dictionary<int, User> _users = new Dictionary<int, User>();
+
+        private readonly SkeletonHandler _skeletonHandler = new SkeletonHandler();
+
+        private volatile bool isRecRequired = false;
 
         public TrackingEngine(KinectData kinect, KinectHandler kinectHandler)
         {
@@ -42,7 +46,6 @@ namespace KinectCOM
                 _recognitionEngine = new RecognitionEngine(kinect);
             }
             _activeSkeleton = -1;
-            _users = new ArrayList();
             Log.Info("Tracking Engine Started");
         }
 
@@ -60,25 +63,60 @@ namespace KinectCOM
 
         private void TrackingEngineAllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
-            if(e == null) return;
-            var rgbFrame = e.OpenColorImageFrame();
-            var depthFrame = e.OpenDepthImageFrame();
-            var skeletonFrame = e.OpenSkeletonFrame();
+            lock (lockObj)
+            {
+                if (e == null) return;
+                var rgbFrame = e.OpenColorImageFrame();
+                var depthFrame = e.OpenDepthImageFrame();
+                var skeletonFrame = e.OpenSkeletonFrame();
 
-            if (rgbFrame == null || depthFrame == null || skeletonFrame == null) return;
+                if (rgbFrame == null || depthFrame == null || skeletonFrame == null) return;
 
-            CheckArrayIsSet(skeletonFrame.SkeletonArrayLength,rgbFrame.PixelDataLength);
-            skeletonFrame.CopySkeletonDataTo(_skeletons);
+                CheckArrayIsSet(skeletonFrame.SkeletonArrayLength, rgbFrame.PixelDataLength);
+                skeletonFrame.CopySkeletonDataTo(_skeletons);
 
-// ReSharper disable PossibleNullReferenceException
-            rgbFrame.CopyPixelDataTo(_pixelData);
-// ReSharper restore PossibleNullReferenceException
+                _skeletonHandler.UpdateSkeletons(_skeletons);
 
-            FindUserToTrack();
+                if (_skeletonHandler.LostSkeletons().Count != 0)
+                {
+                    var oldSkels = _skeletonHandler.LostSkeletons();
 
-            rgbFrame.Dispose();
-            skeletonFrame.Dispose();
-            depthFrame.Dispose();
+                    foreach (Skeleton skeleton in oldSkels)
+                    {
+                        _kinectHandler.PresenceDetected(skeleton.TrackingId);
+                        if(_users.ContainsKey(skeleton.TrackingId))
+                        {
+                            if(_users[skeleton.TrackingId].IsActive)
+                            {
+                                isRecRequired = true;
+                            }
+                            _users.Remove(skeleton.TrackingId);
+                        }
+                        
+
+                    }
+                }
+
+                if (_skeletonHandler.NewSkeletons().Count != 0)
+                {
+                    var newSkels = _skeletonHandler.NewSkeletons();
+
+                    foreach (Skeleton skeleton in newSkels)
+                    {
+                        _kinectHandler.PresenceLost(skeleton.TrackingId);
+                    }
+                }
+
+                // ReSharper disable PossibleNullReferenceException
+                rgbFrame.CopyPixelDataTo(_pixelData);
+                // ReSharper restore PossibleNullReferenceException
+
+                FindUserToTrack();
+
+                rgbFrame.Dispose();
+                skeletonFrame.Dispose();
+                depthFrame.Dispose();
+            }
         }
 
         private void FindUserToTrack()
@@ -123,45 +161,58 @@ namespace KinectCOM
 
         private int FindCurrentUser(bool userOnly)
         {
+            // no skeletons = no users to find so return
             if (_skeletons == null) return -1;
-            if (_skeletons.Any(skeleton => skeleton != null && skeleton.TrackingId == _activeSkeleton) && _currentUser.TrackingID == _activeSkeleton)
+            // skeletons present and one marked as active
+            if (_skeletons.Any(skeleton => skeleton != null && skeleton.TrackingId == _activeSkeleton))
             {
-                return _activeSkeleton;
+                // and is a user marked as active previously
+                if(_users[_activeSkeleton] != null && ( _users[_activeSkeleton].IsActive || isRecRequired ))
+                    // no change to the current user
+                    return _activeSkeleton;
             }
 
-            if (_kinectHandler != null && ColorStreamManager != null)
+            // nothing tracked or no user detected yet
+
+            int matchedUser = -1;
+            if (_kinectHandler != null )
             {
-                float minDistance = float.MaxValue;
-                User closestUser = null;
-
-                DetectUsers();
-
-                if(_users != null)
+                if(isRecRequired && _users.ContainsKey(_activeSkeleton))
                 {
-                    foreach(User user in _users)
+                    Skeleton skel = null;
+                    User user = _users[_activeSkeleton];
+                    foreach(Skeleton skeleton in _skeletons)
                     {
-                        foreach(var skeleton in _skeletons)
+                        if(skeleton.TrackingId == _activeSkeleton && skeleton.TrackingState == SkeletonTrackingState.Tracked)
                         {
-                            if (user.TrackingID != skeleton.TrackingId) continue;
-                            
-                            var distance = getDistanceFromOrigin(skeleton.Position);
-                            
-                            if (distance >= minDistance) continue;
-                            
-                            minDistance = getDistanceFromOrigin(skeleton.Position);
-                            closestUser = user;
+                            skel = skeleton;
                         }
                     }
 
-                    _currentUser = closestUser;
-                    if (_currentUser != null) _activeSkeleton = _currentUser.TrackingID;
-                    return _activeSkeleton;
+
+                    if (skel != null){
+                       
+                        _recognitionEngine.Recognize(skel, Coding4Fun.Kinect.WinForm.BitmapExtensions.ToBitmap(_pixelData,640,480), user);
+                    }
+
+                    if(user != null)
+                    {
+                        if(!"".Equals(user.Name))
+                        {
+                            user.TrackingID = skel.TrackingId;
+                            user.IsActive = true;
+                            isRecRequired = false;
+
+                            _users[user.TrackingID] = user;
+                            return user.TrackingID;
+                        }
+                    }
                 }
-
-
+                matchedUser = DetectUsers();
             }
 
-            if (!userOnly)
+            // still no user found, so fallback to closest skeleton tracking if using RECOGNIZED_FIRST strategy
+            if (!userOnly && matchedUser == -1)
             {
                 return FindClosestSkeleton();
             }
@@ -169,13 +220,23 @@ namespace KinectCOM
             return -1;
         }
 
-        private void DetectUsers()
+        private int DetectUsers()
         {
-            foreach(var skel in _skeletons)
+            var mostAttempts = 0;
+            User userToRecognizeNext = null;
+           foreach(var user in _users)
+           {
+               if(user.Value.Attempts > mostAttempts && user.Value.Attempts < User.MAX_ATTEMPTS)
+               {
+                   mostAttempts = user.Value.Attempts;
+                   userToRecognizeNext = user.Value;
+               }
+           }
+            if(userToRecognizeNext != null)
             {
-                if (_pixelData != null)
-                    _recognitionEngine.Recognize(skel, Coding4Fun.Kinect.WinForm.BitmapExtensions.ToBitmap(_pixelData,640,480));
+                return userToRecognizeNext.TrackingID;
             }
+            return -1;
         }
 
         private float getDistanceFromOrigin(SkeletonPoint skeleton)

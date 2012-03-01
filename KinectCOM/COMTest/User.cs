@@ -5,11 +5,15 @@ namespace KinectCOM
 {
     public class User
     {
+        public const int MAX_ATTEMPTS = 3;
+
         public User()
         {
             HipHeight = 0;
             ShoulderWidth = 0;
             ArmLength = 0;
+            IsActive = false;
+            Attempts = 0;
         }
 
         public User(double hHeight, double sWidth, double aLength)
@@ -34,6 +38,10 @@ namespace KinectCOM
         public float FaceConfidence { get; set; }
 
         public int TrackingID { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public int Attempts { get; set; }
 
     }
 }

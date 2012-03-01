@@ -122,6 +122,7 @@
     <Compile Include="Recognizer.cs" />
     <Compile Include="Skeleton2DdataCoordEventArgs.cs" />
     <Compile Include="Skeleton2DDataExtract.cs" />
+    <Compile Include="SkeletonHandler.cs" />
     <Compile Include="TrackingEngine.cs" />
     <Compile Include="User.cs" />
   </ItemGroup>

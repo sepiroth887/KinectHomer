@@ -45,7 +45,7 @@ namespace KinectCOM
             return null;
         }
 
-        public User Recognize(Skeleton skel,Bitmap image)
+        public User Recognize(Skeleton skel, Bitmap image, User user)
         {
             var headPos = _kinect.GetSensor().MapSkeletonPointToColor(skel.Joints[JointType.Head].Position,
                                                         ColorImageFormat.RgbResolution640x480Fps30);
@@ -67,14 +67,15 @@ namespace KinectCOM
 
             if(userName != null)
             {
-                var user = new User {TrackingID = skel.TrackingId, Name = userName};
+                user.Name = userName;
 
                 if (_featureDetector != null) user = _featureDetector.ValidateUser(user, skel);
-
+                user.Attempts++;
                 return user;
             }
-            var alternateUser = _featureDetector.ValidateUser(new User(), skel);
+            var alternateUser = _featureDetector.ValidateUser(user, skel);
             alternateUser.TrackingID = skel.TrackingId;
+            user.Attempts++;
             return alternateUser;
         }
 
