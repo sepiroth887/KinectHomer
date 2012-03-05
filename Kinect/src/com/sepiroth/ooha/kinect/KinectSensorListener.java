@@ -14,6 +14,7 @@ import com.jniwrapper.win32.automation.impl.IDispatchImpl;
 import com.jniwrapper.win32.automation.server.IDispatchVTBL;
 import com.jniwrapper.win32.automation.types.BStr;
 import com.jniwrapper.win32.automation.types.ExcepInfo;
+import com.jniwrapper.win32.automation.types.VariantBool;
 import com.jniwrapper.win32.com.ComException;
 import com.jniwrapper.win32.com.ComFunctions;
 import com.jniwrapper.win32.com.IClassFactory;
@@ -53,14 +54,14 @@ public class KinectSensorListener {
 	}
 	
 	public void fireAction(String gestureName,String context){
-			if(gestureModel == null){
+		if(gestureModel == null){
 				gestureModel = kinectComponent.getGestureModel();
-			}
-		 Gesture g = null;
+		}
+		Gesture g = null;
 		 
-		 g = gestureModel.findGesture(gestureName, context);
+		g = gestureModel.findGesture(gestureName, context);
 		 
-		 if(g != null) g.triggerAction();
+		if(g != null) g.triggerAction();
 	}
 	
 	private void connect() throws Exception{
@@ -91,8 +92,7 @@ public class KinectSensorListener {
 		comDevice.uninit();
 		
 		ComFunctions.coUninitialize();
-		
-		
+
 	}
 	
 	public void recordGesture(String gestureName, String ctxt){
@@ -168,5 +168,9 @@ public class KinectSensorListener {
 		String[] objects = obj.split(";");
 		
 		return objects;
+	}
+
+	public void setHandConfig(boolean selected) {
+		comDevice.setDefaultHand(new VariantBool(selected));
 	}
 }

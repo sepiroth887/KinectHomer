@@ -16,12 +16,13 @@ import uk.ac.stir.cs.homer.serviceDatabase.HomerDatabase;
 
 import com.jniwrapper.Int32;
 import com.jniwrapper.win32.automation.types.BStr;
+import com.sepiroth.ooha.kinect.gesture.Gesture;
 import com.sepiroth.ooha.kinect.gesture.GestureListModel;
 
 public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 	
 
-	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static final Logger logger = LoggerFactory.getLogger(KinectSensorComponent.class);
 	private KinectSensorListener kinectSensorListener;
 	static final String KINECT_SENSOR  = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "KINECT SENSOR");
 	
@@ -155,5 +156,20 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 
 	public String[] getObjects() {
 		return kinectSensorListener.getObjects();
+	}
+
+	public void setHandConfig(boolean selected) {
+		kinectSensorListener.setHandConfig(selected);
+	}
+
+	public void loadGestureBindings() {
+		
+	}
+
+	public void storeGestureBindings() {
+		for(Gesture g : (Gesture[])gestureModel.toArray()){
+			
+		}
+			
 	}
 }

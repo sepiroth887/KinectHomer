@@ -56,6 +56,7 @@ namespace KinectCOM
         private SkeletonPoint _lastPoint;
         private float _rateOfChange;
         private SkeletonPoint _startPoint;
+        private bool _defaultHand = true;
         private static readonly ILog Log = LogManager.GetLogger(typeof(GestureProcessor));
 
         public GestureProcessor(IKinect kinectHandler, KinectData kinect)
@@ -100,7 +101,7 @@ namespace KinectCOM
             sFrame.Dispose();
             foreach (var skeleton in skeletons.Where(skeleton => skeleton != null && skeleton.TrackingId == _activeUser))
             {
-                Skeleton2DDataExtract.ProcessData(skeleton);
+                Skeleton2DDataExtract.ProcessData(skeleton, _defaultHand);
                 if (!_isRecording)
                     if (_pointer != null) _pointer.FindContext(skeleton);
                 if (_addOnGesture)
@@ -375,6 +376,11 @@ namespace KinectCOM
             if (_pointer != null) 
                 return ObjectPointer.ReturnLastContext();
             return -1;
+        }
+
+        public void SetDefaultHand(bool def)
+        {
+            _defaultHand = def;
         }
     }
 }

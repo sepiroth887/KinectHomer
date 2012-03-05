@@ -23,6 +23,7 @@ public class Activator implements BundleActivator {
 		final HomerDatabase database = ServiceUtils.getService(context, HomerDatabase.class);
 		kinect = new KinectSensorComponent(database);
 		kinect.setUI(new KinectUI(kinect));
+		kinect.loadGestureBindings();
 		ComponentGateway.Singleton.get().registerComponent(kinect);
 		
 	}
@@ -33,5 +34,6 @@ public class Activator implements BundleActivator {
 	@Override
 	public void stop(BundleContext context) throws Exception {
 		kinect.storeGestures();
+		kinect.storeGestureBindings();
 	}
 }

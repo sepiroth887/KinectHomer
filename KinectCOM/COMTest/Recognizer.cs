@@ -16,7 +16,7 @@ namespace KinectCOM
         public Recognizer()
         {
 
-            Dictionary<Image<Gray, byte>[], String[]> db = FileLoader.LoadFaceDB("FaceDB");
+            var db = FileLoader.LoadFaceDB("FaceDB");
 
             if (db == null) return;
 
@@ -28,8 +28,8 @@ namespace KinectCOM
                    _labels = item.Value;
                }else
                {
-                   _images = _images.Concat(item.Key).ToArray();
-                   _labels = _labels.Concat(item.Value).ToArray();
+                   if (_images != null) _images = _images.Concat(item.Key).ToArray();
+                   if (_labels != null) _labels = _labels.Concat(item.Value).ToArray();
                }
             }
             var termCrit = new MCvTermCriteria(32, 0.001);
@@ -50,8 +50,9 @@ namespace KinectCOM
 
         public void TrainFace(Image<Gray,byte>face,String name)
         {
-            _images = _images.Concat(new Image<Gray, byte>[] { face }).ToArray();
-            _labels = _labels.Concat(new String[] { name }).ToArray();
+            if (face == null || name == null) return;
+            _images = _images.Concat(new[] { face }).ToArray();
+            _labels = _labels.Concat(new[] { name }).ToArray();
 
             var termCrit = new MCvTermCriteria(32, 0.001);
             _recognizer = new EigenObjectRecognizer(_images, _labels, 2000, ref termCrit);

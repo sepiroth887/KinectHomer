@@ -9,12 +9,11 @@ namespace KinectCOM
 {
     class SkeletonHandler
     {
-        private Skeleton[] _currentSkeletons;
         private Skeleton[] _previousSkeletons;
-        private ArrayList _lostSkeletons;
-        private ArrayList _newSkeletons;
+        private readonly ArrayList _lostSkeletons;
+        private readonly ArrayList _newSkeletons;
 
-        private readonly object lockObj = new object();
+        private readonly object _lockObj = new object();
         public SkeletonHandler()
         {
             _lostSkeletons = new ArrayList();
@@ -24,7 +23,7 @@ namespace KinectCOM
         public void UpdateSkeletons(Skeleton[] skeletons)
         {
             if (skeletons == null) return;
-            lock(lockObj)
+            lock(_lockObj)
             {
                 if (_previousSkeletons == null)
                 {
@@ -65,7 +64,7 @@ namespace KinectCOM
 
         public ArrayList LostSkeletons()
         {
-            lock(lockObj)
+            lock(_lockObj)
             {
                 return _lostSkeletons;
             }
@@ -73,7 +72,7 @@ namespace KinectCOM
 
         public ArrayList NewSkeletons()
         {
-            lock(lockObj)
+            lock(_lockObj)
             {
                 return _newSkeletons;
             }

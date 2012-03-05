@@ -122,6 +122,9 @@ namespace KinectCOM
         [DispId(22)]
         string GetObjects();
 
+        [DispId(23)]
+        void SetDefaultHand(bool def);
+
         [DispId(42)]
         Boolean Init();
 
@@ -138,6 +141,11 @@ namespace KinectCOM
         private KinectData _kinect;
         private static readonly ILog Log = LogManager.GetLogger(typeof(KinectData));
         #region _Device Members
+
+        public void SetDefaultHand(bool def)
+        {
+            _kHandler.SetDefaultHand(def);
+        }
 
         Boolean IDevice.Init()
         {

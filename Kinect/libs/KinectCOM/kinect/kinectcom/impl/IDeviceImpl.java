@@ -17,7 +17,7 @@ import kinect.kinectcom.*;
 public class IDeviceImpl extends IDispatchImpl
     implements IDevice
 {
-    public static final String INTERFACE_IDENTIFIER = "{ABF23968-C7BF-3ED0-B967-A7C0A776A3EC}";
+    public static final String INTERFACE_IDENTIFIER = "{E9BAEF73-450E-3ADA-92CE-E8B117F39842}";
     private static final IID _iid = IID.create(INTERFACE_IDENTIFIER);
 
     public IDeviceImpl()
@@ -246,8 +246,22 @@ public class IDeviceImpl extends IDispatchImpl
 
         Parameter[] parameters = new Parameter[0];
 
-         Object result = Automation.invokeDispatch(this, "getObjects", parameters, BStr.class);
+         Object result = Automation.invokeDispatch(this, "GetObjects", parameters, BStr.class);
         return (BStr) result;
+    }
+
+    /**
+     * 
+     */
+    public void setDefaultHand(
+        VariantBool /*[in]*/ def)
+    {
+
+        Parameter[] parameters = new Parameter[] {
+                def
+            };
+
+         Automation.invokeDispatch(this, "SetDefaultHand", parameters, void.class);
     }
 
     /**

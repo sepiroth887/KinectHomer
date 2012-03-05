@@ -47,18 +47,9 @@ namespace KinectCOM
 
         public User Recognize(Skeleton skel, Bitmap image, User user)
         {
-            var headPos = _kinect.GetSensor().MapSkeletonPointToColor(skel.Joints[JointType.Head].Position,
-                                                        ColorImageFormat.RgbResolution640x480Fps30);
+            var faces = FindFace(skel, image);
 
-            const int recSize = 80;
-
-            var img = new Image<Bgr, byte>(image) {ROI = new Rectangle(headPos.X-recSize/2,headPos.Y-recSize/2,recSize,recSize)};
-
-            var processedImg = PreProcess(img);
-
-            var faces = _faceDetector.DetectFaces(processedImg);
-
-            if(faces != null || faces.Length > 1)
+            if(faces == null)
             {
                 return null;
             }
@@ -79,5 +70,26 @@ namespace KinectCOM
             return alternateUser;
         }
 
+        private Image<Gray,byte>[] FindFace(Skeleton skel, Bitmap image)
+        {
+            var headPos = _kinect.GetSensor().MapSkeletonPointToColor(skel.Joints[JointType.Head].Position,
+                                                         ColorImageFormat.RgbResolution640x480Fps30);
+
+            const int recSize = 80;
+
+            var img = new Image<Bgr, byte>(image) { ROI = new Rectangle(headPos.X - recSize / 2, headPos.Y - recSize / 2, recSize, recSize) };
+
+            var processedImg = PreProcess(img);
+
+            var faces = _faceDetector.DetectFaces(processedImg);
+
+            return faces;
+        }
+
+        public void Train(string name, Skeleton matchingSkeleton,Bitmap img)
+        {
+            _featureDetector.AddUser(name,matchingSkeleton);
+            _recognizer.TrainFace(FindFace(matchingSkeleton,img)[0],name);
+        }
     }
 }

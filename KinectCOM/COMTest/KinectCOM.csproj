@@ -102,7 +102,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BodyFeatureDetector.cs" />
-    <Compile Include="DataStore.cs" />
     <Compile Include="Device.cs" />
     <Compile Include="DtwGestureRecognizer.cs" />
     <Compile Include="FaceDetector.cs" />

@@ -79,45 +79,16 @@ public class IKinectImpl extends IDispatchImpl
     /**
      * 
      */
-    public void updateFace()
+    public void learnUser(
+        BStr /*[in]*/ name,
+        Int32 /*[in]*/ skeletonID)
         throws ComException
     {
        invokeStandardVirtualMethod(
             9,
             Function.STDCALL_CALLING_CONVENTION,
-            new Parameter[0]
-        );
-    }
-
-    /**
-     * 
-     */
-    public void updateSkeletons(
-        IDictionary /*[in]*/ points,
-        _ArrayList /*[in]*/ users)
-        throws ComException
-    {
-       invokeStandardVirtualMethod(
-            10,
-            Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
-                points == null ? (Parameter)PTR_NULL : (Parameter)points,
-                users == null ? (Parameter)PTR_NULL : (Parameter)users
-            }
-        );
-    }
-
-    /**
-     * 
-     */
-    public void learnUser(
-        Int32 /*[in]*/ skeletonID)
-        throws ComException
-    {
-       invokeStandardVirtualMethod(
-            11,
-            Function.STDCALL_CALLING_CONVENTION,
-            new Parameter[] {
+                name == null ? (Parameter)PTR_NULL : name,
                 skeletonID
             }
         );
@@ -132,7 +103,7 @@ public class IKinectImpl extends IDispatchImpl
     {
         VariantBool pRetVal = new VariantBool();
        invokeStandardVirtualMethod(
-            12,
+            10,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
                 skeletonID,
@@ -150,71 +121,7 @@ public class IKinectImpl extends IDispatchImpl
         throws ComException
     {
        invokeStandardVirtualMethod(
-            13,
-            Function.STDCALL_CALLING_CONVENTION,
-            new Parameter[] {
-                skeletonID
-            }
-        );
-    }
-
-    /**
-     * 
-     */
-    public void userDetected(
-        _User /*[in]*/ User)
-        throws ComException
-    {
-       invokeStandardVirtualMethod(
-            14,
-            Function.STDCALL_CALLING_CONVENTION,
-            new Parameter[] {
-                User == null ? (Parameter)PTR_NULL : (Parameter)User
-            }
-        );
-    }
-
-    /**
-     * 
-     */
-    public void presenceDetected(
-        Int32 /*[in]*/ skeletonID)
-        throws ComException
-    {
-       invokeStandardVirtualMethod(
-            15,
-            Function.STDCALL_CALLING_CONVENTION,
-            new Parameter[] {
-                skeletonID
-            }
-        );
-    }
-
-    /**
-     * 
-     */
-    public void userLost(
-        _User /*[in]*/ User)
-        throws ComException
-    {
-       invokeStandardVirtualMethod(
-            16,
-            Function.STDCALL_CALLING_CONVENTION,
-            new Parameter[] {
-                User == null ? (Parameter)PTR_NULL : (Parameter)User
-            }
-        );
-    }
-
-    /**
-     * 
-     */
-    public void presenceLost(
-        Int32 /*[in]*/ skeletonID)
-        throws ComException
-    {
-       invokeStandardVirtualMethod(
-            17,
+            11,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
                 skeletonID
@@ -231,7 +138,7 @@ public class IKinectImpl extends IDispatchImpl
         throws ComException
     {
        invokeStandardVirtualMethod(
-            18,
+            12,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
                 gestureName == null ? (Parameter)PTR_NULL : gestureName,
@@ -248,7 +155,7 @@ public class IKinectImpl extends IDispatchImpl
         throws ComException
     {
        invokeStandardVirtualMethod(
-            19,
+            13,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
                 p
@@ -264,7 +171,7 @@ public class IKinectImpl extends IDispatchImpl
         throws ComException
     {
        invokeStandardVirtualMethod(
-            20,
+            14,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
                 Gesture == null ? (Parameter)PTR_NULL : Gesture
@@ -281,7 +188,7 @@ public class IKinectImpl extends IDispatchImpl
         throws ComException
     {
        invokeStandardVirtualMethod(
-            21,
+            15,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
                 gestureName == null ? (Parameter)PTR_NULL : gestureName,
@@ -298,7 +205,7 @@ public class IKinectImpl extends IDispatchImpl
         throws ComException
     {
        invokeStandardVirtualMethod(
-            22,
+            16,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
                 ctxt == null ? (Parameter)PTR_NULL : ctxt
@@ -313,7 +220,7 @@ public class IKinectImpl extends IDispatchImpl
         throws ComException
     {
        invokeStandardVirtualMethod(
-            23,
+            17,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[0]
         );
@@ -327,7 +234,7 @@ public class IKinectImpl extends IDispatchImpl
         throws ComException
     {
        invokeStandardVirtualMethod(
-            24,
+            18,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
                 value
@@ -343,7 +250,7 @@ public class IKinectImpl extends IDispatchImpl
         throws ComException
     {
        invokeStandardVirtualMethod(
-            25,
+            19,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
                 ctxt == null ? (Parameter)PTR_NULL : ctxt
@@ -358,7 +265,7 @@ public class IKinectImpl extends IDispatchImpl
         throws ComException
     {
        invokeStandardVirtualMethod(
-            26,
+            20,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[0]
         );
@@ -372,7 +279,7 @@ public class IKinectImpl extends IDispatchImpl
     {
         IEnumerableImpl pRetVal = new IEnumerableImpl();
        invokeStandardVirtualMethod(
-            27,
+            21,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
                 pRetVal == null ? (Parameter)PTR_NULL : new Pointer((Parameter)pRetVal)
@@ -389,7 +296,7 @@ public class IKinectImpl extends IDispatchImpl
         throws ComException
     {
        invokeStandardVirtualMethod(
-            28,
+            22,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
                 strat
@@ -405,7 +312,7 @@ public class IKinectImpl extends IDispatchImpl
         throws ComException
     {
        invokeStandardVirtualMethod(
-            29,
+            23,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
                 matchingSkeleton
@@ -421,7 +328,7 @@ public class IKinectImpl extends IDispatchImpl
         throws ComException
     {
        invokeStandardVirtualMethod(
-            30,
+            24,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
                 matchingSkeleton
@@ -437,13 +344,61 @@ public class IKinectImpl extends IDispatchImpl
     {
         BStr pRetVal = new BStr();
        invokeStandardVirtualMethod(
-            31,
+            25,
             Function.STDCALL_CALLING_CONVENTION,
             new Parameter[] {
                 pRetVal == null ? (Parameter)PTR_NULL : new Pointer(pRetVal)
             }
         );
         return pRetVal;
+    }
+
+    /**
+     * 
+     */
+    public void userDetected(
+        _User /*[in]*/ User)
+        throws ComException
+    {
+       invokeStandardVirtualMethod(
+            26,
+            Function.STDCALL_CALLING_CONVENTION,
+            new Parameter[] {
+                User == null ? (Parameter)PTR_NULL : (Parameter)User
+            }
+        );
+    }
+
+    /**
+     * 
+     */
+    public void userLost(
+        _User /*[in]*/ User)
+        throws ComException
+    {
+       invokeStandardVirtualMethod(
+            27,
+            Function.STDCALL_CALLING_CONVENTION,
+            new Parameter[] {
+                User == null ? (Parameter)PTR_NULL : (Parameter)User
+            }
+        );
+    }
+
+    /**
+     * 
+     */
+    public void setDefaultHand(
+        VariantBool /*[in]*/ def)
+        throws ComException
+    {
+       invokeStandardVirtualMethod(
+            28,
+            Function.STDCALL_CALLING_CONVENTION,
+            new Parameter[] {
+                def
+            }
+        );
     }
 
     public IID getIID()

@@ -153,6 +153,14 @@ public class IDeviceServer extends IDispatchServer
     /**
      * 
      */
+    public void setDefaultHand(
+        VariantBool /*[in]*/ def)
+    {
+    }
+
+    /**
+     * 
+     */
     public VariantBool init()
     {
         throw new ComException(HResult.E_NOTIMPL);

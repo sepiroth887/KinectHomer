@@ -46,30 +46,53 @@ namespace DTWGestureRecognition
         /// Crunches Kinect SDK's Skeleton Data and spits out a format more useful for DTW
         /// </summary>
         /// <param name="data">Kinect SDK's Skeleton Data</param>
-        public static void ProcessData(Skeleton data)
+        /// <param name="defaultHand"> </param>
+        public static void ProcessData(Skeleton data, bool defaultHand)
         {
             // Extract the coordinates of the points.
             var p = new Point[6];
             Point shoulderRight = new Point(), shoulderLeft = new Point();
             foreach (Joint j in data.Joints)
             {
-                switch (j.JointType)
+                if(defaultHand){
+                    switch (j.JointType)
+                    {
+                        case JointType.HandLeft:
+                            p[0] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.WristLeft:
+                            p[1] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.ElbowLeft:
+                            p[2] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.ShoulderLeft:
+                            shoulderLeft = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.ShoulderRight:
+                            shoulderRight = new Point(j.Position.X, j.Position.Y);
+                            break;
+                    }
+                }else
                 {
-                    case JointType.HandLeft:
-                        p[0] = new Point(j.Position.X, j.Position.Y);
-                        break;
-                    case JointType.WristLeft:
-                        p[1] = new Point(j.Position.X, j.Position.Y);
-                        break;
-                    case JointType.ElbowLeft:
-                        p[2] = new Point(j.Position.X, j.Position.Y);
-                        break;
-                    case JointType.ShoulderLeft:
-                        shoulderLeft = new Point(j.Position.X, j.Position.Y);
-                        break;
-                    case JointType.ShoulderRight:
-                        shoulderRight = new Point(j.Position.X, j.Position.Y);
-                        break;
+                    switch (j.JointType)
+                    {
+                        case JointType.HandRight:
+                            p[0] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.WristRight:
+                            p[1] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.ElbowRight:
+                            p[2] = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.ShoulderLeft:
+                            shoulderLeft = new Point(j.Position.X, j.Position.Y);
+                            break;
+                        case JointType.ShoulderRight:
+                            shoulderRight = new Point(j.Position.X, j.Position.Y);
+                            break;
+                    }
                 }
             }
 

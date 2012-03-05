@@ -8,7 +8,7 @@ using log4net;
 
 namespace KinectCOM
 {
-    internal class KinectHandler : IKinect
+    class KinectHandler : IKinect
     {
         private readonly Device _comInterface;
         private readonly string[] _commands;
@@ -20,7 +20,7 @@ namespace KinectCOM
         private GestureProcessor _gestureProcessor;
         private RecognitionProcessor _recognitionProcessor;
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly TrackingEngine _trackingEngine;
+        private TrackingEngine _trackingEngine;
         public KinectHandler(KinectData kinect, Device comInterface)
         {
             
@@ -36,12 +36,11 @@ namespace KinectCOM
                 return;
             }
 
-            _commands = DataStore.loadVoiceCommands();
+            _commands = FileLoader.LoadVoiceCommands();
             //Console.Out.WriteLine("VC loaded: " + commands.Length);
             if (_commands == null) return;
             _vocCom = new VoiceCommander(_commands);
             _vocCom.OrderDetected += VoiceCommandDetected;
-            _trackingEngine = new TrackingEngine(_kinect,this);
         }
 
         #region IKinect Members
@@ -55,26 +54,30 @@ namespace KinectCOM
                 return;
             }
             //initialize the FeatureProcessor
-            _featureProcessor = new FeatureProcessor(_kinect, this);
-            Log.Info("Feature processor created");
-            _featureProcessor.Init();
+            //_featureProcessor = new FeatureProcessor(_kinect, this);
+            //Log.Info("Feature processor created");
+            //_featureProcessor.Init();
 
             // initialize RecognitionProcessor
-            _recognitionProcessor = new RecognitionProcessor(this);
+            //_recognitionProcessor = new RecognitionProcessor(this);
             //Console.Out.WriteLine("Feature processor init complete");
-           Log.Info("Recognition processor created");
+            //Log.Info("Recognition processor created");
             //initialize the FaceProcessor
-            _faceProcessor = new FaceProcessor(_kinect, _featureProcessor, _recognitionProcessor);
-            Log.Info("Face processor created");
-            _faceProcessor.Init();
+            //_faceProcessor = new FaceProcessor(_kinect, _featureProcessor, _recognitionProcessor);
+            //Log.Info("Face processor created");
+            //_faceProcessor.Init();
 
             // pass face and feature processor references to the recongition processor.
-            _recognitionProcessor.SetFaceProcessor(_faceProcessor);
-            _recognitionProcessor.SetFeatureProcessor(_featureProcessor);
+            //_recognitionProcessor.SetFaceProcessor(_faceProcessor);
+            //_recognitionProcessor.SetFeatureProcessor(_featureProcessor);
 
             _gestureProcessor = new GestureProcessor(this, _kinect);
             Log.Info("Gesture processor created");
-            _featureProcessor.StartProcess();
+
+            _trackingEngine = new TrackingEngine(_kinect,this);
+
+            _trackingEngine.Strategy = TrackingEngine.RECOGNIZED_FIRST;
+            //_featureProcessor.StartProcess();
             if (_vocCom != null)
                 _vocCom.Start(_kinect.GetSensor());
             else
@@ -95,37 +98,6 @@ namespace KinectCOM
             }
         }
 
-        void IKinect.UpdateFace()
-        {
-            throw new NotImplementedException();
-        }
-
-        void IKinect.UpdateSkeletons(IDictionary points, ArrayList users)
-        {
-            ////Console.Out.WriteLine(users.Count+""+skeletons.Count);
-            if (users == null || _skeletons == null || users.Count == _skeletons.Count) return;
-
-            if (users.Count > _skeletons.Count)
-            {
-                // new user fire presence event
-
-                foreach (var newUser in users.Cast<int>().Where(newUser => !_skeletons.Contains(newUser)))
-                {
-                    _skeletons.Add(newUser);
-                    PresenceDetected(newUser);
-                    break;
-                }
-            }
-            else
-            {
-                foreach (var lostUser in _skeletons.Cast<int>().Where(lostUser => !users.Contains(lostUser)))
-                {
-                    _skeletons.Remove(lostUser);
-                    PresenceLost(lostUser);
-                    break;
-                }
-            }
-        }
 
         void IKinect.SetTrackingStrategy(int strat)
         {
@@ -142,9 +114,9 @@ namespace KinectCOM
             if (_gestureProcessor != null) _gestureProcessor.RecognizeGesture(ctxt);
         }
 
-        void IKinect.LearnUser(int skeletonID)
+        void IKinect.LearnUser(String name,int skeletonID)
         {
-            throw new NotImplementedException();
+            _trackingEngine.Train(name, skeletonID);
         }
 
         private bool AreProcessorsLoaded()
@@ -209,6 +181,11 @@ namespace KinectCOM
         void IKinect.UserLost(User user)
         {
             if (_comInterface != null && user != null) _comInterface.UserLost(user.Name);
+        }
+
+        public void SetDefaultHand(bool def)
+        {
+            _gestureProcessor.SetDefaultHand(def);
         }
 
 
@@ -285,6 +262,16 @@ namespace KinectCOM
         string IKinect.GetObjects()
         {
             return _gestureProcessor != null ? _gestureProcessor.GetObjects() : "";
+        }
+
+        public void UserDetected(User user)
+        {
+            _comInterface.UserFound(user.Name,user.Confidence,user.TrackingID);
+        }
+
+        public void UserLost(User user)
+        {
+            _comInterface.UserLost(user.Name);
         }
     }
 }

@@ -84,7 +84,7 @@ namespace KinectCOM
             }
 
             features.Add(FeatureType.Face, name);
-            new DataStore().storeUserData(features);
+            FileLoader.StoreUserData(features);
             Log.Info("User trained");
         }
 
@@ -96,7 +96,7 @@ namespace KinectCOM
 
         public void UserRecognized(User user)
         {
-            var users = DataStore.loadAllUsers();
+            var users = FileLoader.LoadAllUsers();
 
             if (user == null || users == null)
             {

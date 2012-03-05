@@ -31,6 +31,8 @@ import uk.ac.stir.cs.homer.serviceDatabase.queryBuilder.QueryObject;
 
 import com.sepiroth.ooha.kinect.gesture.Gesture;
 import com.sepiroth.ooha.kinect.gesture.GestureListModel;
+import javax.swing.JRadioButton;
+import javax.swing.JCheckBox;
 
 
 @SuppressWarnings("serial")
@@ -195,7 +197,7 @@ public class KinectUI extends JFrame{
 		
 		
 		JPanel gActionPanel = new JPanel();
-		gActionPanel.setBounds(234, 11, 222, 285);
+		gActionPanel.setBounds(234, 11, 222, 142);
 		gActionPanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		
 		JPanel gNamePanel = new JPanel();
@@ -220,7 +222,7 @@ public class KinectUI extends JFrame{
 		gPermPanel.add(gPermTF);
 		
 		JButton btnRecordGesture = new JButton("Record Gesture");
-		btnRecordGesture.setBounds(44, 251, 144, 23);
+		btnRecordGesture.setBounds(42, 108, 144, 23);
 		
 	
 		gNamePanel.setLayout(new GridLayout(0, 2, 0, 0));
@@ -256,6 +258,32 @@ public class KinectUI extends JFrame{
 
 		final JTextField gName = gNameTF;
 		final JTextField gPerm = gPermTF;
+		
+		JPanel infoPanel = new JPanel();
+		infoPanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		infoPanel.setBounds(234, 165, 222, 131);
+		gestureTab.add(infoPanel);
+		infoPanel.setLayout(null);
+		
+		JLabel lblPointingGesture = new JLabel("Pointing & Gesture hand settings:");
+		lblPointingGesture.setBounds(10, 11, 202, 14);
+		infoPanel.add(lblPointingGesture);
+		
+		
+		final JCheckBox chckbxUseRightHand = new JCheckBox("Applies to all gestures! ");
+		chckbxUseRightHand.setBounds(10, 50, 202, 23);
+		infoPanel.add(chckbxUseRightHand);
+		
+		JButton btnApply = new JButton("Apply");
+		btnApply.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				kinect.setHandConfig(chckbxUseRightHand.isSelected());
+			}
+		});
+		btnApply.setBounds(121, 101, 91, 23);
+		infoPanel.add(btnApply);
+		
+		
 		
 		
 		gestureList.addListSelectionListener(new ListSelectionListener(){

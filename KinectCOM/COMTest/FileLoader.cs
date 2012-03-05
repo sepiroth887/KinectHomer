@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using DTWGestureRecognition;
+using System.Xml;
 using Emgu.CV;
 using Emgu.CV.Structure;
 using Microsoft.Xna.Framework;
@@ -25,8 +25,12 @@ namespace KinectCOM
 
         #endregion
 
+
         public static readonly string DefaultPath =
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "\\KinectHomer\\";
+
+        private static readonly string UserXmlPath = DefaultPath + "users.xml";
+        private static readonly string VoiceCommandsPath = DefaultPath + "voiceCommands.cfg";
 
         /// <summary>
         /// static method to load all images of users from the hard disk.
@@ -70,12 +74,12 @@ namespace KinectCOM
 
         public static Dictionary<string, Vector3[]> LoadObj(string file, Units unit)
         {
-            Console.Out.WriteLine("loading objects in room");
+            Log.Info("loading objects in room");
             var dir = new DirectoryInfo(DefaultPath);
 
             if (!dir.Exists)
             {
-                Console.Out.WriteLine("Directory doesn't exist: "+DefaultPath);
+                Log.Error("Directory doesn't exist: "+DefaultPath);
                 return null;
             }
 
@@ -297,6 +301,161 @@ namespace KinectCOM
         {
             SaveFaceDB(database,DefaultPath+"FaceDB");
             Log.Debug("Face database saved");
+        }
+
+        public static void StoreUserData(Dictionary<FeatureType, string> values)
+        {
+            // create a new XMLDocument and try to load the content of the users.xml file
+            var xml = new XmlDocument();
+            xml.Load(UserXmlPath);
+
+            // find the Nodes that contain the "user" tag
+            XmlNodeList names = xml.GetElementsByTagName("user");
+
+            bool userExists = false;
+            int index = 0;
+
+            // loop through the nodes and search for the users name to check whether it exists already
+            for (int i = 0; i < names.Count; i++)
+            {
+                if (names[i].LastChild.InnerText.Equals(values[FeatureType.Face]))
+                {
+                    userExists = true;
+                    index = i;
+                    break;
+                }
+            }
+
+            // if a user exists in the XML file just update the features.
+            if (userExists)
+            {
+                XmlNode s = names[index].FirstChild;
+                s.InnerText = values[FeatureType.ShoulderWidth];
+                XmlNode a = s.NextSibling;
+                a.InnerText = values[FeatureType.ArmLength];
+                XmlNode h = a.NextSibling;
+                h.InnerText = values[FeatureType.HipHeadHeight];
+            }
+            else
+            {
+                // a new users need a new user tag and all the feature tags as well.
+                XmlNode root = xml.SelectSingleNode("/users");
+                XmlElement newUser = xml.CreateElement("user");
+
+                // go through each entry in the Feature dictionary and create new tags for the users.xml file
+                foreach (var entry in values)
+                {
+                    XmlElement newFeature = xml.CreateElement(entry.Key.ToString());
+                    newFeature.InnerText = "" + entry.Value;
+                    newUser.AppendChild(newFeature);
+                }
+
+                // append the new user to the XMLDocument
+                root.AppendChild(newUser);
+            }
+
+            // save the changes to the users.xml file
+            xml.Save(UserXmlPath);
+        }
+
+        /**
+         * loads all users from the users.xml file into a Dictionary of Dictionaries.
+         * 
+         **/
+
+        public static Dictionary<string, Dictionary<FeatureType, string>> LoadAllUsers()
+        {
+            // this dictionary contains the user name as a key to the dictionary with the individual features of that user.
+            var users = new Dictionary<string, Dictionary<FeatureType, string>>();
+
+            // create and load an XmlDocument containing all the user info
+            var xml = new XmlDocument();
+            xml.Load(UserXmlPath);
+            
+            // locate all tags "user"
+            XmlNodeList userNodes = xml.GetElementsByTagName("user");
+
+            // loop through all nodes and retrieve info stored.
+            for (int i = 0; i < userNodes.Count; i++)
+            {
+                var userFeatures = new Dictionary<FeatureType, string>();
+
+                XmlNode s = userNodes[i].FirstChild;
+                string ShoulderWidth = s.InnerText;
+
+                XmlNode a = s.NextSibling;
+                string ArmLength = a.InnerText;
+
+                XmlNode h = a.NextSibling;
+                string HipHeight = h.InnerText;
+
+                XmlNode f = h.NextSibling;
+                string Face = f.InnerText;
+
+                userFeatures.Add(FeatureType.ShoulderWidth, ShoulderWidth);
+                userFeatures.Add(FeatureType.ArmLength, ArmLength);
+                userFeatures.Add(FeatureType.HipHeadHeight, HipHeight);
+                userFeatures.Add(FeatureType.Face, Face);
+
+                //Console.Out.WriteLine("User in DB:"+Face);
+
+                users.Add(Face, userFeatures);
+            }
+
+            // return the data.
+            return users;
+        }
+
+        public static string[] LoadVoiceCommands()
+        {
+            string[] commands = null;
+
+            if (!File.Exists(VoiceCommandsPath))
+            {
+                //Console.Out.WriteLine("Voice command config file does not exists");
+                return null;
+            }
+
+            var reader = new StreamReader(VoiceCommandsPath);
+
+            string line;
+            int index = 0;
+
+            while ((line = reader.ReadLine()) != null)
+            {
+                if (line.StartsWith("//"))
+                {
+                    string[] split = line.Split('=');
+                    int numCommands = 0;
+                    try
+                    {
+                        numCommands = int.Parse(split[1]);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Out.WriteLine(ex.Message);
+                        return null;
+                    }
+
+                    commands = new string[numCommands];
+                }
+                else
+                {
+                    commands[index++] = line;
+                }
+            }
+
+            return commands;
+        }
+
+        public static void StoreVoiceCommand(string command)
+        {
+            StreamWriter writer = File.AppendText(VoiceCommandsPath);
+
+            writer.WriteLine(command);
+
+            writer.Flush();
+            writer.Close();
         }
     }
 }

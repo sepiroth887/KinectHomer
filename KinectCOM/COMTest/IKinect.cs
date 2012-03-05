@@ -6,15 +6,9 @@ namespace KinectCOM
     {
         void Init();
         void Uninit();
-        void UpdateFace();
-        void UpdateSkeletons(IDictionary points, ArrayList users);
-        void LearnUser(int skeletonID);
+        void LearnUser(string name,int skeletonID);
         bool StartTracking(int skeletonID);
         void StopTracking(int skeletonID);
-        void UserDetected(User user);
-        void PresenceDetected(int skeletonID);
-        void UserLost(User user);
-        void PresenceLost(int skeletonID);
 
         void GestureRecordCompleted(string gestureName, string ctxt);
 
@@ -39,5 +33,8 @@ namespace KinectCOM
         void TrackingStarted(int matchingSkeleton);
         void TrackingStopped(int matchingSkeleton);
         string GetObjects();
+        void UserDetected(User user);
+        void UserLost(User user);
+        void SetDefaultHand(bool def);
     }
 }

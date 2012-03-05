@@ -42,23 +42,10 @@ public class IKinectVTBL extends IDispatchVTBL
                     }
                 ),
                 new VirtualMethodCallback(
-                    "updateFace",
-                    new HResult(),
-                    new Parameter[] {
-                    }
-                ),
-                new VirtualMethodCallback(
-                    "updateSkeletons",
-                    new HResult(),
-                    new Parameter[] {
-                        new IDictionaryImpl(),
-                        new _ArrayListImpl()
-                    }
-                ),
-                new VirtualMethodCallback(
                     "learnUser",
                     new HResult(),
                     new Parameter[] {
+                        new BStr(),
                         new Int32()
                     }
                 ),
@@ -73,34 +60,6 @@ public class IKinectVTBL extends IDispatchVTBL
                 ),
                 new VirtualMethodCallback(
                     "stopTracking",
-                    new HResult(),
-                    new Parameter[] {
-                        new Int32()
-                    }
-                ),
-                new VirtualMethodCallback(
-                    "userDetected",
-                    new HResult(),
-                    new Parameter[] {
-                        new _UserImpl()
-                    }
-                ),
-                new VirtualMethodCallback(
-                    "presenceDetected",
-                    new HResult(),
-                    new Parameter[] {
-                        new Int32()
-                    }
-                ),
-                new VirtualMethodCallback(
-                    "userLost",
-                    new HResult(),
-                    new Parameter[] {
-                        new _UserImpl()
-                    }
-                ),
-                new VirtualMethodCallback(
-                    "presenceLost",
                     new HResult(),
                     new Parameter[] {
                         new Int32()
@@ -205,6 +164,27 @@ public class IKinectVTBL extends IDispatchVTBL
                         new Pointer(new BStr())
                     },
                     0
+                ),
+                new VirtualMethodCallback(
+                    "userDetected",
+                    new HResult(),
+                    new Parameter[] {
+                        new _UserImpl()
+                    }
+                ),
+                new VirtualMethodCallback(
+                    "userLost",
+                    new HResult(),
+                    new Parameter[] {
+                        new _UserImpl()
+                    }
+                ),
+                new VirtualMethodCallback(
+                    "setDefaultHand",
+                    new HResult(),
+                    new Parameter[] {
+                        new VariantBool()
+                    }
                 )
             }
         );

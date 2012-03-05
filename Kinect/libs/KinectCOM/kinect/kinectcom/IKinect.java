@@ -22,7 +22,7 @@ import kinect.stdole.impl.*;
  */
 public interface IKinect extends IDispatch
 {
-    public static final String INTERFACE_IDENTIFIER = "{09E79A9B-F60D-3881-B721-E9104E2E6AA0}";
+    public static final String INTERFACE_IDENTIFIER = "{EBCEF8A1-A0AC-30EE-B953-F7CAA656405B}";
 
     /**
      * 
@@ -39,21 +39,8 @@ public interface IKinect extends IDispatch
     /**
      * 
      */
-    void updateFace()
-        throws ComException;
-
-    /**
-     * 
-     */
-    void updateSkeletons(
-        IDictionary /*[in]*/ points,
-        _ArrayList /*[in]*/ users)
-        throws ComException;
-
-    /**
-     * 
-     */
     void learnUser(
+        BStr /*[in]*/ name,
         Int32 /*[in]*/ skeletonID)
         throws ComException;
 
@@ -68,34 +55,6 @@ public interface IKinect extends IDispatch
      * 
      */
     void stopTracking(
-        Int32 /*[in]*/ skeletonID)
-        throws ComException;
-
-    /**
-     * 
-     */
-    void userDetected(
-        _User /*[in]*/ User)
-        throws ComException;
-
-    /**
-     * 
-     */
-    void presenceDetected(
-        Int32 /*[in]*/ skeletonID)
-        throws ComException;
-
-    /**
-     * 
-     */
-    void userLost(
-        _User /*[in]*/ User)
-        throws ComException;
-
-    /**
-     * 
-     */
-    void presenceLost(
         Int32 /*[in]*/ skeletonID)
         throws ComException;
 
@@ -193,5 +152,26 @@ public interface IKinect extends IDispatch
      * 
      */
     BStr getObjects()
+        throws ComException;
+
+    /**
+     * 
+     */
+    void userDetected(
+        _User /*[in]*/ User)
+        throws ComException;
+
+    /**
+     * 
+     */
+    void userLost(
+        _User /*[in]*/ User)
+        throws ComException;
+
+    /**
+     * 
+     */
+    void setDefaultHand(
+        VariantBool /*[in]*/ def)
         throws ComException;
 }

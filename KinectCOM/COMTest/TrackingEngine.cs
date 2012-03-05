@@ -15,21 +15,23 @@ namespace KinectCOM
         private readonly KinectHandler _kinectHandler;
         private readonly RecognitionEngine _recognitionEngine;
 
-        private const int CLOSEST_SKELETON = 0x0;
-        private const int RECOGNIZED_FIRST = 0x1;
-        private const int RECOGNIZED_ONLY = 0x2;
+        public const int CLOSEST_SKELETON = 0x0;
+        public const int RECOGNIZED_FIRST = 0x1;
+        public const int RECOGNIZED_ONLY = 0x2;
 
         private Skeleton[] _skeletons;
         private int _activeSkeleton;
         private byte[] _pixelData;
 
-        private readonly object lockObj = new object();
+        private readonly object _lockObj = new object();
 
         private readonly Dictionary<int, User> _users = new Dictionary<int, User>();
 
         private readonly SkeletonHandler _skeletonHandler = new SkeletonHandler();
 
-        private volatile bool isRecRequired = false;
+        private volatile bool _isRecRequired;
+        private volatile bool _isTraining;
+
 
         public TrackingEngine(KinectData kinect, KinectHandler kinectHandler)
         {
@@ -63,7 +65,7 @@ namespace KinectCOM
 
         private void TrackingEngineAllFramesReady(object sender, AllFramesReadyEventArgs e)
         {
-            lock (lockObj)
+            lock (_lockObj)
             {
                 if (e == null) return;
                 var rgbFrame = e.OpenColorImageFrame();
@@ -88,7 +90,8 @@ namespace KinectCOM
                         {
                             if(_users[skeleton.TrackingId].IsActive)
                             {
-                                isRecRequired = true;
+                                _isRecRequired = true;
+                                _kinectHandler.UserLost(_users[skeleton.TrackingId]);
                             }
                             _users.Remove(skeleton.TrackingId);
                         }
@@ -167,7 +170,7 @@ namespace KinectCOM
             if (_skeletons.Any(skeleton => skeleton != null && skeleton.TrackingId == _activeSkeleton))
             {
                 // and is a user marked as active previously
-                if(_users[_activeSkeleton] != null && ( _users[_activeSkeleton].IsActive || isRecRequired ))
+                if(_users[_activeSkeleton] != null && ( _users[_activeSkeleton].IsActive || _isRecRequired ))
                     // no change to the current user
                     return _activeSkeleton;
             }
@@ -177,7 +180,7 @@ namespace KinectCOM
             int matchedUser = -1;
             if (_kinectHandler != null )
             {
-                if(isRecRequired && _users.ContainsKey(_activeSkeleton))
+                if(_isRecRequired && _users.ContainsKey(_activeSkeleton))
                 {
                     Skeleton skel = null;
                     User user = _users[_activeSkeleton];
@@ -201,8 +204,8 @@ namespace KinectCOM
                         {
                             user.TrackingID = skel.TrackingId;
                             user.IsActive = true;
-                            isRecRequired = false;
-
+                            _isRecRequired = false;
+                            _kinectHandler.UserDetected(user);
                             _users[user.TrackingID] = user;
                             return user.TrackingID;
                         }
@@ -269,5 +272,17 @@ namespace KinectCOM
         }
 
         public int Strategy { get; set; }
+
+        public void Train(string name, int skeletonID)
+        {
+            _isTraining = true;
+            Skeleton matchingSkeleton = _skeletons.FirstOrDefault(skel => skel.TrackingId == skeletonID);
+
+            if (matchingSkeleton != null)
+            {
+                _recognitionEngine.Train(name, matchingSkeleton, Coding4Fun.Kinect.WinForm.BitmapExtensions.ToBitmap(_pixelData, 640, 480));
+            }
+
+        }
     }
 }

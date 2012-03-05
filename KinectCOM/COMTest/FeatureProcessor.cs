@@ -170,7 +170,7 @@ namespace KinectCOM
 
             // update the  with the retrieved information
 
-            if (_handler != null) _handler.UpdateSkeletons(_jointPoints, _users);
+            //if (_handler != null) _handler.UpdateSkeletons(_jointPoints, _users);
         }
 
         /// <summary>
