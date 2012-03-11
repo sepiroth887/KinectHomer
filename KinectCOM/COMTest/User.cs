@@ -5,7 +5,7 @@ namespace KinectCOM
 {
     public class User
     {
-        public const int MAX_ATTEMPTS = 3;
+        public const int MAX_ATTEMPTS = 10;
 
         public User()
         {

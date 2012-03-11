@@ -133,16 +133,16 @@ namespace KinectCOM
 
             var handV = skeleton.Joints[JointType.HandRight].Position;
             var elbowV = skeleton.Joints[JointType.ElbowRight].Position;
-            var hipL = skeleton.Joints[JointType.HipLeft].Position;
+            var hipL = skeleton.Joints[JointType.Head].Position;
             var handL = skeleton.Joints[JointType.HandLeft].Position;
 
-            var distanceHandHip = (hipL.X - handL.X)*(hipL.X - handL.X) + (hipL.Y - handL.Y)*(hipL.Y - handL.Y) +
+            var distanceHandHead = (hipL.X - handL.X)*(hipL.X - handL.X) + (hipL.Y - handL.Y)*(hipL.Y - handL.Y) +
                                     (hipL.Z - handL.Z)*(hipL.Z - handL.Z);
 
-            ////Console.Out.WriteLine(Math.Sqrt(distanceHandHip));
+            //Log.Info(distanceHandHead);
             _handPos = new Vector3(handV.X, handV.Y, handV.Z);
 
-            if (distanceHandHip > 0.22)
+            if (distanceHandHead > 0.2)
             {
                 return;
             }

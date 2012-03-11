@@ -304,7 +304,7 @@ namespace KinectCOM
                 {
                     // db needs to be loaded so retrieve the faces and labels from HDD
 
-                    var database = FileLoader.LoadFaceDB("FaceDB");
+                    var database = FileLoader.LoadFaceDB();
 
                     // empty database??? cant be right... no need to load the recognizer then.
                     if (database == null)

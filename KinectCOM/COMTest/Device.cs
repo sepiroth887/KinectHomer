@@ -25,7 +25,7 @@ namespace KinectCOM
 
     public delegate void OnAddonGestureValueChangeDel(float value);
 
-    public delegate void OnUserFoundDel(string user, float confidence, int skeletonID);
+    public delegate void OnUserFoundDel(string user, string confidence, int skeletonID);
 
     public delegate void OnUserLostDel(string user);
 
@@ -40,7 +40,7 @@ namespace KinectCOM
         void OnPresenceDetected(int skeletonID);
 
         [DispId(2)]
-        void OnUserFound(string user, float confidence, int skeletonID);
+        void OnUserFound(string user, string confidence, int skeletonID);
 
         [DispId(3)]
         void OnUserLost(string user);
@@ -287,27 +287,27 @@ namespace KinectCOM
 
         public void PresenceDetected(int newUser)
         {
-            OnPresenceDetected(newUser);
+            if (OnPresenceDetected != null) OnPresenceDetected(newUser);
         }
 
         public void PresenceLost(int skeletonID)
         {
-            OnPresenceLost(skeletonID);
+            if (OnPresenceLost != null) OnPresenceLost(skeletonID);
         }
 
         public void GestureRecordCompleted(string gestureName, string ctxt)
         {
-            OnGestureRecordCompleted(gestureName, ctxt);
+            if (OnGestureRecordCompleted != null) OnGestureRecordCompleted(gestureName, ctxt);
         }
 
         public void RecordingCountDownEvent(int p)
         {
-            OnRecordingCountDownEvent(p);
+            if (OnRecordingCountDownEvent != null) OnRecordingCountDownEvent(p);
         }
 
         public void GestureRecognitionCompleted(string gesture)
         {
-            OnGestureRecognitionCompleted(gesture);
+            if (OnGestureRecognitionCompleted != null) OnGestureRecognitionCompleted(gesture);
         }
 
 
@@ -328,7 +328,7 @@ namespace KinectCOM
 
         public void UserFound(string name, float confidence, int skeletonID)
         {
-            OnUserFound(name, confidence, skeletonID);
+            OnUserFound(name, confidence.ToString(), skeletonID);
         }
 
         public void UserLost(string name)
@@ -343,7 +343,7 @@ namespace KinectCOM
 
         public void TrackingStarted(int matchingSkeleton)
         {
-            OnTrackingStarted(matchingSkeleton);
+            if (OnTrackingStarted != null) OnTrackingStarted(matchingSkeleton);
         }
 
 

@@ -35,13 +35,12 @@ namespace KinectCOM
         /// <summary>
         /// static method to load all images of users from the hard disk.
         /// </summary>
-        /// <param name="path"></param>
         /// <returns></returns>
-        public static Dictionary<Image<Gray, byte>[], string[]> LoadFaceDB(string path)
+        public static Dictionary<Image<Gray, byte>[], string[]> LoadFaceDB()
         {
-            if (path == null) return null;
+            
             // get the directory info of the passed path
-            var dir = new DirectoryInfo(path);
+            var dir = new DirectoryInfo(DefaultPath+"FaceDB");
 
 
             var database = new Dictionary<Image<Gray, byte>[], string[]>();
@@ -137,8 +136,7 @@ namespace KinectCOM
         /// Saves a set of images for one user and its name to the file path
         /// </summary>
         /// <param name="database"></param>
-        /// <param name="path">file path to store the images</param>
-        public static void SaveFaceDB(Dictionary<Image<Gray, byte>[], string[]> database, string path)
+        public static void SaveFaceDB(Dictionary<Image<Gray, byte>[], string[]> database)
         {
             // loop though each entry in the dictionary 
             if (database != null)
@@ -149,9 +147,9 @@ namespace KinectCOM
                     {
                         var folderName = entry.Value[0];
 
-                        var dir = new DirectoryInfo(path + "/" + folderName);
+                        var dir = new DirectoryInfo(DefaultPath+"FaceDB");
 
-                        int numFiles = 0;
+                        var numFiles = 0;
 
                         // check whether the folder already exists or create it if not.
                         if (!dir.Exists)
@@ -295,12 +293,6 @@ namespace KinectCOM
         {
             File.WriteAllText(DefaultPath + "gestures.sav", gestureData);
             Log.Debug("Gestures saved");
-        }
-
-        public static void SaveFaceDB(Dictionary<Image<Gray, byte>[], string[]> database)
-        {
-            SaveFaceDB(database,DefaultPath+"FaceDB");
-            Log.Debug("Face database saved");
         }
 
         public static void StoreUserData(Dictionary<FeatureType, string> values)

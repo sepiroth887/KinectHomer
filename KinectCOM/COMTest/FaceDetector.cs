@@ -38,7 +38,7 @@ namespace KinectCOM
             Image<Gray, byte>[] faces = null;
             if (img != null)
             {
-                var grayGPUImage = new GpuImage<Gray, byte>(img);
+                
 
                 Rectangle[] faceRegions = null;
 
@@ -46,7 +46,16 @@ namespace KinectCOM
                 {
                     if(_haarGpu != null && _hasCuda)
                     {
+                        var grayGPUImage = new GpuImage<Gray, byte>(img);
                         faceRegions = _haarGpu.DetectMultiScale(grayGPUImage, 1.2, 4, new Size(img.Width/12, img.Height/12));
+                        if (faceRegions != null)
+                        {
+                            faces = new Image<Gray, byte>[faceRegions.Length];
+                            for (var i = 0; i < faces.Length; i++)
+                            {
+                                faces[i] = grayGPUImage.GetSubRect(faceRegions[i]).ToImage();
+                            }
+                        }
                     }else if(_haarCpu != null)
                     {
                         var facesComp = _haarCpu.Detect(img, 1.2, 4, HAAR_DETECTION_TYPE.DO_CANNY_PRUNING,
@@ -58,20 +67,24 @@ namespace KinectCOM
                         {
                             faceRegions[i] = facesComp[i].rect;
                         }
+
+                        if (faceRegions != null)
+                        {
+                            faces = new Image<Gray, byte>[faceRegions.Length];
+                            for (var i = 0; i < faces.Length; i++)
+                            {
+                                img.ROI = faceRegions[i];
+                                faces[i] = img.Copy();
+                                faces[i] = faces[i].Resize(100, 100, INTER.CV_INTER_CUBIC);
+                            }
+                        }
                     }
                 }catch (Exception ex)
                 {
                     Log.Error("Face detection failed",ex);
                 }
 
-                if(faceRegions != null)
-                {
-                    faces = new Image<Gray, byte>[faceRegions.Length];
-                    for (var i = 0; i < faces.Length;i++ )
-                    {
-                        faces[i] = grayGPUImage.GetSubRect(faceRegions[i]).ToImage();
-                    }
-                }
+               
 
             }
 

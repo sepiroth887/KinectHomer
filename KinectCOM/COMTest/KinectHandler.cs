@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Windows.Forms;
 using Kinect.Toolbox.Voice;
 using Microsoft.Kinect;
 using log4net;
@@ -21,6 +23,8 @@ namespace KinectCOM
         private RecognitionProcessor _recognitionProcessor;
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private TrackingEngine _trackingEngine;
+        private DebugWindow _debugWindow;
+
         public KinectHandler(KinectData kinect, Device comInterface)
         {
             
@@ -129,9 +133,9 @@ namespace KinectCOM
         {
             ////Console.Out.WriteLine("Trying to start tracking!");
 // ReSharper disable PossibleNullReferenceException
-            if ( AreProcessorsLoaded() && _skeletons.Contains(skeletonID))
+            if ( _gestureProcessor != null)
             {
-                _featureProcessor.SetActiveUser(skeletonID);
+                //_featureProcessor.SetActiveUser(skeletonID);
                 _gestureProcessor.SetActiveUser(skeletonID);
                 
                 //_faceProcessor.DoProcess();
@@ -146,10 +150,9 @@ namespace KinectCOM
 
         public void StopTracking(int skeletonID)
         {
-            if (!AreProcessorsLoaded()) return;
-
+            
 // ReSharper disable PossibleNullReferenceException
-            _featureProcessor.SetActiveUser(-1); 
+            //_featureProcessor.SetActiveUser(-1); 
             _gestureProcessor.SetActiveUser(-1);
 // ReSharper restore PossibleNullReferenceException
         }
@@ -162,6 +165,7 @@ namespace KinectCOM
 
         public void PresenceLost(int skeletonID)
         {
+            if (skeletonID <= 0) return;
             //Console.WriteLine("User lost: " + skeletonID);
             if (_comInterface != null) _comInterface.PresenceLost(skeletonID);
             StopTracking(skeletonID);
@@ -242,21 +246,15 @@ namespace KinectCOM
             if (_comInterface != null) _comInterface.VoiceCommandDetected(command);
         }
 
-    
-        internal IEnumerable<User> FindUsers(System.Windows.Media.Imaging.WriteableBitmap writeableBitmap, Skeleton[] _skeletons)
-        {
-            //TODO create methods to find all user faces that have a skeleton and return them
-            return null;
-        }
-
+   
         public void TrackingStopped(int matchingSkeleton)
         {
-            if (_comInterface != null) _comInterface.TrackingStopped(matchingSkeleton);
+            if (_comInterface != null && matchingSkeleton != -1) _comInterface.TrackingStopped(matchingSkeleton);
         }
 
         public void TrackingStarted(int matchingSkeleton)
         {
-            if (_comInterface != null) _comInterface.TrackingStarted(matchingSkeleton);
+            if (_comInterface != null && matchingSkeleton != -1) _comInterface.TrackingStarted(matchingSkeleton);
         }
 
         string IKinect.GetObjects()
@@ -266,7 +264,7 @@ namespace KinectCOM
 
         public void UserDetected(User user)
         {
-            _comInterface.UserFound(user.Name,user.Confidence,user.TrackingID);
+            _comInterface.UserFound(user.Name,user.FaceConfidence,user.TrackingID);
         }
 
         public void UserLost(User user)

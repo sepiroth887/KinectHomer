@@ -28,7 +28,23 @@ namespace KinectCOM
 
             var bestMatch = FindBestMatch(actualHeight, actualWidth, actualLength);
 
-            return bestMatch.Name.Equals(user.Name) ? bestMatch : user;
+            if(bestMatch.Name.Equals(user.Name))
+            {
+                user.Confidence = (user.FaceConfidence/100 + bestMatch.Confidence)/2;
+                user.HipHeight = bestMatch.HipHeight;
+                user.ShoulderWidth = bestMatch.ShoulderWidth;
+                user.ArmLength = bestMatch.ArmLength;
+
+            }else
+            {
+                user.Confidence = (user.FaceConfidence/100 - bestMatch.Confidence)/2;
+                user.HipHeight = bestMatch.HipHeight;
+                user.ShoulderWidth = bestMatch.ShoulderWidth;
+                user.ArmLength = bestMatch.ArmLength;
+
+            }
+
+            return user;
 
         }
 

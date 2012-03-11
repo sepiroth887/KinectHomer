@@ -41,7 +41,8 @@ public class UserEventsHandler extends IUserEventsServer {
 	}
 	
 	
-	public void onUserFound(BStr user, Variant confidence, Int32 skelID){
+	public void onUserFound(BStr user, BStr confidence, Int32 skelID){
+		logger.info("User detected: "+user.toString()+","+confidence.toString()+","+skelID.toString());
 		
 	}
 	
@@ -76,7 +77,7 @@ public class UserEventsHandler extends IUserEventsServer {
 	@Override
 	public void onContextSelected(BStr ctxt){
 		if(!ctxt.toString().equals("__NOCONTEXT")){
-			logger.info("Context selected, starting gesture recognition.");
+			logger.info("Context selected "+ctxt.toString()+", starting gesture recognition.");
 			this.currentContext = ctxt.toString();
 			kinectListener.recognizeGesture(ctxt);
 		}else{

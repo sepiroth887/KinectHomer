@@ -133,7 +133,7 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 	}
 
 	public void updateGestureModel() {
-		ui.updateGestureModel();
+		ui.updateGestureModel();		
 	}
 	
 	public HomerDatabase getDatabase(){

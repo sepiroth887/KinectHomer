@@ -25,7 +25,7 @@
 <mapEntry key="org.osgi.framework.bootdelegation" value="System:*"/>
 <mapEntry key="org.osgi.service.http.port" value="System:8080"/>
 <mapEntry key="uk.ac.stir.cs.homer.componentVisonicSensors.port" value="System:COM6"/>
-<mapEntry key="uk.ac.stir.cs.homer.componentX10.port" value="System:COM3"/>
+<mapEntry key="uk.ac.stir.cs.homer.componentX10.port" value="System:COM4"/>
 <mapEntry key="uk.ac.stir.cs.homer.database.dbpath" value="System:../ServiceDatabase/database/homerDatabase"/>
 <mapEntry key="uk.ac.stir.cs.homer.database.initalise.addBasicInformation" value="System:true"/>
 <mapEntry key="uk.ac.stir.cs.homer.database.initalise.addFullInformation" value="System:false"/>

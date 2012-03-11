@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using Kinect.Toolbox;
+using System.Media;
 using Microsoft.Kinect;
 using log4net;
 
@@ -20,35 +21,69 @@ namespace KinectCOM
         public const int RECOGNIZED_ONLY = 0x2;
 
         private Skeleton[] _skeletons;
-        private int _activeSkeleton;
+        private int _activeTID;
+        private Skeleton _activeSkeleton;
         private byte[] _pixelData;
 
         private readonly object _lockObj = new object();
 
-        private readonly Dictionary<int, User> _users = new Dictionary<int, User>();
-
         private readonly SkeletonHandler _skeletonHandler = new SkeletonHandler();
 
-        private volatile bool _isRecRequired;
-        private volatile bool _isTraining;
+        private readonly ArrayList _users = new ArrayList(); 
 
+        private ArrayList _presenceIDs = new ArrayList();
+
+        private bool _recSoundPlayed = false;
+
+        private readonly SoundPlayer  _recStart =
+                new SoundPlayer(
+                    FileLoader.DefaultPath + "recStart.wav");
+
+        private SoundPlayer _recDone =
+        new SoundPlayer(
+            FileLoader.DefaultPath + "recStop.wav");
 
         public TrackingEngine(KinectData kinect, KinectHandler kinectHandler)
         {
             Log.Info("Starting TrackingEngine");
             _kinect = kinect;
             _kinectHandler = kinectHandler;
-            Strategy = CLOSEST_SKELETON;
+            Strategy = RECOGNIZED_FIRST;
             if (_kinect != null)
             {
                 Log.Info("Attaching to Kinect");
                 var kinectSensor = _kinect.GetSensor();
                 if (kinectSensor != null)
                     kinectSensor.AllFramesReady+=TrackingEngineAllFramesReady;
-                _recognitionEngine = new RecognitionEngine(kinect);
+                _recognitionEngine = new RecognitionEngine(kinect,this);
             }
-            _activeSkeleton = -1;
+            _activeTID = -1;
             Log.Info("Tracking Engine Started");
+
+            var userData = FileLoader.LoadAllUsers();
+
+            foreach(var userInfo in userData)
+            {
+                var user = new User {Name = userInfo.Key, TrackingID = -1, IsActive = false};
+
+                foreach(var feature in userInfo.Value){
+                    if(feature.Key.Equals(FeatureType.ArmLength))
+                    {
+                        user.ArmLength = float.Parse(feature.Value);
+                    }else if(feature.Key.Equals(FeatureType.HipHeadHeight)){
+                        user.HipHeight = float.Parse(feature.Value);
+                    
+                    }else if(feature.Key.Equals(FeatureType.ShoulderWidth))
+                    {
+                        user.ShoulderWidth = float.Parse(feature.Value);
+                    
+                    }
+                }
+
+                _users.Add(user);
+            }
+
+            Log.Info("Users loaded");
         }
 
         private void CheckArrayIsSet(int skeletonLenght, int rgbLength)
@@ -76,44 +111,60 @@ namespace KinectCOM
 
                 CheckArrayIsSet(skeletonFrame.SkeletonArrayLength, rgbFrame.PixelDataLength);
                 skeletonFrame.CopySkeletonDataTo(_skeletons);
+                
+                //_skeletonHandler.UpdateSkeletons(_skeletons);
 
-                _skeletonHandler.UpdateSkeletons(_skeletons);
+                var tempIds = new ArrayList();
 
-                if (_skeletonHandler.LostSkeletons().Count != 0)
+                foreach(var skel in _skeletons)
                 {
-                    var oldSkels = _skeletonHandler.LostSkeletons();
-
-                    foreach (Skeleton skeleton in oldSkels)
+                    if(skel.TrackingId != 0)
                     {
-                        _kinectHandler.PresenceDetected(skeleton.TrackingId);
-                        if(_users.ContainsKey(skeleton.TrackingId))
-                        {
-                            if(_users[skeleton.TrackingId].IsActive)
-                            {
-                                _isRecRequired = true;
-                                _kinectHandler.UserLost(_users[skeleton.TrackingId]);
-                            }
-                            _users.Remove(skeleton.TrackingId);
-                        }
-                        
+                        tempIds.Add(skel.TrackingId);
 
+                    }
+
+                    if(!_presenceIDs.Contains(skel.TrackingId) && skel.TrackingState != SkeletonTrackingState.NotTracked)
+                    {
+                        _presenceIDs.Add(skel.TrackingId);
+                        _kinectHandler.PresenceDetected(skel.TrackingId);
+                    }
+
+                    
+                }
+
+                var removeIds = new ArrayList();
+
+                foreach(int pId in _presenceIDs)
+                {
+                    if(!tempIds.Contains(pId))
+                    {
+                        removeIds.Add(pId);
                     }
                 }
 
-                if (_skeletonHandler.NewSkeletons().Count != 0)
+                foreach(int id in removeIds)
                 {
-                    var newSkels = _skeletonHandler.NewSkeletons();
-
-                    foreach (Skeleton skeleton in newSkels)
+                    _kinectHandler.PresenceLost(id);
+                    _presenceIDs.Remove(id);
+                    if(_activeTID == id)
                     {
-                        _kinectHandler.PresenceLost(skeleton.TrackingId);
+                        _activeTID = -1;
+                        _activeSkeleton = null;
                     }
                 }
 
                 // ReSharper disable PossibleNullReferenceException
                 rgbFrame.CopyPixelDataTo(_pixelData);
                 // ReSharper restore PossibleNullReferenceException
+             /**
+                Log.Info("Opening DebugWindow");
+                DebugWindow _debugWindow = new DebugWindow();
 
+                Application.Run(_debugWindow);
+                _debugWindow.drawImage(Coding4Fun.Kinect.WinForm.BitmapExtensions.ToBitmap(_pixelData, 640, 480));
+                Log.Info("DebugWindow openend");    
+            **/
                 FindUserToTrack();
 
                 rgbFrame.Dispose();
@@ -129,7 +180,7 @@ namespace KinectCOM
             {
                 case CLOSEST_SKELETON:
                     matchingSkeleton = FindClosestSkeleton();
-                    break;
+                    break;  
                 case RECOGNIZED_FIRST:
                     matchingSkeleton = FindCurrentUser(false);
                     break;
@@ -144,102 +195,79 @@ namespace KinectCOM
             SetTrackedSkeleton(matchingSkeleton);
         }
 
-        private void SetTrackedSkeleton(int matchingSkeleton)
+        private int FindCurrentUser(bool forceRecognition)
         {
-            if (matchingSkeleton == _activeSkeleton) return;
-            if(matchingSkeleton != -1 && _kinect != null && _kinect.GetSensor() != null){
-                Log.Info("Closest skeleton found. Starting tracking of id : "+matchingSkeleton);
-                _kinect.GetSensor().SkeletonStream.ChooseSkeletons(matchingSkeleton);
-                _kinectHandler.StartTracking(matchingSkeleton);
-                _kinectHandler.TrackingStarted(matchingSkeleton);
-                _activeSkeleton = matchingSkeleton;
-            }else 
-            {
-                Log.Info("No suitable skeleton found for tracking.");
-                _kinectHandler.StopTracking(_activeSkeleton);
-                _kinectHandler.TrackingStopped(matchingSkeleton);
-                _activeSkeleton = -1;
-            }
-        }
-
-        private int FindCurrentUser(bool userOnly)
-        {
-            // no skeletons = no users to find so return
+            if (_recognitionEngine == null) return -1;
             if (_skeletons == null) return -1;
-            // skeletons present and one marked as active
-            if (_skeletons.Any(skeleton => skeleton != null && skeleton.TrackingId == _activeSkeleton))
-            {
-                // and is a user marked as active previously
-                if(_users[_activeSkeleton] != null && ( _users[_activeSkeleton].IsActive || _isRecRequired ))
-                    // no change to the current user
-                    return _activeSkeleton;
-            }
 
-            // nothing tracked or no user detected yet
-
-            int matchedUser = -1;
-            if (_kinectHandler != null )
+            foreach (var user in _users.Cast<User>().Where(user => user.IsActive))
             {
-                if(_isRecRequired && _users.ContainsKey(_activeSkeleton))
+                foreach(var skel in _skeletons)
                 {
-                    Skeleton skel = null;
-                    User user = _users[_activeSkeleton];
-                    foreach(Skeleton skeleton in _skeletons)
+                    if(skel.TrackingId == user.TrackingID && skel.TrackingState == SkeletonTrackingState.Tracked)
                     {
-                        if(skeleton.TrackingId == _activeSkeleton && skeleton.TrackingState == SkeletonTrackingState.Tracked)
-                        {
-                            skel = skeleton;
-                        }
-                    }
-
-
-                    if (skel != null){
-                       
-                        _recognitionEngine.Recognize(skel, Coding4Fun.Kinect.WinForm.BitmapExtensions.ToBitmap(_pixelData,640,480), user);
-                    }
-
-                    if(user != null)
-                    {
-                        if(!"".Equals(user.Name))
-                        {
-                            user.TrackingID = skel.TrackingId;
-                            user.IsActive = true;
-                            _isRecRequired = false;
-                            _kinectHandler.UserDetected(user);
-                            _users[user.TrackingID] = user;
-                            return user.TrackingID;
-                        }
+                        return user.TrackingID;
                     }
                 }
-                matchedUser = DetectUsers();
+
+                user.IsActive = false;
+                user.TrackingID = -1;
+
+                return -1;
             }
 
-            // still no user found, so fallback to closest skeleton tracking if using RECOGNIZED_FIRST strategy
-            if (!userOnly && matchedUser == -1)
+            foreach(var skel in _skeletons)
             {
-                return FindClosestSkeleton();
+                if(skel.TrackingId == _activeTID && skel.TrackingState != SkeletonTrackingState.Tracked)
+                {
+                    
+                    return -1;
+                }
             }
-                
-            return -1;
+
+            if(_activeTID != -1 && _activeSkeleton != null && !_recognitionEngine.IsRecognizing)
+            {
+                if(!_recSoundPlayed)
+                {
+                    _recStart.Play();
+                    _recSoundPlayed = true;
+                }
+                _recognitionEngine.Recognize(_activeSkeleton,Coding4Fun.Kinect.WinForm.BitmapExtensions.ToBitmap(_pixelData,640,480));
+                return _activeTID;
+
+            }else if(_recognitionEngine.IsRecognizing){
+                return _activeTID;
+            }
+
+
+            return FindClosestSkeleton();
         }
 
-        private int DetectUsers()
+        private void SetTrackedSkeleton(int matchingSkeleton)
         {
-            var mostAttempts = 0;
-            User userToRecognizeNext = null;
-           foreach(var user in _users)
-           {
-               if(user.Value.Attempts > mostAttempts && user.Value.Attempts < User.MAX_ATTEMPTS)
-               {
-                   mostAttempts = user.Value.Attempts;
-                   userToRecognizeNext = user.Value;
-               }
-           }
-            if(userToRecognizeNext != null)
+           
+
+            if (matchingSkeleton == _activeTID) return;
+            if(matchingSkeleton != -1 && _kinect != null && _kinect.GetSensor() != null){
+                
+                _kinect.GetSensor().SkeletonStream.ChooseSkeletons(matchingSkeleton);
+                
+                if(Strategy.Equals(TrackingEngine.CLOSEST_SKELETON))
+                {
+                    Log.Info("Closest skeleton found. Starting tracking of id : " + matchingSkeleton);
+                    _kinectHandler.StartTracking(matchingSkeleton);
+                    _kinectHandler.TrackingStarted(matchingSkeleton);
+                            
+                 }
+
+                _activeTID = matchingSkeleton;
+            }else 
             {
-                return userToRecognizeNext.TrackingID;
+                Log.Info("No suitable skeleton found for tracking. Tracking stopped");
+                _kinectHandler.StopTracking(_activeTID);
+                _kinectHandler.TrackingStopped(matchingSkeleton);
+                _activeTID = -1;
             }
-            return -1;
         }
 
         private float getDistanceFromOrigin(SkeletonPoint skeleton)
@@ -257,6 +285,7 @@ namespace KinectCOM
             if (_skeletons == null) return -1;
             var minDistance = float.MaxValue;
             var trackingID =  -1;
+            Skeleton tempSkel = null;
             foreach(var skeleton in _skeletons)
             {
                 if (skeleton == null || skeleton.TrackingState == SkeletonTrackingState.NotTracked) continue;
@@ -265,24 +294,61 @@ namespace KinectCOM
                 if (minDistance <= distance) continue;
                 minDistance = distance;
                 trackingID = skeleton.TrackingId;
+                tempSkel = skeleton;
             }
 
-            
+            if(tempSkel != null)
+            {
+                _activeSkeleton = tempSkel;
+            }
+
             return trackingID;
         }
 
         public int Strategy { get; set; }
 
-        public void Train(string name, int skeletonID)
+        public void Train(string name, int skelID)
         {
-            _isTraining = true;
-            Skeleton matchingSkeleton = _skeletons.FirstOrDefault(skel => skel.TrackingId == skeletonID);
-
-            if (matchingSkeleton != null)
+            foreach(var skeleton in _skeletons)
             {
-                _recognitionEngine.Train(name, matchingSkeleton, Coding4Fun.Kinect.WinForm.BitmapExtensions.ToBitmap(_pixelData, 640, 480));
+                if(skeleton.TrackingId == skelID && skeleton.TrackingState == SkeletonTrackingState.Tracked)
+                {
+                     _recognitionEngine.Train(name, skeleton, Coding4Fun.Kinect.WinForm.BitmapExtensions.ToBitmap(_pixelData, 640, 480));
+                    
+                }
             }
+            
+        }
 
+        public void RecognitionResult(User user)
+        {
+            if (user == null) return;
+            foreach(var skeleton in _skeletons)
+            {
+                if (skeleton.TrackingId != user.TrackingID ||
+                    skeleton.TrackingState == SkeletonTrackingState.NotTracked) continue;
+                _kinectHandler.UserDetected(user);
+
+                User tempUser;
+                foreach (User userL in _users)
+                {
+                    if (!userL.Name.Equals(user.Name)) continue;
+                    userL.TrackingID = user.TrackingID;
+                    userL.Confidence = user.Confidence;
+                    userL.FaceConfidence = user.FaceConfidence;
+                    userL.IsActive = true;
+                    userL.ShoulderWidth = user.ShoulderWidth;
+                    userL.HipHeight = user.HipHeight;
+                    userL.ArmLength = user.ArmLength;
+                    _activeSkeleton = skeleton;
+                    _recDone.Play();
+                    _recSoundPlayed = false;
+                    Log.Info("User skeleton found. Starting tracking of id : " + userL.TrackingID);
+                    _activeTID = userL.TrackingID;
+                    _kinectHandler.StartTracking(userL.TrackingID);
+                    _kinectHandler.TrackingStarted(userL.TrackingID);
+                }
+            }
         }
     }
 }

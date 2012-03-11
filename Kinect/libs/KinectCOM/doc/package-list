@@ -7,3 +7,9 @@ kinect.mscorlib.server
 kinect.stdole
 kinect.stdole.impl
 kinect.stdole.server
+kinect.system
+kinect.system.impl
+kinect.system.server
+kinect.system_windows_forms
+kinect.system_windows_forms.impl
+kinect.system_windows_forms.server
