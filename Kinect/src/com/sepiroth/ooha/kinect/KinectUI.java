@@ -39,10 +39,10 @@ import javax.swing.JCheckBox;
 public class KinectUI extends JFrame{
 	
 	private JTextField nameTF;
-	private JTextField imagePathTF;
 	private JTextField gNameTF;
 	private JTextField gPermTF;
 	private GestureListModel gestureModel;
+	private DefaultListModel<String> userModel;
 	private KinectSensorComponent kinect;
 	private final JLabel statusLabel = new JLabel("");
 	final JComboBox<String> contextCB = new JComboBox<String>();
@@ -50,6 +50,7 @@ public class KinectUI extends JFrame{
 	public KinectUI(KinectSensorComponent kinect) {
 		this.kinect = kinect;
 		this.gestureModel = kinect.getGestureModel();
+		this.userModel = kinect.getUserModel();
 		init();
 	}
 	
@@ -329,14 +330,15 @@ public class KinectUI extends JFrame{
 		userListPanel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 		
 		JPanel infoPanel = new JPanel();
-		infoPanel.setBounds(130, 149, 326, 147);
+		infoPanel.setBounds(130, 199, 326, 99);
 		infoPanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		
 		JPanel userPicPanel = new JPanel();
 		userPicPanel.setBounds(292, 6, 164, 137);
-		infoPanel.setLayout(new GridLayout(4, 2, 0, 0));
+		infoPanel.setLayout(null);
 		
 		JPanel namePanel = new JPanel();
+		namePanel.setBounds(2, 2, 322, 30);
 		infoPanel.add(namePanel);
 		namePanel.setLayout(null);
 		
@@ -345,7 +347,7 @@ public class KinectUI extends JFrame{
 		namePanel.add(lblName);
 		
 		nameTF = new JTextField();
-		nameTF.setBounds(107, 5, 101, 20);
+		nameTF.setBounds(107, 5, 85, 20);
 		nameTF.setHorizontalAlignment(SwingConstants.LEFT);
 		nameTF.setAlignmentX(Component.LEFT_ALIGNMENT);
 		namePanel.add(nameTF);
@@ -353,34 +355,73 @@ public class KinectUI extends JFrame{
 		nameTF.setMaximumSize(new Dimension(150,20));
 		
 		JPanel imagePanel = new JPanel();
+		imagePanel.setBounds(2, 43, 322, 38);
 		infoPanel.add(imagePanel);
 		imagePanel.setLayout(null);
 		
-		JLabel imageLbl = new JLabel("ImageDB: ");
-		imageLbl.setBounds(10, 9, 92, 14);
-		imagePanel.add(imageLbl);
-		
-		imagePathTF = new JTextField();
-		imagePathTF.setBounds(107, 6, 101, 20);
-		imagePathTF.setMaximumSize(new Dimension(100, 20));
-		imagePathTF.setHorizontalAlignment(SwingConstants.LEFT);
-		imagePathTF.setColumns(20);
-		imagePathTF.setAlignmentX(0.0f);
-		imagePanel.add(imagePathTF);
-		
-		JButton btnBrowse = new JButton("Browse");
+		JButton btnBrowse = new JButton("Create");
 		btnBrowse.setFont(new Font("Dialog", Font.BOLD, 10));
-		btnBrowse.setBounds(220, 5, 87, 23);
+		btnBrowse.setBounds(10, 11, 87, 23);
 		imagePanel.add(btnBrowse);
+		
+		JButton btnTrain = new JButton("Train");
+		btnTrain.setFont(new Font("Dialog", Font.BOLD, 10));
+		btnTrain.setBounds(107, 11, 87, 23);
+		imagePanel.add(btnTrain);
+		
+		JButton delButton = new JButton("Remove");
+		delButton.setFont(new Font("Dialog", Font.BOLD, 10));
+		delButton.setBounds(225, 11, 87, 23);
+		imagePanel.add(delButton);
 		userListPanel.setLayout(new BorderLayout(5, 5));
 		
-		JList<User> userList = new JList<User>();
+		JList<String> userList = new JList<String>();
 	
-		DefaultListModel<User> userModel = new DefaultListModel<User>();
-		
-		userModel.addElement(new User("TestUser".hashCode(),"TestUser"));
-		
 		userList.setModel(userModel);
+		
+		userList.addListSelectionListener(new ListSelectionListener(){
+
+			@Override
+			public void valueChanged(ListSelectionEvent arg0) {
+				@SuppressWarnings("unchecked")
+				JList<String> list = (JList<String>)arg0.getSource();
+				
+				String name = list.getSelectedValue();
+				
+				nameTF.setText(name);
+			}
+			
+		});
+		
+		btnTrain.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String userName = nameTF.getText();
+				
+				if("".equals(userName)) return;
+				
+				if(!userModel.contains(userName)){
+					userModel.addElement(userName);
+				}	
+				kinect.trainUser(userName);
+			}
+			
+		});
+		
+		delButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String userName = nameTF.getText();
+				
+				if(userModel.contains(userName)){
+					kinect.removeUser(userName);
+					userModel.removeElement(userName);
+				}
+			}
+			
+		});
 		userTab.setLayout(null);
 		userListPanel.add(userList, BorderLayout.CENTER);
 		userTab.add(userListPanel);

@@ -17,7 +17,7 @@ import kinect.kinectcom.*;
 public class IDeviceImpl extends IDispatchImpl
     implements IDevice
 {
-    public static final String INTERFACE_IDENTIFIER = "{E9BAEF73-450E-3ADA-92CE-E8B117F39842}";
+    public static final String INTERFACE_IDENTIFIER = "{5D0EC549-F2C9-3166-99D5-2A4191254BCB}";
     private static final IID _iid = IID.create(INTERFACE_IDENTIFIER);
 
     public IDeviceImpl()
@@ -42,20 +42,6 @@ public class IDeviceImpl extends IDispatchImpl
     public IDeviceImpl(CLSID clsid, IUnknownImpl pUnkOuter, ClsCtx dwClsContext) throws ComException
     {
         super(clsid, pUnkOuter, dwClsContext);
-    }
-
-    /**
-     * 
-     */
-    public void userRecognition(
-        VariantBool /*[in]*/ on)
-    {
-
-        Parameter[] parameters = new Parameter[] {
-                on
-            };
-
-         Automation.invokeDispatch(this, "UserRecognition", parameters, void.class);
     }
 
     /**
@@ -262,6 +248,46 @@ public class IDeviceImpl extends IDispatchImpl
             };
 
          Automation.invokeDispatch(this, "SetDefaultHand", parameters, void.class);
+    }
+
+    /**
+     * 
+     */
+    public BStr loadUsers()
+    {
+
+        Parameter[] parameters = new Parameter[0];
+
+         Object result = Automation.invokeDispatch(this, "LoadUsers", parameters, BStr.class);
+        return (BStr) result;
+    }
+
+    /**
+     * 
+     */
+    public void addUser(
+        BStr /*[in]*/ User)
+    {
+
+        Parameter[] parameters = new Parameter[] {
+                User == null ? (Parameter)PTR_NULL : User
+            };
+
+         Automation.invokeDispatch(this, "AddUser", parameters, void.class);
+    }
+
+    /**
+     * 
+     */
+    public void delUser(
+        BStr /*[in]*/ User)
+    {
+
+        Parameter[] parameters = new Parameter[] {
+                User == null ? (Parameter)PTR_NULL : User
+            };
+
+         Automation.invokeDispatch(this, "DelUser", parameters, void.class);
     }
 
     /**

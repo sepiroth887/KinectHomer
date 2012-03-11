@@ -29,14 +29,6 @@ public class IDeviceServer extends IDispatchServer
     /**
      * 
      */
-    public void userRecognition(
-        VariantBool /*[in]*/ on)
-    {
-    }
-
-    /**
-     * 
-     */
     public void setContext(
         BStr /*[in]*/ contextID)
     {
@@ -155,6 +147,30 @@ public class IDeviceServer extends IDispatchServer
      */
     public void setDefaultHand(
         VariantBool /*[in]*/ def)
+    {
+    }
+
+    /**
+     * 
+     */
+    public BStr loadUsers()
+    {
+        throw new ComException(HResult.E_NOTIMPL);
+    }
+
+    /**
+     * 
+     */
+    public void addUser(
+        BStr /*[in]*/ User)
+    {
+    }
+
+    /**
+     * 
+     */
+    public void delUser(
+        BStr /*[in]*/ User)
     {
     }
 

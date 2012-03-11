@@ -185,6 +185,28 @@ public class IKinectVTBL extends IDispatchVTBL
                     new Parameter[] {
                         new VariantBool()
                     }
+                ),
+                new VirtualMethodCallback(
+                    "loadUsers",
+                    new HResult(),
+                    new Parameter[] {
+                        new Pointer(new BStr())
+                    },
+                    0
+                ),
+                new VirtualMethodCallback(
+                    "addUser",
+                    new HResult(),
+                    new Parameter[] {
+                        new BStr()
+                    }
+                ),
+                new VirtualMethodCallback(
+                    "delUser",
+                    new HResult(),
+                    new Parameter[] {
+                        new BStr()
+                    }
                 )
             }
         );

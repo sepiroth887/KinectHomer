@@ -48,7 +48,7 @@ namespace KinectCOM
 
         }
 
-        public void AddUser(String name, Skeleton skel)
+        public bool AddUser(String name, Skeleton skel)
         {
             var actualHeight = PointDistance(skel.Joints[JointType.HipCenter].Position,
                                             skel.Joints[JointType.Head].Position);
@@ -68,10 +68,11 @@ namespace KinectCOM
             {
                 _users.Add(name,userData);
                 StoreFeatures(userData);
-            }else
-            {
-                _users[name] = userData;
+                return false;
             }
+
+            _users[name] = userData;
+            return true;
         }
 
         private User FindBestMatch(float actualHeight, float actualWidth, float actualLength)
@@ -136,6 +137,11 @@ namespace KinectCOM
         private void StoreFeatures(Dictionary<FeatureType,String> features )
         {
             FileLoader.StoreUserData(features);
+        }
+
+        public void DelUser(string user)
+        {
+            FileLoader.RemoveUser(user);
         }
     }
 }

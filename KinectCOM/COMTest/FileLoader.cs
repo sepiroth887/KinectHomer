@@ -350,6 +350,39 @@ namespace KinectCOM
             xml.Save(UserXmlPath);
         }
 
+        public static void RemoveUser(string user)
+        {
+            // create a new XMLDocument and try to load the content of the users.xml file
+            var xml = new XmlDocument();
+            xml.Load(UserXmlPath);
+
+            // find the Nodes that contain the "user" tag
+            XmlNodeList names = xml.GetElementsByTagName("user");
+
+            bool userExists = false;
+            int index = 0;
+
+            // loop through the nodes and search for the users name to check whether it exists already
+            for (int i = 0; i < names.Count; i++)
+            {
+                if (names[i].LastChild.InnerText.Equals(user))
+                {
+                    userExists = true;
+                    index = i;
+                    break;
+                }
+            }
+
+            if(userExists)
+            {
+                var delNode = names[index];
+                XmlNode root = xml.SelectSingleNode("/users");
+                root.RemoveChild(delNode);
+            }
+
+            xml.Save(UserXmlPath);
+        }
+
         /**
          * loads all users from the users.xml file into a Dictionary of Dictionaries.
          * 

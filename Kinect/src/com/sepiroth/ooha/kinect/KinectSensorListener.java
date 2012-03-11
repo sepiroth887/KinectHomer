@@ -173,4 +173,17 @@ public class KinectSensorListener {
 	public void setHandConfig(boolean selected) {
 		comDevice.setDefaultHand(new VariantBool(selected));
 	}
+
+	public String[] loadUsers() {
+		
+		return comDevice.loadUsers().toString().split(";");
+	}
+
+	public void trainUser(String userName) {
+		comDevice.addUser(new BStr(userName));
+	}
+	
+	public void removeUser(String userName){
+		comDevice.delUser(new BStr(userName));
+	}
 }

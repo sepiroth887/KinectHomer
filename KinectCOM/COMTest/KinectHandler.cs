@@ -192,6 +192,21 @@ namespace KinectCOM
             _gestureProcessor.SetDefaultHand(def);
         }
 
+        public string LoadUsers()
+        {
+            return _trackingEngine.GetUsers();
+        }
+
+        public void AddUser(string user)
+        {
+            _trackingEngine.AddUser(user);
+        }
+
+        public void DelUser(string user)
+        {
+            _trackingEngine.DelUser(user);
+        }
+
 
         void IKinect.GestureRecordCompleted(string gestureName, string ctxt)
         {

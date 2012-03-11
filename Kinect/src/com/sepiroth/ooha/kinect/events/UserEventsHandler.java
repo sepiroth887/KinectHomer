@@ -43,7 +43,7 @@ public class UserEventsHandler extends IUserEventsServer {
 	
 	public void onUserFound(BStr user, BStr confidence, Int32 skelID){
 		logger.info("User detected: "+user.toString()+","+confidence.toString()+","+skelID.toString());
-		
+		//ComponentGateway.Singleton.get().triggerOccured(kinectListener.getSysDeviceID(), KinectSensorComponent.PRESENCE_DETECTED, new String[]{skelID.toString()});
 	}
 	
 	@Override

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
@@ -45,6 +46,7 @@ namespace KinectCOM
         void _recognizer_TrainingCompletedEvent(System.ComponentModel.RunWorkerCompletedEventArgs e)
         {
             IsTraining = false;
+            Log.Info("Training completed");
         }
 
         void _recognizer_RecognitionCompletedEvent(System.ComponentModel.RunWorkerCompletedEventArgs e)
@@ -98,27 +100,6 @@ namespace KinectCOM
 
         }
 
-        private Image<Gray,byte> PreProcess(Image<Bgr,byte> image)
-        {
-            if (image != null)
-            {
-
-                var grey = image.Convert<Gray, byte>();
-
-                var resizedImg = grey.Resize(100, 100, INTER.CV_INTER_CUBIC, true);
-
-
-                if (resizedImg != null)
-                {
-                    resizedImg._EqualizeHist();
-
-                    return resizedImg;
-                }
-            }
-
-            return null;
-        }
-
         public bool Recognize(Skeleton skel, Bitmap image)
         {
             
@@ -144,15 +125,38 @@ namespace KinectCOM
             var headPos = _kinect.GetSensor().MapSkeletonPointToColor(skel.Joints[JointType.Head].Position,
                                                          ColorImageFormat.RgbResolution640x480Fps30);
 
-            const int recSize = 100;
+            var shoulderL = _kinect.GetSensor().MapSkeletonPointToColor(skel.Joints[JointType.ShoulderLeft].Position,
+                                                                        ColorImageFormat.RgbResolution640x480Fps30);
 
-            var img = new Image<Bgr, byte>(image) { ROI = new Rectangle(headPos.X - recSize / 2, headPos.Y - recSize / 2, recSize, recSize) };
+            var shoulderR = _kinect.GetSensor().MapSkeletonPointToColor(skel.Joints[JointType.ShoulderRight].Position,
+                                                                        ColorImageFormat.RgbResolution640x480Fps30);
 
-            var processedImg = PreProcess(img);
+            var startX = shoulderL.X;
+            var startY = Math.Max(headPos.Y - 80,0);
+
+            var width = Math.Sqrt((shoulderR.X - shoulderL.X)*(shoulderR.X - shoulderL.X));
+            var height = Math.Sqrt((headPos.Y - shoulderL.Y)*(headPos.Y - shoulderL.Y)) + 100;
+
+            //Log.Info(startX + "," + startY + "," + width + "," + height);
+
+
+            width = Math.Min(Math.Max(width, 0),640);
+            height = Math.Min(Math.Max(height, 0), 480);
+
+            
+
+
+            if (Double.IsNaN(width) || Double.IsNaN(height) || Math.Abs(width - 0) < 0.0001 || Math.Abs(height - 0) < 0.0001) return null;
+
+            var img = new Image<Bgr, byte>(image) { ROI = new Rectangle(startX,startY,(int)width,(int)height) };
+
+            
 
             var faces = new Image<Bgr,byte>[1];
 
-            faces[0] = new Image<Bgr, byte>(image);
+            faces[0] = img.Copy();
+
+            img.Save(FileLoader.DefaultPath+"testHeadPos.jpg");
 
             return faces;
         }
@@ -164,6 +168,16 @@ namespace KinectCOM
             _featureDetector.AddUser(name,matchingSkeleton);
             _recognizer.Train(name, FindFace(matchingSkeleton, img)[0].ToBitmap());
             return true;
+        }
+
+        public bool AddUser(string userName,Skeleton skel)
+        {
+            return _featureDetector.AddUser(userName,skel);
+        }
+
+        public void DelUser(string user)
+        {
+            _featureDetector.DelUser(user);
         }
     }
 }

@@ -3,6 +3,8 @@ package com.sepiroth.ooha.kinect;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.DefaultListModel;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +14,6 @@ import uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils.encoding.IDUtil;
 import uk.ac.stir.cs.homer.homerFrameworkAPI.homerObjects.SystemDeviceType;
 import uk.ac.stir.cs.homer.homerFrameworkAPI.tcas.Trigger;
 import uk.ac.stir.cs.homer.serviceDatabase.HomerDatabase;
-
 
 import com.jniwrapper.Int32;
 import com.jniwrapper.win32.automation.types.BStr;
@@ -35,6 +36,7 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 	private final HomerDatabase database;
 	private String sysDeviceID;
 	private GestureListModel gestureModel;
+	private DefaultListModel<String> userModel;
 	
 	static{
 		System.setProperty("java.library.path",System.getProperty("java.library.path")+";F:\\KinectHomer\\Kinect\\libs\\comfyJ\\bin");
@@ -88,7 +90,7 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 	@Override
 	public void registerComponentInstance(String systemDeviceTypeID,
 			String sysDeviceID, String[] parameters) {
-		logger.info("New Kinect sensor registered: " + systemDeviceTypeID + " with code: " + sysDeviceID);
+		//logger.info("New Kinect sensor registered: " + systemDeviceTypeID + " with code: " + sysDeviceID);
 		this.sysDeviceID = systemDeviceTypeID;
 		
 	}
@@ -96,7 +98,7 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 	@Override
 	public void editComponentInstance(String systemDeviceTypeID,
 			String sysDeviceID, String[] newParameters, String[] oldParameters) {
-		logger.info("Kinect sensor settings changed: " + sysDeviceID);
+		//logger.info("Kinect sensor settings changed: " + sysDeviceID);
 		
 		this.sysDeviceID = sysDeviceID;
 		
@@ -153,6 +155,24 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 		
 		return gestureModel;
 	}
+	
+	public DefaultListModel<String> getUserModel(){
+		if(userModel == null){
+			String[] users = kinectSensorListener.loadUsers();
+			
+			if(users != null){
+				userModel = new DefaultListModel<String>();
+				for(String user : users){
+					userModel.addElement(user);
+				}
+			}else{
+				userModel = new DefaultListModel<String>();
+				userModel.add(0,"No users found!");
+			}
+		}
+		
+		return userModel;
+	}
 
 	public String[] getObjects() {
 		return kinectSensorListener.getObjects();
@@ -171,5 +191,13 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 			
 		}
 			
+	}
+
+	public void trainUser(String userName) {
+		kinectSensorListener.trainUser(userName);
+	}
+
+	public void removeUser(String userName) {
+		kinectSensorListener.removeUser(userName);
 	}
 }

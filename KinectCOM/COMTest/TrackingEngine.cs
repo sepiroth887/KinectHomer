@@ -60,30 +60,52 @@ namespace KinectCOM
             _activeTID = -1;
             Log.Info("Tracking Engine Started");
 
+            LoadUsers();
+
+            Log.Info("Users loaded");
+        }
+
+        public string GetUsers()
+        {
+            var result = "";
+            foreach(User user in _users)
+            {
+                result += user.Name + ";";
+            }
+
+            result.Substring(0, result.Length - 1);
+
+            return result;
+        }
+
+        private void LoadUsers()
+        {
             var userData = FileLoader.LoadAllUsers();
 
-            foreach(var userInfo in userData)
+            foreach (var userInfo in userData)
             {
-                var user = new User {Name = userInfo.Key, TrackingID = -1, IsActive = false};
+                var user = new User { Name = userInfo.Key, TrackingID = -1, IsActive = false };
 
-                foreach(var feature in userInfo.Value){
-                    if(feature.Key.Equals(FeatureType.ArmLength))
+                foreach (var feature in userInfo.Value)
+                {
+                    if (feature.Key.Equals(FeatureType.ArmLength))
                     {
                         user.ArmLength = float.Parse(feature.Value);
-                    }else if(feature.Key.Equals(FeatureType.HipHeadHeight)){
+                    }
+                    else if (feature.Key.Equals(FeatureType.HipHeadHeight))
+                    {
                         user.HipHeight = float.Parse(feature.Value);
-                    
-                    }else if(feature.Key.Equals(FeatureType.ShoulderWidth))
+
+                    }
+                    else if (feature.Key.Equals(FeatureType.ShoulderWidth))
                     {
                         user.ShoulderWidth = float.Parse(feature.Value);
-                    
+
                     }
                 }
 
                 _users.Add(user);
             }
-
-            Log.Info("Users loaded");
         }
 
         private void CheckArrayIsSet(int skeletonLenght, int rgbLength)
@@ -311,10 +333,16 @@ namespace KinectCOM
         {
             foreach(var skeleton in _skeletons)
             {
-                if(skeleton.TrackingId == skelID && skeleton.TrackingState == SkeletonTrackingState.Tracked)
+                if(skeleton.TrackingId == skelID && skeleton.TrackingState == SkeletonTrackingState.Tracked && skeleton.TrackingId == _activeTID)
                 {
-                     _recognitionEngine.Train(name, skeleton, Coding4Fun.Kinect.WinForm.BitmapExtensions.ToBitmap(_pixelData, 640, 480));
+                    var exists = _recognitionEngine.AddUser(name,skeleton); 
+                    _recognitionEngine.Train(name, skeleton, Coding4Fun.Kinect.WinForm.BitmapExtensions.ToBitmap(_pixelData, 640, 480));
                     
+                    if(!exists)
+                    {
+                        var u = new User {Name = name, IsActive = false, TrackingID = skeleton.TrackingId};
+                        _users.Add(u);
+                    }
                 }
             }
             
@@ -349,6 +377,26 @@ namespace KinectCOM
                     _kinectHandler.TrackingStarted(userL.TrackingID);
                 }
             }
+        }
+
+        public void AddUser(string user)
+        {
+            if (_activeTID == -1) return;
+
+            Train(user,_activeTID);
+        }
+
+        public void DelUser(string user)
+        {
+            foreach(User u in _users)
+            {
+                if(u.Name.Equals(user))
+                {
+                    _users.Remove(u);
+                }
+            }
+
+            _recognitionEngine.DelUser(user);
         }
     }
 }

@@ -36,5 +36,8 @@ namespace KinectCOM
         void UserDetected(User user);
         void UserLost(User user);
         void SetDefaultHand(bool def);
+        string LoadUsers();
+        void AddUser(string user);
+        void DelUser(string user);
     }
 }

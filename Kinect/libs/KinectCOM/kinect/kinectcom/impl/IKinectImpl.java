@@ -401,6 +401,55 @@ public class IKinectImpl extends IDispatchImpl
         );
     }
 
+    /**
+     * 
+     */
+    public BStr loadUsers()
+        throws ComException
+    {
+        BStr pRetVal = new BStr();
+       invokeStandardVirtualMethod(
+            29,
+            Function.STDCALL_CALLING_CONVENTION,
+            new Parameter[] {
+                pRetVal == null ? (Parameter)PTR_NULL : new Pointer(pRetVal)
+            }
+        );
+        return pRetVal;
+    }
+
+    /**
+     * 
+     */
+    public void addUser(
+        BStr /*[in]*/ User)
+        throws ComException
+    {
+       invokeStandardVirtualMethod(
+            30,
+            Function.STDCALL_CALLING_CONVENTION,
+            new Parameter[] {
+                User == null ? (Parameter)PTR_NULL : User
+            }
+        );
+    }
+
+    /**
+     * 
+     */
+    public void delUser(
+        BStr /*[in]*/ User)
+        throws ComException
+    {
+       invokeStandardVirtualMethod(
+            31,
+            Function.STDCALL_CALLING_CONVENTION,
+            new Parameter[] {
+                User == null ? (Parameter)PTR_NULL : User
+            }
+        );
+    }
+
     public IID getIID()
     {
         return _iid;

@@ -22,7 +22,7 @@ import kinect.stdole.impl.*;
  */
 public interface IKinect extends IDispatch
 {
-    public static final String INTERFACE_IDENTIFIER = "{EBCEF8A1-A0AC-30EE-B953-F7CAA656405B}";
+    public static final String INTERFACE_IDENTIFIER = "{12BC429B-E4E6-3358-825B-A3B912495D18}";
 
     /**
      * 
@@ -173,5 +173,25 @@ public interface IKinect extends IDispatch
      */
     void setDefaultHand(
         VariantBool /*[in]*/ def)
+        throws ComException;
+
+    /**
+     * 
+     */
+    BStr loadUsers()
+        throws ComException;
+
+    /**
+     * 
+     */
+    void addUser(
+        BStr /*[in]*/ User)
+        throws ComException;
+
+    /**
+     * 
+     */
+    void delUser(
+        BStr /*[in]*/ User)
         throws ComException;
 }

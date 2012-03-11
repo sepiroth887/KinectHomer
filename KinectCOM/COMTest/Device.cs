@@ -77,9 +77,6 @@ namespace KinectCOM
     [InterfaceType(ComInterfaceType.InterfaceIsIDispatch)]
     public interface IDevice
     {
-        [DispId(8)]
-        void UserRecognition(bool on);
-
         [DispId(9)]
         void SetContext(string contextID);
 
@@ -125,6 +122,14 @@ namespace KinectCOM
         [DispId(23)]
         void SetDefaultHand(bool def);
 
+        [DispId(24)]
+        string LoadUsers();
+
+        [DispId(25)]
+        void AddUser(string user);
+
+        [DispId(26)]
+        void DelUser(string user);
         [DispId(42)]
         Boolean Init();
 
@@ -145,6 +150,21 @@ namespace KinectCOM
         public void SetDefaultHand(bool def)
         {
             _kHandler.SetDefaultHand(def);
+        }
+
+        public string LoadUsers()
+        {
+            return _kHandler.LoadUsers();
+        }
+
+        public void AddUser(string user)
+        {
+            _kHandler.AddUser(user);
+        }
+
+        public void DelUser(string user)
+        {
+            _kHandler.DelUser(user);
         }
 
         Boolean IDevice.Init()
@@ -213,10 +233,6 @@ namespace KinectCOM
         }
 
         void IDevice. SetContext(string ctxt)
-        {
-        }
-
-        void IDevice. UserRecognition(bool on)
         {
         }
 

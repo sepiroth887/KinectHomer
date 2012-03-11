@@ -18,9 +18,8 @@ import kinect.kinectcom.impl.*;
  */
 public interface IDevice extends IDispatch
 {
-    public static final String INTERFACE_IDENTIFIER = "{E9BAEF73-450E-3ADA-92CE-E8B117F39842}";
+    public static final String INTERFACE_IDENTIFIER = "{5D0EC549-F2C9-3166-99D5-2A4191254BCB}";
 
-    public static final int DISPID_userRecognition = 8;
     public static final int DISPID_setContext = 9;
     public static final int DISPID_speechRecognition = 10;
     public static final int DISPID_learnUser = 11;
@@ -36,15 +35,12 @@ public interface IDevice extends IDispatch
     public static final int DISPID_loadGestures = 21;
     public static final int DISPID_getObjects = 22;
     public static final int DISPID_setDefaultHand = 23;
+    public static final int DISPID_loadUsers = 24;
+    public static final int DISPID_addUser = 25;
+    public static final int DISPID_delUser = 26;
     public static final int DISPID_init = 42;
     public static final int DISPID_uninit = 43;
 
-
-    /**
-     * 
-     */
-    void userRecognition(
-        VariantBool /*[in]*/ on);
 
     /**
      * 
@@ -133,6 +129,23 @@ public interface IDevice extends IDispatch
      */
     void setDefaultHand(
         VariantBool /*[in]*/ def);
+
+    /**
+     * 
+     */
+    BStr loadUsers();
+
+    /**
+     * 
+     */
+    void addUser(
+        BStr /*[in]*/ User);
+
+    /**
+     * 
+     */
+    void delUser(
+        BStr /*[in]*/ User);
 
     /**
      * 
