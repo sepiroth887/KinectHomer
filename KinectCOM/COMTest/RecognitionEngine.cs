@@ -14,8 +14,6 @@ namespace KinectCOM
 {
     class RecognitionEngine
     {
-        private readonly FaceDetector _faceDetector;
-
         private readonly BodyFeatureDetector _featureDetector;
 
         private readonly Recognizer _recognizer;
@@ -30,7 +28,7 @@ namespace KinectCOM
 
         public RecognitionEngine(KinectData kinect, TrackingEngine trackingEngine)
         {
-            _faceDetector = new FaceDetector();
+            new FaceDetector();
             _featureDetector = new BodyFeatureDetector();
             _recognizer = new Recognizer();
             _kinect = kinect;

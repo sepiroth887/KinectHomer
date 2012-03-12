@@ -1,5 +1,6 @@
 ﻿using Emgu.CV;
 using Emgu.CV.Structure;
+using Microsoft.Kinect;
 
 namespace KinectCOM
 {
@@ -42,6 +43,8 @@ namespace KinectCOM
         public bool IsActive { get; set; }
 
         public int Attempts { get; set; }
+
+        public Skeleton Skeleton { get; set; }
 
     }
 }

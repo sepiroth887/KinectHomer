@@ -154,18 +154,14 @@ namespace FaceComTest
                 return;
             }
 
-            foreach (var tag in tags)
+            var tag = tags[0];
+
+            if (tag.attributes["face"].confidence < 80) continue;
+            tagList.Add(tag.tid);
+            if (!_users.Contains(name + "@" + _namespace[0]))
             {
-                if (tag.attributes["face"].confidence < 80) continue;
-                tagList.Add(tag.tid);
-                if (!_users.Contains(name + "@" + _namespace[0]))
-                {
-                    _users.Add(name + "@"+_namespace[0]);
-                }
-
-
+                _users.Add(name + "@"+_namespace[0]);
             }
-
 
             _faceRest.tags_save(tagList, name + "@"+_namespace[0], "", "kinectHome");
             var trainRes = _faceRest.faces_train(new List<string> { name },_namespace[0], string.Empty);

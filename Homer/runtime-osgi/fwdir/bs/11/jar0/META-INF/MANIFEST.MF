@@ -64,5 +64,5 @@ Import-Package: javax.swing, org.osgi.framework, uk.ac.stir.cs.homer.h
  rameworkAPI.osgi, uk.ac.stir.cs.homer.serviceDatabase.objects, uk.ac.
  stir.cs.homer.serviceDatabase.queryBuilder
 Bundle-SymbolicName: KinectComponent
-Build-Date: Sun Mar 11 16:25:28 GMT 2012
+Build-Date: Mon Mar 12 09:24:53 GMT 2012
 

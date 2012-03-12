@@ -23,6 +23,7 @@ namespace KinectCOM
         private Skeleton[] _skeletons;
         private int _activeTID;
         private Skeleton _activeSkeleton;
+        private User _activeUser;
         private byte[] _pixelData;
 
         private readonly object _lockObj = new object();
@@ -179,14 +180,7 @@ namespace KinectCOM
                 // ReSharper disable PossibleNullReferenceException
                 rgbFrame.CopyPixelDataTo(_pixelData);
                 // ReSharper restore PossibleNullReferenceException
-             /**
-                Log.Info("Opening DebugWindow");
-                DebugWindow _debugWindow = new DebugWindow();
-
-                Application.Run(_debugWindow);
-                _debugWindow.drawImage(Coding4Fun.Kinect.WinForm.BitmapExtensions.ToBitmap(_pixelData, 640, 480));
-                Log.Info("DebugWindow openend");    
-            **/
+             
                 FindUserToTrack();
 
                 rgbFrame.Dispose();
@@ -241,20 +235,43 @@ namespace KinectCOM
             foreach(var skel in _skeletons)
             {
                 if(skel.TrackingId == _activeTID && skel.TrackingState != SkeletonTrackingState.Tracked)
-                {
-                    
+                { 
                     return -1;
                 }
             }
 
             if(_activeTID != -1 && _activeSkeleton != null && !_recognitionEngine.IsRecognizing)
             {
+                if(_activeUser == null)
+                {
+                    _activeUser = new User();
+                    _activeUser.TrackingID = _activeTID;
+                    _activeUser.Skeleton = _activeSkeleton;
+                }else if(_activeUser.TrackingID != _activeTID || _activeSkeleton.TrackingId != _activeUser.Skeleton.TrackingId)
+                {
+                    _activeUser.TrackingID = _activeTID;
+                    _activeUser.Skeleton = _activeSkeleton;
+                    _activeUser.Attempts = 0;
+                }
+
+                if(_activeUser.Attempts > 5)
+                {
+                    _activeUser = null;
+                    return -1;
+                }
+
                 if(!_recSoundPlayed)
                 {
                     _recStart.Play();
                     _recSoundPlayed = true;
                 }
-                _recognitionEngine.Recognize(_activeSkeleton,Coding4Fun.Kinect.WinForm.BitmapExtensions.ToBitmap(_pixelData,640,480));
+
+
+                if(_recognitionEngine.Recognize(_activeSkeleton,Coding4Fun.Kinect.WinForm.BitmapExtensions.ToBitmap(_pixelData,640,480)))
+                {
+                    _activeUser.Attempts++;
+                }
+
                 return _activeTID;
 
             }else if(_recognitionEngine.IsRecognizing){
