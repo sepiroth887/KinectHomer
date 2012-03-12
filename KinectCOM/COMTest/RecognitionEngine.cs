@@ -28,7 +28,6 @@ namespace KinectCOM
 
         public RecognitionEngine(KinectData kinect, TrackingEngine trackingEngine)
         {
-            new FaceDetector();
             _featureDetector = new BodyFeatureDetector();
             _recognizer = new Recognizer();
             _kinect = kinect;
@@ -79,7 +78,7 @@ namespace KinectCOM
 
             bestMatch = bestMatch.Replace("@homerKinect.com", "");
 
-            Log.Info(bestMatch);
+            //Log.Info(bestMatch);
 
             User userF = new User();
 

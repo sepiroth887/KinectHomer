@@ -27,10 +27,10 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 	private KinectSensorListener kinectSensorListener;
 	static final String KINECT_SENSOR  = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "KINECT SENSOR");
 	
-	static final String PRESENCE_DETECTED = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "PRESENCE_DETECTED");
-	static final String PRESENCE_LOST = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "PRESENCE_LOST");
-	static final String USER_DETECTED = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "USER_DETECTED");
-	static final String USER_LOST = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "USER_LOST");
+	public static final String PRESENCE_DETECTED = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "PRESENCE_DETECTED");
+	public static final String PRESENCE_LOST = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "PRESENCE_LOST");
+	public static final String USER_DETECTED = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "USER_DETECTED");
+	public static final String USER_LOST = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "USER_LOST");
 	
 	private KinectUI ui;
 	private final HomerDatabase database;

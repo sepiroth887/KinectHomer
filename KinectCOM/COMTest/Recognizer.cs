@@ -156,7 +156,12 @@ namespace FaceComTest
 
             var tag = tags[0];
 
-            if (tag.attributes["face"].confidence < 80) continue;
+            if (tag.attributes["face"].confidence < 80)
+            {
+                e.Cancel = true;
+                return;
+            }
+
             tagList.Add(tag.tid);
             if (!_users.Contains(name + "@" + _namespace[0]))
             {

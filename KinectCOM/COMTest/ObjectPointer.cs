@@ -142,7 +142,7 @@ namespace KinectCOM
             //Log.Info(distanceHandHead);
             _handPos = new Vector3(handV.X, handV.Y, handV.Z);
 
-            if (distanceHandHead > 0.2)
+            if (Math.Sqrt(distanceHandHead) > 0.45)
             {
                 return;
             }

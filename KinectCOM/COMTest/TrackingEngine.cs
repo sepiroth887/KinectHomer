@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Media;
 using Microsoft.Kinect;
@@ -28,24 +26,23 @@ namespace KinectCOM
 
         private readonly object _lockObj = new object();
 
-        private readonly SkeletonHandler _skeletonHandler = new SkeletonHandler();
-
         private readonly ArrayList _users = new ArrayList(); 
 
-        private ArrayList _presenceIDs = new ArrayList();
+        private readonly ArrayList _presenceIDs = new ArrayList();
 
-        private bool _recSoundPlayed = false;
+        private bool _recSoundPlayed;
 
         private readonly SoundPlayer  _recStart =
                 new SoundPlayer(
                     FileLoader.DefaultPath + "recStart.wav");
 
-        private SoundPlayer _recDone =
+        private readonly SoundPlayer _recDone =
         new SoundPlayer(
             FileLoader.DefaultPath + "recStop.wav");
 
         public TrackingEngine(KinectData kinect, KinectHandler kinectHandler)
         {
+            if (Log == null) return;
             Log.Info("Starting TrackingEngine");
             _kinect = kinect;
             _kinectHandler = kinectHandler;
@@ -68,43 +65,45 @@ namespace KinectCOM
 
         public string GetUsers()
         {
-            var result = "";
-            foreach(User user in _users)
+            if (_users == null) return "";
+            var result = _users.Cast<User>().Aggregate("", (current, user) => user != null ? current + (user.Name + ";") : null);
+
+            if (result != null)
             {
-                result += user.Name + ";";
+                return result.Substring(0, result.Length - 1);
             }
 
-            result.Substring(0, result.Length - 1);
-
-            return result;
+            return "";
         }
 
         private void LoadUsers()
         {
             var userData = FileLoader.LoadAllUsers();
 
+            if (userData == null) return;
+
             foreach (var userInfo in userData)
             {
                 var user = new User { Name = userInfo.Key, TrackingID = -1, IsActive = false };
 
-                foreach (var feature in userInfo.Value)
-                {
-                    if (feature.Key.Equals(FeatureType.ArmLength))
+                if (userInfo.Value != null)
+                    foreach (var feature in userInfo.Value)
                     {
-                        user.ArmLength = float.Parse(feature.Value);
-                    }
-                    else if (feature.Key.Equals(FeatureType.HipHeadHeight))
-                    {
-                        user.HipHeight = float.Parse(feature.Value);
+                        if (feature.Key.Equals(FeatureType.ArmLength))
+                        {
+                            user.ArmLength = float.Parse(feature.Value);
+                        }
+                        else if (feature.Key.Equals(FeatureType.HipHeadHeight))
+                        {
+                            user.HipHeight = float.Parse(feature.Value);
 
-                    }
-                    else if (feature.Key.Equals(FeatureType.ShoulderWidth))
-                    {
-                        user.ShoulderWidth = float.Parse(feature.Value);
+                        }
+                        else if (feature.Key.Equals(FeatureType.ShoulderWidth))
+                        {
+                            user.ShoulderWidth = float.Parse(feature.Value);
 
-                    }
-                }
-
+                        }
+                    }  
                 _users.Add(user);
             }
         }
@@ -254,9 +253,10 @@ namespace KinectCOM
                     _activeUser.Attempts = 0;
                 }
 
-                if(_activeUser.Attempts > 5)
+                if(_activeUser.Attempts >= User.MAX_ATTEMPTS && _activeUser.Attempts <= User.MAX_ATTEMPTS+1)
                 {
-                    _activeUser = null;
+                    Log.Info("Gave up on recognition for user with id: " + _activeUser.TrackingID);
+                    _activeUser.Attempts++;
                     return -1;
                 }
 
@@ -291,13 +291,12 @@ namespace KinectCOM
                 
                 _kinect.GetSensor().SkeletonStream.ChooseSkeletons(matchingSkeleton);
                 
-                if(Strategy.Equals(TrackingEngine.CLOSEST_SKELETON))
+                if(Strategy.Equals(TrackingEngine.CLOSEST_SKELETON)|| (_activeUser != null && _activeUser.Attempts >= User.MAX_ATTEMPTS))
                 {
                     Log.Info("Closest skeleton found. Starting tracking of id : " + matchingSkeleton);
                     _kinectHandler.StartTracking(matchingSkeleton);
                     _kinectHandler.TrackingStarted(matchingSkeleton);
-                            
-                 }
+                }
 
                 _activeTID = matchingSkeleton;
             }else 
@@ -374,7 +373,6 @@ namespace KinectCOM
                     skeleton.TrackingState == SkeletonTrackingState.NotTracked) continue;
                 _kinectHandler.UserDetected(user);
 
-                User tempUser;
                 foreach (User userL in _users)
                 {
                     if (!userL.Name.Equals(user.Name)) continue;
@@ -388,10 +386,11 @@ namespace KinectCOM
                     _activeSkeleton = skeleton;
                     _recDone.Play();
                     _recSoundPlayed = false;
-                    Log.Info("User skeleton found. Starting tracking of id : " + userL.TrackingID);
+                    //zLog.Info("User skeleton found. Starting tracking of id : " + userL.TrackingID);
                     _activeTID = userL.TrackingID;
                     _kinectHandler.StartTracking(userL.TrackingID);
                     _kinectHandler.TrackingStarted(userL.TrackingID);
+                    _activeUser = null;
                 }
             }
         }

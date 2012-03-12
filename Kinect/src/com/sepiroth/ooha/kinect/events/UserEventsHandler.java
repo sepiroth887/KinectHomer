@@ -5,10 +5,13 @@ import kinect.kinectcom.server.IUserEventsServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils.ComponentGateway;
+
 import com.jniwrapper.Int32;
 import com.jniwrapper.win32.automation.types.BStr;
 import com.jniwrapper.win32.automation.types.Variant;
 import com.jniwrapper.win32.com.server.CoClassMetaInfo;
+import com.sepiroth.ooha.kinect.KinectSensorComponent;
 import com.sepiroth.ooha.kinect.KinectSensorListener;
 
 public class UserEventsHandler extends IUserEventsServer {
@@ -40,10 +43,10 @@ public class UserEventsHandler extends IUserEventsServer {
 		logger.info("Stopped tracking user with id: "+skelID);
 	}
 	
-	
+		
 	public void onUserFound(BStr user, BStr confidence, Int32 skelID){
 		logger.info("User detected: "+user.toString()+","+confidence.toString()+","+skelID.toString());
-		//ComponentGateway.Singleton.get().triggerOccured(kinectListener.getSysDeviceID(), KinectSensorComponent.PRESENCE_DETECTED, new String[]{skelID.toString()});
+		//ComponentGateway.Singleton.get().triggerOccured(kinectListener.getSysDeviceID(),KinectSensorComponent.USER_DETECTED , new String[]{user.toString(),confidence.toString(),skelID.toString()});
 	}
 	
 	@Override
