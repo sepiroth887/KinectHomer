@@ -450,6 +450,22 @@ public class IKinectImpl extends IDispatchImpl
         );
     }
 
+    /**
+     * 
+     */
+    public void setNewObjectContext(
+        BStr /*[in]*/ context)
+        throws ComException
+    {
+       invokeStandardVirtualMethod(
+            32,
+            Function.STDCALL_CALLING_CONVENTION,
+            new Parameter[] {
+                context == null ? (Parameter)PTR_NULL : context
+            }
+        );
+    }
+
     public IID getIID()
     {
         return _iid;

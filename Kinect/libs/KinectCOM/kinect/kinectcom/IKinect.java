@@ -22,7 +22,7 @@ import kinect.stdole.impl.*;
  */
 public interface IKinect extends IDispatch
 {
-    public static final String INTERFACE_IDENTIFIER = "{12BC429B-E4E6-3358-825B-A3B912495D18}";
+    public static final String INTERFACE_IDENTIFIER = "{61094FAD-1DE4-3B2C-8CDB-6B76D878851F}";
 
     /**
      * 
@@ -193,5 +193,12 @@ public interface IKinect extends IDispatch
      */
     void delUser(
         BStr /*[in]*/ User)
+        throws ComException;
+
+    /**
+     * 
+     */
+    void setNewObjectContext(
+        BStr /*[in]*/ context)
         throws ComException;
 }

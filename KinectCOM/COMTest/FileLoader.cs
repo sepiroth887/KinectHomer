@@ -76,7 +76,7 @@ namespace KinectCOM
             Log.Info("loading objects in room");
             var dir = new DirectoryInfo(DefaultPath);
 
-            if (!dir.Exists)
+            if (!File.Exists(DefaultPath+file))
             {
                 Log.Error("Directory doesn't exist: "+DefaultPath);
                 return null;
@@ -172,31 +172,6 @@ namespace KinectCOM
                 }
         }
 
-
-        /// <summary>
-        /// Adds an individual image to the local userDB folder.
-        /// </summary>
-        /// <param name="label"></param>
-        /// <param name="image"></param>
-        /// <param name="path"></param>
-        public static void SaveImage(string label, Image<Gray, byte> image, string path)
-        {
-            var folderName = label;
-            var numFiles = 0;
-            var dir = new DirectoryInfo(path + "/" + folderName);
-
-            if (!dir.Exists)
-            {
-                dir.Create();
-            }
-            else
-            {
-                numFiles = dir.GetFiles("*.png").Count();
-            }
-
-
-            if (image != null) image.Save(dir.FullName + "/" + (numFiles)%200 + ".png");
-        }
 
         public static string[] LoadGestures(DtwGestureRecognizer dtw)
         {   

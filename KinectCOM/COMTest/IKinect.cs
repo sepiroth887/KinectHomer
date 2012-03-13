@@ -39,5 +39,6 @@ namespace KinectCOM
         string LoadUsers();
         void AddUser(string user);
         void DelUser(string user);
+        void SetNewObjectContext(string context);
     }
 }

@@ -84,6 +84,11 @@ namespace KinectCOM
             return _pointer != null ? _pointer.GetObjects() : "";
         }
 
+        public void CreateObject(Vector3[] points, string ctxtName)
+        {
+            _pointer.CreateObject(points, ctxtName);
+        }
+
         private void PointerContextSelected(string ctxt)
         {
             if (_kinectHandler != null) _kinectHandler.ContextSelected(ctxt);
@@ -118,6 +123,7 @@ namespace KinectCOM
                 
             return _pointer.GetHandPos();
         }
+
 
 
         public void RecognizeGesture(string ctxt)

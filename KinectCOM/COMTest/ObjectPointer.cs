@@ -58,13 +58,22 @@ namespace KinectCOM
             return -1;
         }
 
+        public void CreateObject(Vector3[] points, string contextName)
+        {
+            var box = BoundingBox.CreateFromPoints(points);
+
+            _bounds.Add(contextName,box);
+
+            Log.Info("Object added: "+contextName);
+        }
+
         public String GetObjects()
         {
             var ret = "";
             if (_bounds != null)
                 ret = _bounds.Aggregate(ret, (current, bound) => current + (bound.Key + ";"));
 
-            return ret != null ? ret.Substring(0, ret.Length - 1) : null;
+            return ret != null ? ret.Substring(0, ret.Length - 1) : "";
         }
 
         public void SetObjects(Dictionary<string, Vector3[]> objects)
@@ -73,8 +82,12 @@ namespace KinectCOM
             {
                 _bounds.Clear();
 
-                if (objects != null)
-                    foreach (var obj in objects)
+                if (objects == null)
+                {
+                    Log.Info("No objects loaded, no model stored?");
+                    return;
+                }
+                foreach (var obj in objects)
                     {
                         if (obj.Key != null && obj.Key.Contains("Room"))
                         {

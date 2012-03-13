@@ -18,7 +18,7 @@ import kinect.kinectcom.impl.*;
  */
 public interface IDevice extends IDispatch
 {
-    public static final String INTERFACE_IDENTIFIER = "{5D0EC549-F2C9-3166-99D5-2A4191254BCB}";
+    public static final String INTERFACE_IDENTIFIER = "{92A28D11-004C-3146-90A8-AF8E242E41B6}";
 
     public static final int DISPID_setContext = 9;
     public static final int DISPID_speechRecognition = 10;
@@ -38,6 +38,7 @@ public interface IDevice extends IDispatch
     public static final int DISPID_loadUsers = 24;
     public static final int DISPID_addUser = 25;
     public static final int DISPID_delUser = 26;
+    public static final int DISPID_setNewObjectContext = 27;
     public static final int DISPID_init = 42;
     public static final int DISPID_uninit = 43;
 
@@ -146,6 +147,12 @@ public interface IDevice extends IDispatch
      */
     void delUser(
         BStr /*[in]*/ User);
+
+    /**
+     * 
+     */
+    void setNewObjectContext(
+        BStr /*[in]*/ context);
 
     /**
      * 

@@ -207,6 +207,13 @@ public class IKinectVTBL extends IDispatchVTBL
                     new Parameter[] {
                         new BStr()
                     }
+                ),
+                new VirtualMethodCallback(
+                    "setNewObjectContext",
+                    new HResult(),
+                    new Parameter[] {
+                        new BStr()
+                    }
                 )
             }
         );

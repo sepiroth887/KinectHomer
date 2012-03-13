@@ -10,5 +10,5 @@ Bundle-Activator: uk.ac.stir.cs.homer.serviceLogger.ServiceLoggerActiv
 Bundle-ManifestVersion: 2
 Import-Package: org.osgi.framework
 Bundle-SymbolicName: ServiceLogger
-Build-Date: Mon Mar 12 13:26:00 GMT 2012
+Build-Date: Tue Mar 13 18:04:51 GMT 2012
 

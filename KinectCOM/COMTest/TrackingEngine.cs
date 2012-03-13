@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Media;
 using Microsoft.Kinect;
+using Microsoft.Xna.Framework;
 using log4net;
 
 namespace KinectCOM
@@ -269,7 +270,8 @@ namespace KinectCOM
 
                 if(_recognitionEngine.Recognize(_activeSkeleton,Coding4Fun.Kinect.WinForm.BitmapExtensions.ToBitmap(_pixelData,640,480)))
                 {
-                    _activeUser.Attempts++;
+                    if(_activeUser != null)
+                        _activeUser.Attempts++;
                 }
 
                 return _activeTID;
@@ -413,6 +415,33 @@ namespace KinectCOM
             }
 
             _recognitionEngine.DelUser(user);
+        }
+
+        public Vector3 GetHandLocation(bool left)
+        {
+            if(_activeTID == -1)
+            {
+                Log.Info("no active skeleton");
+                return new Vector3();
+            }
+
+            
+            foreach(var skeleton in _skeletons)
+             {
+                 if (skeleton.TrackingId != _activeTID) continue;
+                 SkeletonPoint pos;
+                    
+                 if(left)
+                 {
+                     pos = skeleton.Joints[JointType.HandRight].Position;
+                     return new Vector3(pos.X,pos.Y,pos.Z);
+                 }
+                 pos = skeleton.Joints[JointType.HandRight].Position;
+
+                 return new Vector3(pos.X,pos.Y,pos.Z);
+             }
+
+            return new Vector3();
         }
     }
 }

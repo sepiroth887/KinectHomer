@@ -177,6 +177,14 @@ public class IDeviceServer extends IDispatchServer
     /**
      * 
      */
+    public void setNewObjectContext(
+        BStr /*[in]*/ context)
+    {
+    }
+
+    /**
+     * 
+     */
     public VariantBool init()
     {
         throw new ComException(HResult.E_NOTIMPL);

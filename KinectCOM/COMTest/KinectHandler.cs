@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Kinect.Toolbox.Voice;
 using Microsoft.Kinect;
+using Microsoft.Xna.Framework;
 using log4net;
 
 namespace KinectCOM
@@ -152,6 +153,14 @@ namespace KinectCOM
             if (_trackingEngine != null) _trackingEngine.DelUser(user);
         }
 
+        public void SetNewObjectContext(string context)
+        {
+            if(!"".Equals(context))
+            {
+                _points = new Vector3[2];
+            }
+        }
+
 
         void IKinect.GestureRecordCompleted(string gestureName, string ctxt)
         {
@@ -200,10 +209,30 @@ namespace KinectCOM
 
         #endregion
 
+
+        private Vector3[] _points;
+        private string objectContext;
         private void VoiceCommandDetected(string command)
         {
+
             //Console.Out.WriteLine("Voice command detected: " + command);
             if (_comInterface != null) _comInterface.VoiceCommandDetected(command);
+
+            if(command.Equals("mark one") && _points != null)
+            {
+                _points = new Vector3[2];
+                _points[1] = _trackingEngine.GetHandLocation(true);
+            }else if(command.Equals("mark two") && _points!=null)
+            {
+                _points[1] = _trackingEngine.GetHandLocation(true);
+
+                if(!"".Equals(objectContext))
+                {
+                    _gestureProcessor.CreateObject(_points,objectContext);
+                    objectContext = "";
+                    _points = null;
+                }
+            }
         }
 
    

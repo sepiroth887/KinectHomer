@@ -144,7 +144,7 @@ public class KinectSensorListener {
 	}
 
 	public void storeGestures() {
-		comDevice.storeGestures();
+		comDevice.storeGestures();	
 	}
 	
 	public String[] loadGestures(){

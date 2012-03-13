@@ -17,7 +17,7 @@ import kinect.kinectcom.*;
 public class IDeviceImpl extends IDispatchImpl
     implements IDevice
 {
-    public static final String INTERFACE_IDENTIFIER = "{5D0EC549-F2C9-3166-99D5-2A4191254BCB}";
+    public static final String INTERFACE_IDENTIFIER = "{92A28D11-004C-3146-90A8-AF8E242E41B6}";
     private static final IID _iid = IID.create(INTERFACE_IDENTIFIER);
 
     public IDeviceImpl()
@@ -288,6 +288,20 @@ public class IDeviceImpl extends IDispatchImpl
             };
 
          Automation.invokeDispatch(this, "DelUser", parameters, void.class);
+    }
+
+    /**
+     * 
+     */
+    public void setNewObjectContext(
+        BStr /*[in]*/ context)
+    {
+
+        Parameter[] parameters = new Parameter[] {
+                context == null ? (Parameter)PTR_NULL : context
+            };
+
+         Automation.invokeDispatch(this, "SetNewObjectContext", parameters, void.class);
     }
 
     /**

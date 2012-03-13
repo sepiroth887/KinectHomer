@@ -130,6 +130,10 @@ namespace KinectCOM
 
         [DispId(26)]
         void DelUser(string user);
+
+        [DispId(27)]
+        void SetNewObjectContext(string context);
+
         [DispId(42)]
         Boolean Init();
 
@@ -366,6 +370,12 @@ namespace KinectCOM
         public string GetObjects()
         {
             return _kHandler != null ? _kHandler.GetObjects() : "";
+        }
+
+
+        public void SetNewObjectContext(string context)
+        {
+            _kHandler.SetNewObjectContext(context);
         }
     }
 }
