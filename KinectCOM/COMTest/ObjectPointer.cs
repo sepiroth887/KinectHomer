@@ -58,11 +58,20 @@ namespace KinectCOM
             return -1;
         }
 
-        public void CreateObject(Vector3[] points, string contextName)
+        public void CreateObject(IEnumerable<Vector3> points, string contextName)
         {
             var box = BoundingBox.CreateFromPoints(points);
 
+            if(_bounds.ContainsKey(contextName))
+            {
+                _bounds[contextName] = box;
+                Log.Info("Object updated");
+                return;
+            }
+
             _bounds.Add(contextName,box);
+
+            FileLoader.SaveObject("livingRoom.obj", box.GetCorners(), contextName);
 
             Log.Info("Object added: "+contextName);
         }

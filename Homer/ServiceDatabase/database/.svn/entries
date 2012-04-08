@@ -1,44 +1,0 @@
-10
-
-dir
-515
-svn://svn.cs.stir.ac.uk/maternaghan/Tech%20Work/Homer/ServiceDatabase/database
-svn://svn.cs.stir.ac.uk/maternaghan
-
-
-
-2011-09-23T12:27:20.597405Z
-515
-cma
-has-props
-
-svn:special svn:externals svn:needs-lock
-
-
-
-
-
-
-
-
-
-
-
-d1ff6347-c711-46c5-ad72-3da2db1b8f4d
-
-backup
-dir
-
-homerDatabase
-dir
-
-homerDatabase.lobs.db
-dir
-
-
-
-delete
-
-queries
-dir
-

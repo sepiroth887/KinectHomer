@@ -1,9 +1,0 @@
-K 10
-svn:ignore
-V 70
-*.db
-homerDatabase.h2.db
-homerDatabase.lock.db
-homerDatabase.trace.db
-
-END

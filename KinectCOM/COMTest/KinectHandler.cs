@@ -36,7 +36,6 @@ namespace KinectCOM
             }
 
             _commands = FileLoader.LoadVoiceCommands();
-            //Console.Out.WriteLine("VC loaded: " + commands.Length);
             if (_commands == null) return;
             _vocCom = new VoiceCommander(_commands);
             _vocCom.OrderDetected += VoiceCommandDetected;
@@ -157,7 +156,9 @@ namespace KinectCOM
         {
             if(!"".Equals(context))
             {
+                objectContext = context;
                 _points = new Vector3[2];
+                Log.Info("Context for new object set: "+context);
             }
         }
 
@@ -217,7 +218,7 @@ namespace KinectCOM
 
             //Console.Out.WriteLine("Voice command detected: " + command);
             if (_comInterface != null) _comInterface.VoiceCommandDetected(command);
-
+            
             if(command.Equals("mark one") && _points != null)
             {
                 _points = new Vector3[2];

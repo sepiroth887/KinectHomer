@@ -9,9 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils.HomerComponent;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils.WhichHasConditions;
 import uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils.WhichHasTriggers;
 import uk.ac.stir.cs.homer.homerFrameworkAPI.componentUtils.encoding.IDUtil;
 import uk.ac.stir.cs.homer.homerFrameworkAPI.homerObjects.SystemDeviceType;
+import uk.ac.stir.cs.homer.homerFrameworkAPI.tcas.Condition;
 import uk.ac.stir.cs.homer.homerFrameworkAPI.tcas.Trigger;
 import uk.ac.stir.cs.homer.serviceDatabase.HomerDatabase;
 
@@ -20,7 +22,7 @@ import com.jniwrapper.win32.automation.types.BStr;
 import com.sepiroth.ooha.kinect.gesture.Gesture;
 import com.sepiroth.ooha.kinect.gesture.GestureListModel;
 
-public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
+public class KinectSensorComponent implements HomerComponent, WhichHasTriggers, WhichHasConditions{
 	
 
 	private static final Logger logger = LoggerFactory.getLogger(KinectSensorComponent.class);
@@ -31,6 +33,11 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 	public static final String PRESENCE_LOST = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "PRESENCE_LOST");
 	public static final String USER_DETECTED = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "USER_DETECTED");
 	public static final String USER_LOST = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "USER_LOST");
+	
+	public static final String HAS_USER = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "sees a user");
+	public static final String HAS_SKELETON = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "sees a skeleton");
+	public static final String HAS_NO_USER = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "sees no user");
+	public static final String HAS_NO_SKELETON = IDUtil.getUniqueIdentifier(KinectSensorComponent.class, "sees no skeleton");
 	
 	private KinectUI ui;
 	private final HomerDatabase database;
@@ -51,7 +58,7 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 		} catch (Exception ex){
 			logger.error("Could not create Kinect sensor listener : "+ex.getMessage());
 		}
-		
+	
 		
 	}
 	
@@ -90,15 +97,15 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 	@Override
 	public void registerComponentInstance(String systemDeviceTypeID,
 			String sysDeviceID, String[] parameters) {
-		//logger.info("New Kinect sensor registered: " + systemDeviceTypeID + " with code: " + sysDeviceID);
-		this.sysDeviceID = systemDeviceTypeID;
+		logger.info("New Kinect sensor registered: " + systemDeviceTypeID + " with code: " + sysDeviceID);
+		this.sysDeviceID = sysDeviceID;
 		
 	}
 
 	@Override
 	public void editComponentInstance(String systemDeviceTypeID,
 			String sysDeviceID, String[] newParameters, String[] oldParameters) {
-		//logger.info("Kinect sensor settings changed: " + sysDeviceID);
+		logger.info("Kinect sensor settings changed: " + sysDeviceID);
 		
 		this.sysDeviceID = sysDeviceID;
 		
@@ -107,7 +114,6 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 	@Override
 	public void deleteComponentInstance(String systemDeviceTypeID,
 			String sysDeviceID, String[] parameters) {
-		// TODO Auto-generated method stub
 		kinectSensorListener.disconnect();
 	}
 
@@ -188,7 +194,7 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 
 	public void storeGestureBindings() {
 		for(Gesture g : (Gesture[])gestureModel.toArray()){
-			
+			g.getName();
 		}
 			
 	}
@@ -199,5 +205,27 @@ public class KinectSensorComponent implements HomerComponent, WhichHasTriggers{
 
 	public void removeUser(String userName) {
 		kinectSensorListener.removeUser(userName);
+	}
+
+	public void createNewObject(String objName) {
+		kinectSensorListener.createNewObject(objName);
+	}
+
+	@Override
+	public List<Condition> getConditions(String systemDeviceTypeID) {
+		// TODO Auto-generated method stub
+		List<Condition> conditions = new ArrayList<Condition>();
+	
+		conditions.add(new Condition(HAS_NO_USER,"no user","",null,USER_LOST,USER_LOST));
+		conditions.add(new Condition(HAS_USER,"user present","",null,USER_DETECTED,USER_DETECTED));
+		
+		return conditions;
+	}
+
+	@Override
+	public boolean checkCondition(String sysDeviceTypeID, String sysDeviceID,
+			String conditionID, String[] parameters) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

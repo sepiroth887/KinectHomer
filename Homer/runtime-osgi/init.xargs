@@ -49,10 +49,10 @@
 -install file:F:\KinectHomer\Homer\HomerFramework\out\HomerFramework-1.0.0.jar
 -initlevel 80
 -install file:F:\KinectHomer\Homer\ComponentX10\out\ComponentX10-1.0.0.jar
+-initlevel 81
+-install file:F:\KinectHomer\Kinect\out\Kinect-0.8.0.jar
 -initlevel 90
 -install file:F:\KinectHomer\Homer\UserInterfaceJavaClient\out\UserInterfaceJavaClient-1.0.0.jar
--initlevel 95
--install file:F:\KinectHomer\Kinect\out\Kinect-0.8.0.jar
 -startlevel 99
 -launch 
 -start file:F:\KinectHomer\knopflerfish\osgi\jars\cm\cm_all-3.0.1.jar
@@ -62,5 +62,5 @@
 -start file:F:\KinectHomer\Homer\ServiceDatabase\out\ServiceDatabase-1.0.0.jar
 -start file:F:\KinectHomer\Homer\HomerFramework\out\HomerFramework-1.0.0.jar
 -start file:F:\KinectHomer\Homer\ComponentX10\out\ComponentX10-1.0.0.jar
--start file:F:\KinectHomer\Homer\UserInterfaceJavaClient\out\UserInterfaceJavaClient-1.0.0.jar
 -start file:F:\KinectHomer\Kinect\out\Kinect-0.8.0.jar
+-start file:F:\KinectHomer\Homer\UserInterfaceJavaClient\out\UserInterfaceJavaClient-1.0.0.jar

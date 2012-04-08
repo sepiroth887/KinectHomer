@@ -35,7 +35,7 @@ public class KinectSensorListener {
 	private IDispatchImpl userEventsHandlerDP;
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	private KinectSensorComponent kinectComponent ;
-	private GestureListModel gestureModel;
+	private GestureListModel gestureModel;	
 	
 	public KinectSensorListener(KinectSensorComponent kinectComponent) throws Exception{
 		this.kinectComponent = kinectComponent;
@@ -185,5 +185,9 @@ public class KinectSensorListener {
 	
 	public void removeUser(String userName){
 		comDevice.delUser(new BStr(userName));
+	}
+
+	public void createNewObject(String objName) {
+		comDevice.setNewObjectContext(new BStr(objName));
 	}
 }

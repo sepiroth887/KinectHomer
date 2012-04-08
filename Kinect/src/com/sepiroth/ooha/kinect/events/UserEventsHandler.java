@@ -22,15 +22,13 @@ public class UserEventsHandler extends IUserEventsServer {
 	
 	public UserEventsHandler(CoClassMetaInfo classImpl) {
 		super(classImpl);
-		
-		
-		// TODO Auto-generated constructor stub
 	}
 	
 	@Override
 	public void onPresenceDetected(Int32 skelID){
 		logger.info("User presence detected with userID: "+skelID);
-		//ComponentGateway.Singleton.get().triggerOccured(kinectListener.getSysDeviceID(), KinectSensorComponent.PRESENCE_DETECTED, new String[]{skelID.toString()});
+		if(kinectListener.getSysDeviceID() != null)
+			ComponentGateway.Singleton.get().triggerOccured(kinectListener.getSysDeviceID(), KinectSensorComponent.PRESENCE_DETECTED, new String[]{skelID.toString()});
 	}
 	
 	@Override
@@ -46,12 +44,15 @@ public class UserEventsHandler extends IUserEventsServer {
 		
 	public void onUserFound(BStr user, BStr confidence, Int32 skelID){
 		logger.info("User detected: "+user.toString()+","+confidence.toString()+","+skelID.toString());
-		//ComponentGateway.Singleton.get().triggerOccured(kinectListener.getSysDeviceID(),KinectSensorComponent.USER_DETECTED , new String[]{user.toString(),confidence.toString(),skelID.toString()});
+		if(kinectListener.getSysDeviceID() != null)
+			ComponentGateway.Singleton.get().triggerOccured(kinectListener.getSysDeviceID(),KinectSensorComponent.USER_DETECTED , new String[]{user.toString(),confidence.toString(),skelID.toString()});
 	}
 	
 	@Override
 	public void onPresenceLost(Int32 skelID){
 		logger.info("User presence lost with userID: "+skelID);
+		if(kinectListener.getSysDeviceID() != null)
+			ComponentGateway.Singleton.get().triggerOccured(kinectListener.getSysDeviceID(),KinectSensorComponent.PRESENCE_LOST , new String[]{skelID.toString()});
 	}
 	
 	@Override
@@ -64,6 +65,12 @@ public class UserEventsHandler extends IUserEventsServer {
 		}else{
 			logger.info("Gesture not recognized.");
 		}	
+	}
+	
+	public void onUserLost(BStr name){
+		logger.info("User "+name+" lost.");
+		if(kinectListener.getSysDeviceID() != null)
+			ComponentGateway.Singleton.get().triggerOccured(kinectListener.getSysDeviceID(),KinectSensorComponent.USER_LOST , new String[]{name.toString()});
 	}
 	
 	@Override
@@ -97,8 +104,9 @@ public class UserEventsHandler extends IUserEventsServer {
 	
 	@Override
 	public void onVoiceCommandDetected(BStr command){
-		
+		logger.info("Voice command received" + command.toString());
 	}
+	
 	public void setKinectListener(KinectSensorListener kinectSensorListener) {
 		this.kinectListener = kinectSensorListener;
 	}

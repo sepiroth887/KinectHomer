@@ -1,6 +1,4 @@
-﻿using Emgu.CV;
-using Emgu.CV.Structure;
-using Microsoft.Kinect;
+﻿using Microsoft.Kinect;
 
 namespace KinectCOM
 {
@@ -16,15 +14,6 @@ namespace KinectCOM
             IsActive = false;
             Attempts = 0;
         }
-
-        public User(double hHeight, double sWidth, double aLength)
-        {
-            HipHeight = hHeight;
-            ShoulderWidth = sWidth;
-            ArmLength = aLength;
-        }
-
-        public Image<Gray, byte> Image { get; set; }
 
         public double HipHeight { get; set; }
 

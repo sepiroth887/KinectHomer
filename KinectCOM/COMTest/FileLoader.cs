@@ -132,46 +132,6 @@ namespace KinectCOM
             return objects;
         }
 
-        /// <summary>
-        /// Saves a set of images for one user and its name to the file path
-        /// </summary>
-        /// <param name="database"></param>
-        public static void SaveFaceDB(Dictionary<Image<Gray, byte>[], string[]> database)
-        {
-            // loop though each entry in the dictionary 
-            if (database != null)
-                foreach (var entry in database)
-                {
-                    // and get the name of the user as the folder name
-                    if (entry.Value != null)
-                    {
-                        var folderName = entry.Value[0];
-
-                        var dir = new DirectoryInfo(DefaultPath+"FaceDB");
-
-                        var numFiles = 0;
-
-                        // check whether the folder already exists or create it if not.
-                        if (!dir.Exists)
-                        {
-                            dir.Create();
-                        }
-                        else
-                        {
-                            // retrieve the number of images already stored 
-                            numFiles = dir.GetFiles("*.png").Count();
-                        }
-
-                        // loop through all images and save them with a number
-                        if (entry.Key != null)
-                            foreach (var t in entry.Key.Where(t => t != null))
-                            {
-                                if (t != null) t.Save(dir.FullName + "/" + (numFiles++)%200 + ".png");
-                            }
-                    }
-                }
-        }
-
 
         public static string[] LoadGestures(DtwGestureRecognizer dtw)
         {   
@@ -187,7 +147,6 @@ namespace KinectCOM
             string line;
             var gestureName = "";
             var contextName = "";
-            // TODO I'm defaulting this to 12 here for now as it meets my current need but I need to cater for variable lengths in the future
             var frames = new ArrayList();
             var items = new double[12];
 
@@ -456,6 +415,32 @@ namespace KinectCOM
 
             writer.Flush();
             writer.Close();
+        }
+
+
+        public static void SaveObject(String file, Vector3[] getCorners, string contextName)
+        {
+            var writer = File.AppendText(DefaultPath+""+file);
+
+            var outStr ="\n\r";
+
+            outStr += "#\n\r# object " + contextName + "\n\r\n\r";
+
+            foreach(var point in getCorners)
+            {
+                outStr += "v " + point.X*(float) Units.cm + " " + point.Y*(float) Units.cm + " " +
+                          point.Z*(float) Units.cm + "\n\r";
+            }
+            
+            outStr+="# "+getCorners.Length+" vertices";
+
+            writer.WriteLine(outStr);
+
+            writer.Flush();
+
+            writer.Close();
+           
+
         }
     }
 }

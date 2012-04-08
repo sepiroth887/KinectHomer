@@ -25,7 +25,6 @@ public class Activator implements BundleActivator {
 		kinect.setUI(new KinectUI(kinect));
 		kinect.loadGestureBindings();
 		ComponentGateway.Singleton.get().registerComponent(kinect);
-		
 	}
 
 	/* (non-Javadoc)
@@ -35,5 +34,6 @@ public class Activator implements BundleActivator {
 	public void stop(BundleContext context) throws Exception {
 		kinect.storeGestures();
 		kinect.storeGestureBindings();
+		kinect.disconnect();
 	}
 }

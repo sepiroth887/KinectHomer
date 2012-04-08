@@ -5,7 +5,7 @@
 <mapAttribute key="org.knopflerfish.eclipse.core.launcher.bundle_projects">
 <mapEntry key="ComponentX10" value="80,1"/>
 <mapEntry key="HomerFramework" value="40,1"/>
-<mapEntry key="Kinect" value="95,1"/>
+<mapEntry key="Kinect" value="81,1"/>
 <mapEntry key="ServiceCOMMs" value="10,0"/>
 <mapEntry key="ServiceDatabase" value="10,1"/>
 <mapEntry key="ServiceJSON" value="10,0"/>

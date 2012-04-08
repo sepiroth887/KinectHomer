@@ -57,29 +57,9 @@ namespace KinectCOM
             }
         }
 
-
-        /*
-         * Attaches an external method that is called whenever a new VideoFrame is ready from an active RGB stream         
-         * 
-         */
-
-        public void attachRGBHandler(EventHandler<ColorImageFrameReadyEventArgs> handler)
-        {
-            if (_kinect != null) _kinect.ColorFrameReady += handler;
-        }
-
         public KinectSensor GetSensor()
         {
             return _kinect;
-        }
-
-        /**
-         * Attaches an external method that is called whenever a new DepthFrame is ready from an active DepthStream
-         * **/
-
-        public void attachDepthHandler(EventHandler<DepthImageFrameReadyEventArgs> handler)
-        {
-            if (_kinect != null) _kinect.DepthFrameReady += handler;
         }
 
         /**

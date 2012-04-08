@@ -46,6 +46,7 @@ public class KinectUI extends JFrame{
 	private KinectSensorComponent kinect;
 	private final JLabel statusLabel = new JLabel("");
 	final JComboBox<String> contextCB = new JComboBox<String>();
+	private final JLabel lblAddObject = new JLabel("Add object");
 	
 	public KinectUI(KinectSensorComponent kinect) {
 		this.kinect = kinect;
@@ -261,28 +262,31 @@ public class KinectUI extends JFrame{
 		final JTextField gPerm = gPermTF;
 		
 		JPanel infoPanel = new JPanel();
+		infoPanel.setToolTipText("Once the object name is set, the object can be created by defining two points around which a bounding box will be created.\r\n\r\nTo define the fist point, place the left hand at the desired location and say \"mark one\". Once the point is set, the second point can be marked in the same manner by saying \"mark two\". ");
 		infoPanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		infoPanel.setBounds(234, 165, 222, 131);
 		gestureTab.add(infoPanel);
 		infoPanel.setLayout(null);
+		lblAddObject.setBounds(10, 11, 64, 29);
+		infoPanel.add(lblAddObject);
 		
-		JLabel lblPointingGesture = new JLabel("Pointing & Gesture hand settings:");
-		lblPointingGesture.setBounds(10, 11, 202, 14);
-		infoPanel.add(lblPointingGesture);
+	    final JTextField textField = new JTextField();
+		textField.setBounds(84, 15, 86, 20);
+		infoPanel.add(textField);
+		textField.setColumns(10);
 		
-		
-		final JCheckBox chckbxUseRightHand = new JCheckBox("Applies to all gestures! ");
-		chckbxUseRightHand.setBounds(10, 50, 202, 23);
-		infoPanel.add(chckbxUseRightHand);
-		
-		JButton btnApply = new JButton("Apply");
-		btnApply.addActionListener(new ActionListener() {
+		JButton btnStartCreation = new JButton("Start creation");
+		btnStartCreation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				kinect.setHandConfig(chckbxUseRightHand.isSelected());
+				String objName = textField.getText();
+				
+				if(!"".equals(objName)){
+					kinect.createNewObject(objName);
+				}
 			}
 		});
-		btnApply.setBounds(121, 101, 91, 23);
-		infoPanel.add(btnApply);
+		btnStartCreation.setBounds(10, 97, 119, 23);
+		infoPanel.add(btnStartCreation);
 		
 		
 		

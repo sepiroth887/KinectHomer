@@ -107,6 +107,7 @@ public class Policy extends DBObject
 		this.dateLastEditedInMillisecs = params[4];
 		this.enabled = Boolean.parseBoolean(params[5]);
 		this.whenClauseAsJSON = params[7];
-		this.doClauseAsJSON = params[8];
+		if(params.length > 8)
+			this.doClauseAsJSON = params[8];
 	}	
 }
