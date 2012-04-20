@@ -1,0 +1,1 @@
+SELECT * FROM ActionRule WHERE policyID=?

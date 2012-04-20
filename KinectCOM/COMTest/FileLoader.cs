@@ -371,7 +371,7 @@ namespace KinectCOM
 
             if (!File.Exists(VoiceCommandsPath))
             {
-                //Console.Out.WriteLine("Voice command config file does not exists");
+                Log.Error("Voice command config file does not exists");
                 return null;
             }
 
@@ -397,10 +397,12 @@ namespace KinectCOM
                     }
 
                     commands = new string[numCommands];
+                    
                 }
                 else
                 {
                     commands[index++] = line;
+                    Log.Info("Command added: " + line);
                 }
             }
 

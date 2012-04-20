@@ -217,6 +217,7 @@ namespace KinectCOM
         {
 
             //Console.Out.WriteLine("Voice command detected: " + command);
+            Log.Info("Voice command recognized: "+command);
             if (_comInterface != null) _comInterface.VoiceCommandDetected(command);
             
             if(command.Equals("mark one") && _points != null)

@@ -1,0 +1,1 @@
+SELECT id FROM Location WHERE name=? AND context=? AND image=?

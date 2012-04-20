@@ -42,6 +42,10 @@ namespace KinectCOM
                             _kinect.ColorStream.Enable(ColorImageFormat.RgbResolution640x480Fps30);
                         if (_kinect.DepthStream != null)
                             _kinect.DepthStream.Enable(DepthImageFormat.Resolution640x480Fps30);
+
+                        _kinect.AudioSource.NoiseSuppression = false;
+                        _kinect.AudioSource.AutomaticGainControlEnabled = false;
+                        _kinect.AudioSource.EchoCancellationMode = EchoCancellationMode.None;
                         _kinect.Start();
                         Log.Info("Kinect DevID:" + deviceId + " started");
                     }    

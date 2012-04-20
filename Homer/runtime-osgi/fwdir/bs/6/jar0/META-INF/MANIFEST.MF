@@ -7,5 +7,5 @@ Bundle-Name: ServiceCOMMs
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: ServiceCOMMs
 Import-Package: org.slf4j
-Build-Date: Sun Apr 08 14:57:45 BST 2012
+Build-Date: Thu Apr 19 13:26:25 BST 2012
 

@@ -312,7 +312,7 @@ namespace KinectCOM
         {
           
                 if (_kinectHandler == null || _seqCoords == null || _dtw == null) return;
-
+                
                 if (_seqCoords.Count > MINIMUM_FRAMES && !_isRecording && _isRecognizing)
                 {
                     ////Console.Out.WriteLine("No of frames: " + seqCoords.Count);
@@ -321,15 +321,14 @@ namespace KinectCOM
                         var g = _dtw.Recognize(_seqCoords, _ctxt);
 
 
-                        if (_recTimer != null && (g != null || _recTimer.ElapsedMilliseconds > 3000))
+                        if (_recTimer != null && (g != null || _recTimer.ElapsedMilliseconds > 4000))
                         {
                             _isRecognizing = false;
                             _seqCoords.Clear();
 
                             
-                                if (g != null)
+                                if (g != null && (!g.Name.Equals("__UNKNOWN") || _recTimer.ElapsedMilliseconds > 4000))
                                     _kinectHandler.GestureRecognitionCompleted(g.Name);
-
                         }
                     }
                 }
